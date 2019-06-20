@@ -1,0 +1,64 @@
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.csprojAssemblyReference.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\App.g.cs
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes_MarkupCompile.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\bin\Debug\GestorClientes.exe.config
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\bin\Debug\GestorClientes.exe
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\bin\Debug\GestorClientes.pdb
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\MainWindow.g.cs
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes_MarkupCompile.lref
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\MainWindow.baml
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.g.resources
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.Properties.Resources.resources
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.csproj.GenerateResource.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.csproj.CoreCompileInputs.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.exe
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.pdb
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\bin\Debug\MaterialDesignColors.dll
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.dll
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.pdb
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.xml
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\App.baml
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GestorClientes.csproj.CopyComplete
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\GestorClientes\GestorClientes\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\bin\Debug\GestorClientes.exe.config
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\bin\Debug\GestorClientes.exe
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\bin\Debug\GestorClientes.pdb
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\bin\Debug\MaterialDesignColors.dll
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.dll
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.pdb
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.xml
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.csprojAssemblyReference.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\MainWindow.g.cs
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\App.g.cs
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes_MarkupCompile.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes_MarkupCompile.lref
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\App.baml
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\MainWindow.baml
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.g.resources
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.Properties.Resources.resources
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.csproj.GenerateResource.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.csproj.CoreCompileInputs.cache
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.csproj.CopyComplete
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.exe
+C:\Users\pinid\Escritorio\Escritorio\tallerOscar\App\GestorClientes\obj\Debug\GestorClientes.pdb
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\GestorClientes.exe.config
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\GestorClientes.exe
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\GestorClientes.pdb
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\MaterialDesignColors.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.pdb
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\MaterialDesignThemes.Wpf.xml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.csprojAssemblyReference.cache
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\MainWindow.g.cs
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\App.g.cs
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes_MarkupCompile.cache
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes_MarkupCompile.lref
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\App.baml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\MainWindow.baml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.g.resources
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.Properties.Resources.resources
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.csproj.GenerateResource.cache
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.csproj.CoreCompileInputs.cache
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.csproj.CopyComplete
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.exe
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.pdb

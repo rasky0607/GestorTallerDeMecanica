@@ -1,0 +1,192 @@
+﻿<Window x:Class="GestorClientes.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GestorClientes"
+         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF45A3CF" Offset="0"/>
+                <GradientStop Color="#FF45CF7D" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="394*"/>
+        </Grid.RowDefinitions>
+        <!--Barra de menu-->
+        <Menu  BorderThickness="2,2,3,4" HorizontalAlignment="Stretch" Grid.RowSpan="2" Height="51" VerticalAlignment="Top">
+            <Menu.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF45CF7D" Offset="0"/>
+                    <GradientStop Color="#FF45A3CF" Offset="1"/>
+                </LinearGradientBrush>
+            </Menu.Background>
+            <MenuItem ToolTip="Exportar documentos." IsEnabled="{Binding ConexionAbierta}">
+                <MenuItem.Header>Archivo</MenuItem.Header>
+                <MenuItem Header="Exportar listado a formato PDF.">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="FilePdf" Height="16" Width="19" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Exportar listado a formato CSV.">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="FileCsv" Height="16" Width="19" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem ToolTip="Filtrar últimos repostajes." IsEnabled="{Binding ConexionAbierta}" >
+                <MenuItem.Header>Otros Filtros</MenuItem.Header>
+                <MenuItem Header="Repostajes de mes actual." ToolTip="Muestra los regístro de del mes actual guardados hasta el momento." Command="{Binding RepostajeMesActual_clickBD, Mode=OneWay}"/>
+                <MenuItem Header="Los 10 últimos Repostajes."  ToolTip="Muestra los regístros de los ultimos 10 depostajes guardados." Command="{Binding DiezUltimosRepostajes_clickBD, Mode=OneWay}"/>
+                <MenuItem Header="Los 30 últimos Repostajes." ToolTip="Muestra los regístros de los ultimos 30 depostajes guardados." CommandTarget="{Binding TreintaUltimosRepostajes_clickBD, Mode=OneWay}" Command="{Binding TreintaUltimosRepostajes_clickBD, Mode=OneWay}"/>
+                <MenuItem Name="btnAbrirVentanaBuscarConductor" Header="Buscar respostajes de un conductor concreto." ToolTip="Muestra los regístros de los repostajes relacionado con el nombre de un conductor indicado."/>
+            </MenuItem>
+            <MenuItem ToolTip="Muestra una ventana los registros de el indole seleccionado" IsEnabled="{Binding ConexionAbierta}">
+                <MenuItem.Header>Ver otros registros</MenuItem.Header>
+                <MenuItem Header="Repostaje de vehiculos." ToolTip="Muestra los regístro de todos los repostajes de los vehiculos guardados."/>
+                <MenuItem Header="Recarga de los depósitos de combustible." ToolTip="Muestra los regístro de todos las recargas de los depósitos de combustible guardados."/>
+                <MenuItem Header="Empresas proveedoras." ToolTip="Muestra los datos de todos proveedores de combustibles guardados."/>
+                <MenuItem Header="Tipos de combustibles." ToolTip="Muestra los regístro de todos los combustibles que nos pueden suministran los proveedores guardados."/>
+                <MenuItem Header="Vehiculos." ToolTip="Muestra los datos de todos nuestros vehiculos guardados."/>
+                <MenuItem Header="Conductores." ToolTip="Muestra los datos de todos nuestros conductores guardados."/>
+                <MenuItem Header="Despositos de combustible." ToolTip="Muestra los datos de todos nuestros depósitos de combustibles guardados."/>
+            </MenuItem>
+            <MenuItem>
+                <MenuItem.Header>Ayuda</MenuItem.Header>
+                <MenuItem x:Name="MiMenu_Git_Pablo" Header="Rasky0607 (Pablo)" ToolTip="Enlace a Github de el desarrollador.">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="GithubCircle" Height="19" Width="17" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="btnAcercaDe" Header="Acerca de..."  ToolTip="Información sobre del desarrollador y versión de la aplicación.">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="InformationVariant" Height="19" Width="17" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <!--Tab o pestañas-->
+        <TabControl Name="tbcPestañas" Margin="10,41,5,10" Grid.Row="1">
+            <TabControl.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFF3F5F5" Offset="0"/>
+                    <GradientStop Color="#FFCFECDB" Offset="1"/>
+                </LinearGradientBrush>
+            </TabControl.Background>
+
+            <!--Tab o pensataña Listado-->
+            <TabItem Header="Listado" ToolTip="Listado de registros." Name="tbListado" TabIndex="1" Margin="-2,-2,-16,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="310*"/>
+                        <ColumnDefinition Width="493*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFF3F5F5" Offset="0"/>
+                            <GradientStop Color="#FFCFECDB" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <Image HorizontalAlignment="Right" Margin="0,0,10,10" Width="174" Stretch="Fill" Height="98" VerticalAlignment="Bottom" Grid.Column="1"/>
+                    <!--Barra de carga oculta mientras no se de a conectar o algun filtrar-->
+                    <ProgressBar Name="progressBar"  Visibility="Hidden"
+                     Style="{StaticResource MaterialDesignCircularProgressBar}"
+                     Value="0"
+                    IsIndeterminate="True" Height="31" Margin="61,0,404,10" Width="28" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Foreground="#FF45A3CF" Grid.Column="1" />
+
+
+                    <!--Boton conectar/Desconectar-->
+                    <Button Name="btnconecdesconec" Content="{Binding Content}" Margin="22,0,0,10" Height="41" Command="{Binding ConecDeconec_clickBD, Mode=OneWay}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding Colorconecxion}" BorderBrush="{Binding Colorconecxion}"/>
+
+                    <!--DataGrid para los datos de la BD-->
+                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}">
+
+
+                    </DataGrid>
+
+                    <!--Filtros-->
+                    <materialDesign:Card Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" Padding="8" Grid.Column="1" Margin="0,43,10,0" Height="229" HorizontalAlignment="Right" Width="169" IsEnabled="{Binding ConexionAbierta}">
+                        <materialDesign:Card.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FF45A3CF" Offset="0"/>
+                                <GradientStop Color="#FF45CF7D" Offset="1"/>
+                            </LinearGradientBrush>
+                        </materialDesign:Card.Background>
+                        <StackPanel>
+                            <TextBlock Text="Filtros:" Margin="16 16 12 8" FontSize="16"/>
+                            <DatePicker Name="dtpFiltroCalendario" Margin="16 4 16 0" Foreground="#FF811BE6"/>
+                            <!--Tipo de filtro-->
+                            <RadioButton Name="rbFiltroFecha" Content="Filtrar fecha." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtra por una determinado mes dia y año concreto"/>
+                            <RadioButton Name="rbFiltroMes" Content="Filtrar un mes." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtrar solo por los registros de un determinado mes"/>
+                            <RadioButton Name="rbFiltroCalculoMes" Content="Calcular total mes." Margin="16,4,0,0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Calcula el coste total del mes"/>
+                            <!--Resultado de calculo total mes.-->
+                            <TextBlock Name="tbcResultado" Text="Resultado: " Margin="16,4,0,0" Visibility="Hidden"/>
+
+                            <Separator Style="{StaticResource MaterialDesignLightSeparator}" />
+                            <!--Button Aplicar/Quitar filtro-->
+                            <StackPanel  Margin="8 0 8 8" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="btnQuitarFiltro" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolForegroundButton}" ToolTip="Eliminar filtros" Width="30" Padding="2 0 0 0" materialDesign:RippleAssist.IsCentered="True">
+                                    <materialDesign:PackIcon Kind="CloseOutline" Height="22" Width="30" />
+                                </Button>
+                                <Button Name="btnAplicarFiltro" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolForegroundButton}" ToolTip="Aplicar filtro" Width="30" Padding="2 0 0 0" materialDesign:RippleAssist.IsCentered="True">
+                                    <materialDesign:PackIcon Kind="CheckAll" Height="22" Width="30" />
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </materialDesign:Card>
+                    <!--Mensajes de control a la hora de insertar eliminar modificar o errores varios..-->
+                    <Label Content="lbMensajes" HorizontalAlignment="Left" Margin="188,372,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+
+                    <!--Botones de Modificar Eliminar Insertar-->
+                    <materialDesign:PopupBox PlacementMode="BottomAndAlignCentres" Foreground="#FF45A3CF" ToolTipService.Placement="Left" ToolTip="Acciones"  Grid.Column="1" Margin="0,277,126,0" Width="58" Background="AliceBlue" HorizontalAlignment="Right" Height="44" VerticalAlignment="Top" IsEnabled="{Binding ConexionAbierta}" >
+                        <StackPanel>
+                            <StackPanel.Background>
+                                <LinearGradientBrush>
+                                    <GradientStop Color="#FF45A3CF" Offset="0"/>
+                                    <GradientStop Color="#FF45CF7D" Offset="1"/>
+                                </LinearGradientBrush>
+                            </StackPanel.Background>
+                            <Button Name="btnEditar" ToolTip="Edita el registro selecionado" >
+                                <materialDesign:PackIcon Kind="Edit" Height="22" Width="30" />
+                            </Button>
+                            <Button Name="btnIraTabInsertar"  ToolTip="Añadir un registro nuevo">
+                                <materialDesign:PackIcon Kind="ExpandAll" Height="22" Width="30" />
+                            </Button>
+                            <Button Name="btnEliminar" ToolTip="Elimina el registro selecionado">
+                                <materialDesign:PackIcon Kind="Delete" Height="22" Width="30" />
+                            </Button>
+                        </StackPanel>
+                    </materialDesign:PopupBox>
+                    <Label Name="lbmensaje" Content="{Binding Mensaje}" HorizontalAlignment="Left" Margin="246,0,0,34" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419"/>
+
+
+
+
+
+                </Grid>
+
+            </TabItem>
+            <!--Tab o pestaña Insercion-->
+            <TabItem Header="Inserción" Name="tbInsercion" TabIndex="2" Margin="14,-2,-18,-2" ToolTip="En esta pestaña podrá añadir nuevos registros.">
+                <Grid>
+                    <materialDesign:PackIcon Kind="DatabasePlus" Height="31" Width="58" Margin="272,33,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                    <Label Content="Escoge lo deseas insertar:" Margin="321,5,0,0" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Width="166"/>
+                    <ComboBox Name="cbxtipoInsercion" Background="White" Margin="321,36,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="212" Height="28" />
+                </Grid>
+
+            </TabItem>
+            <!--Tab o pestaña Modificacion-->
+            <TabItem Name="tbModificacion" Header="Modificaciones" TabIndex="3" Margin="16,-2,-20,-2" Visibility="Visible" ToolTip="En esta pestaña podrá modificar un registro seleccionado en la pestaña 'Listado.'" >
+
+            </TabItem>
+
+        </TabControl>
+
+    </Grid>
+</Window>
