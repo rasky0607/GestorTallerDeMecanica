@@ -173,10 +173,10 @@
 
             </TabItem>
             <!--Tab o pestaña Insercion-->
-            <TabItem Header="Inserción" Name="tbInsercion" TabIndex="2" Margin="14,-2,-18,-2" ToolTip="En esta pestaña podrá añadir nuevos registros.">
+            <TabItem Header="Añadir" Name="tbInsercion" TabIndex="2" Margin="14,-2,-18,-2" ToolTip="En esta pestaña podrá añadir nuevos registros.">
                 <Grid>
                     <materialDesign:PackIcon Kind="DatabasePlus" Height="31" Width="58" Margin="272,33,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                    <Label Content="Escoge lo deseas insertar:" Margin="321,5,0,0" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Width="166"/>
+                    <Label Content="Escoge lo deseas añadir:" Margin="321,5,0,0" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Width="166"/>
                     <ComboBox Name="cbxtipoInsercion" Background="White" Margin="321,36,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="212" Height="28" />
                 </Grid>
 

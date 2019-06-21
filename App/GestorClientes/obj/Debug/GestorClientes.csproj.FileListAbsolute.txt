@@ -62,3 +62,16 @@ E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\Gesto
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.csproj.CopyComplete
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.exe
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.pdb
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes_Content.g.cs
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\x86\e_sqlite3.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\x64\e_sqlite3.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\XamlC.stamp
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\EntityFramework.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\EntityFramework.SqlServer.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Data.SQLite.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Data.SQLite.EF6.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Data.SQLite.Linq.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\EntityFramework.xml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\EntityFramework.SqlServer.xml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Data.SQLite.xml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Data.SQLite.dll.config

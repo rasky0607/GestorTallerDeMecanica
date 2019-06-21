@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace GestorClientes
 {
     /// <summary>
@@ -23,6 +24,11 @@ namespace GestorClientes
         public MainWindow()
         {
             InitializeComponent();
+            DaoSqlite dao = new DaoSqlite();
+            if (dao.EstadoConexion())
+                MessageBox.Show("conectado!!!");
+            else
+                MessageBox.Show("ERROR!!!");
         }
     }
 }
