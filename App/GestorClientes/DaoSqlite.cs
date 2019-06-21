@@ -23,7 +23,7 @@ namespace GestorClientes
         {
             try
             {
-                string db = "mecanicasqlite";
+                string db = "mecanica.sqlite";
                 string cadenaConecxion = string.Format("Data Source=" + db + ";Version=3;FailIfMissing=true;");
                 conexion = new SQLiteConnection(cadenaConecxion);
                 conexion.Open();
