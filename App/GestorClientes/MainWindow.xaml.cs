@@ -25,10 +25,12 @@ namespace GestorClientes
         {
             InitializeComponent();
             DaoSqlite dao = new DaoSqlite();
-            if (dao.EstadoConexion())
-                MessageBox.Show("conectado!!!");
+            if (dao.Conectar())
+            {
+                dtgDatos.ItemsSource= dao.selectServicio();
+            }
             else
-                MessageBox.Show("ERROR!!!");
+                MessageBox.Show("Pos no");
         }
     }
 }

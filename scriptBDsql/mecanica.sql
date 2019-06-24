@@ -12,7 +12,7 @@ drop table if exists cliente;
 		dni char(9) UNIQUE,
 		nombre varchar(200),
 		apellidos varchar(200),
-		tlf varchar(9),
+		tlf integer,
 		primary key(id)
 		)engine=InnoDB;
 
