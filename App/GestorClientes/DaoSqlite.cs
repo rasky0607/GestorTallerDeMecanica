@@ -29,7 +29,30 @@ namespace GestorClientes
             {
                 throw;
             }
+        }
 
+        public bool Desconectar()
+        {
+            try
+            {
+                conexion.Close();
+                conexion = null;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool EstadoConexion()
+        {
+            if (conexion != null && conexion.State == ConnectionState.Open)
+            {
+                return true;
+            }
+            else
+                return false;
         }
    
         public List<Cliente> selectCliente()

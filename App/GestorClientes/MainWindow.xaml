@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:GestorClientes"
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Gestor de clientes" Height="450" Width="800">
     <Grid>
+        <Grid.DataContext>
+            <local:GestionVM/>
+        </Grid.DataContext>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="#FF45A3CF" Offset="0"/>
@@ -26,7 +29,7 @@
                     <GradientStop Color="#FF45A3CF" Offset="1"/>
                 </LinearGradientBrush>
             </Menu.Background>
-            <MenuItem ToolTip="Exportar documentos." IsEnabled="{Binding ConexionAbierta}">
+            <MenuItem ToolTip="Exportar documentos." IsEnabled="{Binding Habilitado}">
                 <MenuItem.Header>Archivo</MenuItem.Header>
                 <MenuItem Header="Exportar listado a formato PDF.">
                     <MenuItem.Icon>
@@ -39,22 +42,19 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem ToolTip="Filtrar últimos repostajes." IsEnabled="{Binding ConexionAbierta}" >
+            <MenuItem ToolTip="Filtrar últimos repostajes." IsEnabled="{Binding Habilitado}" >
                 <MenuItem.Header>Otros Filtros</MenuItem.Header>
-                <MenuItem Header="Repostajes de mes actual." ToolTip="Muestra los regístro de del mes actual guardados hasta el momento." Command="{Binding RepostajeMesActual_clickBD, Mode=OneWay}"/>
-                <MenuItem Header="Los 10 últimos Repostajes."  ToolTip="Muestra los regístros de los ultimos 10 depostajes guardados." Command="{Binding DiezUltimosRepostajes_clickBD, Mode=OneWay}"/>
-                <MenuItem Header="Los 30 últimos Repostajes." ToolTip="Muestra los regístros de los ultimos 30 depostajes guardados." CommandTarget="{Binding TreintaUltimosRepostajes_clickBD, Mode=OneWay}" Command="{Binding TreintaUltimosRepostajes_clickBD, Mode=OneWay}"/>
+                <MenuItem Header="Repostajes de mes actual." ToolTip="Muestra los regístro de del mes actual guardados hasta el momento."/>
+                <MenuItem Header="Los 10 últimos Repostajes."  ToolTip="Muestra los regístros de los ultimos 10 depostajes guardados."/>
+                <MenuItem Header="Los 30 últimos Repostajes." ToolTip="Muestra los regístros de los ultimos 30 depostajes guardados."/>
                 <MenuItem Name="btnAbrirVentanaBuscarConductor" Header="Buscar respostajes de un conductor concreto." ToolTip="Muestra los regístros de los repostajes relacionado con el nombre de un conductor indicado."/>
             </MenuItem>
-            <MenuItem ToolTip="Muestra una ventana los registros de el indole seleccionado" IsEnabled="{Binding ConexionAbierta}">
+            <MenuItem ToolTip="Muestra una ventana los registros de el indole seleccionado" IsEnabled="{Binding Habilitado}" >
                 <MenuItem.Header>Ver otros registros</MenuItem.Header>
-                <MenuItem Header="Repostaje de vehiculos." ToolTip="Muestra los regístro de todos los repostajes de los vehiculos guardados."/>
-                <MenuItem Header="Recarga de los depósitos de combustible." ToolTip="Muestra los regístro de todos las recargas de los depósitos de combustible guardados."/>
-                <MenuItem Header="Empresas proveedoras." ToolTip="Muestra los datos de todos proveedores de combustibles guardados."/>
-                <MenuItem Header="Tipos de combustibles." ToolTip="Muestra los regístro de todos los combustibles que nos pueden suministran los proveedores guardados."/>
-                <MenuItem Header="Vehiculos." ToolTip="Muestra los datos de todos nuestros vehiculos guardados."/>
-                <MenuItem Header="Conductores." ToolTip="Muestra los datos de todos nuestros conductores guardados."/>
-                <MenuItem Header="Despositos de combustible." ToolTip="Muestra los datos de todos nuestros depósitos de combustibles guardados."/>
+                <MenuItem Header="Registros de clientes." ToolTip="Muestra los regístro de todos los clientes registrados." Command="{Binding RegistroClientes_click, Mode=OneWay}"/>
+                <MenuItem Header="Registros de vehiculos." ToolTip="Muestra los regístro de todos los vehiculos registrados." Command="{Binding RegistroCoches_click, Mode=OneWay}"/>
+                <MenuItem Header="Registro de servicios." ToolTip="Muestra los regístro de todos los servicios dados de alta." Command="{Binding RegistroServicios_click, Mode=OneWay}"/>
+                <MenuItem Header="Registro de reparaciones." ToolTip="Muestra los regístro de todos las reparaciónes realizadas" Command="{Binding RegistroReparaciones_click, Mode=OneWay}"/>
             </MenuItem>
             <MenuItem>
                 <MenuItem.Header>Ayuda</MenuItem.Header>
@@ -81,7 +81,7 @@
             </TabControl.Background>
 
             <!--Tab o pensataña Listado-->
-            <TabItem Header="Listado" ToolTip="Listado de registros." Name="tbListado" TabIndex="1" Margin="-2,-2,-16,0">
+            <TabItem Header="Listado" ToolTip="Listado de registros." Name="tbListado" TabIndex="1" Margin="-2,-2,-16,0" IsEnabled="{Binding Habilitado}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="310*"/>
@@ -102,16 +102,17 @@
 
 
                     <!--Boton conectar/Desconectar-->
-                    <Button Name="btnconecdesconec" Content="{Binding Content}" Margin="22,0,0,10" Height="41" Command="{Binding ConecDeconec_clickBD, Mode=OneWay}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding Colorconecxion}" BorderBrush="{Binding Colorconecxion}"/>
+                    <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}" />
 
                     <!--DataGrid para los datos de la BD-->
-                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}">
+                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}" >
+               
 
 
                     </DataGrid>
 
                     <!--Filtros-->
-                    <materialDesign:Card Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" Padding="8" Grid.Column="1" Margin="0,43,10,0" Height="229" HorizontalAlignment="Right" Width="169" IsEnabled="{Binding ConexionAbierta}">
+                    <materialDesign:Card Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" Padding="8" Grid.Column="1" Margin="0,43,10,0" Height="229" HorizontalAlignment="Right" Width="169" IsEnabled="{Binding Habilitado}">
                         <materialDesign:Card.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#FF45A3CF" Offset="0"/>
@@ -122,9 +123,9 @@
                             <TextBlock Text="Filtros:" Margin="16 16 12 8" FontSize="16"/>
                             <DatePicker Name="dtpFiltroCalendario" Margin="16 4 16 0" Foreground="#FF811BE6"/>
                             <!--Tipo de filtro-->
-                            <RadioButton Name="rbFiltroFecha" Content="Filtrar fecha." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtra por una determinado mes dia y año concreto"/>
-                            <RadioButton Name="rbFiltroMes" Content="Filtrar un mes." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtrar solo por los registros de un determinado mes"/>
-                            <RadioButton Name="rbFiltroCalculoMes" Content="Calcular total mes." Margin="16,4,0,0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Calcula el coste total del mes"/>
+                            <RadioButton Name="rbFiltroFecha" Content="Filtrar fecha." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtra reparaciones de una fecha concreta"/>
+                            <RadioButton Name="rbFiltroMes" Content="Filtrar un mes." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtrar solo por las reparaciones de un determinado mes"/>
+                            <RadioButton Name="rbFiltroCalculoMes"  Content="Calcular total mes." Margin="16,4,0,0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Calcular total ganado con las reparaciones de un mes"/>
                             <!--Resultado de calculo total mes.-->
                             <TextBlock Name="tbcResultado" Text="Resultado: " Margin="16,4,0,0" Visibility="Hidden"/>
 
@@ -144,7 +145,7 @@
                     <Label Content="lbMensajes" HorizontalAlignment="Left" Margin="188,372,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 
                     <!--Botones de Modificar Eliminar Insertar-->
-                    <materialDesign:PopupBox PlacementMode="BottomAndAlignCentres" Foreground="#FF45A3CF" ToolTipService.Placement="Left" ToolTip="Acciones"  Grid.Column="1" Margin="0,277,126,0" Width="58" Background="AliceBlue" HorizontalAlignment="Right" Height="44" VerticalAlignment="Top" IsEnabled="{Binding ConexionAbierta}" >
+                    <materialDesign:PopupBox PlacementMode="BottomAndAlignCentres" Foreground="#FF45A3CF" ToolTipService.Placement="Left" ToolTip="Acciones"  Grid.Column="1" Margin="0,277,126,0" Width="58" Background="AliceBlue" HorizontalAlignment="Right" Height="44" VerticalAlignment="Top" >
                         <StackPanel>
                             <StackPanel.Background>
                                 <LinearGradientBrush>
@@ -163,7 +164,7 @@
                             </Button>
                         </StackPanel>
                     </materialDesign:PopupBox>
-                    <Label Name="lbmensaje" Content="{Binding Mensaje}" HorizontalAlignment="Left" Margin="246,0,0,34" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419"/>
+                    <Label Name="lbmensaje" HorizontalAlignment="Left" Margin="246,0,0,34" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419"/>
 
 
 
@@ -173,7 +174,7 @@
 
             </TabItem>
             <!--Tab o pestaña Insercion-->
-            <TabItem Header="Añadir" Name="tbInsercion" TabIndex="2" Margin="14,-2,-18,-2" ToolTip="En esta pestaña podrá añadir nuevos registros.">
+            <TabItem Header="Añadir" Name="tbInsercion" TabIndex="2" Margin="14,-2,-18,-2" ToolTip="En esta pestaña podrá añadir nuevos registros." IsEnabled="{Binding Habilitado}">
                 <Grid>
                     <materialDesign:PackIcon Kind="DatabasePlus" Height="31" Width="58" Margin="272,33,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
                     <Label Content="Escoge lo deseas añadir:" Margin="321,5,0,0" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Width="166"/>
@@ -182,7 +183,7 @@
 
             </TabItem>
             <!--Tab o pestaña Modificacion-->
-            <TabItem Name="tbModificacion" Header="Modificaciones" TabIndex="3" Margin="16,-2,-20,-2" Visibility="Visible" ToolTip="En esta pestaña podrá modificar un registro seleccionado en la pestaña 'Listado.'" >
+            <TabItem Name="tbModificacion" Header="Modificaciones" TabIndex="3" Margin="16,-2,-20,-2" Visibility="Visible" ToolTip="En esta pestaña podrá modificar un registro seleccionado en la pestaña 'Listado.'" IsEnabled="{Binding Habilitado}" >
 
             </TabItem>
 

@@ -24,13 +24,7 @@ namespace GestorClientes
         public MainWindow()
         {
             InitializeComponent();
-            DaoSqlite dao = new DaoSqlite();
-            if (dao.Conectar())
-            {
-                dtgDatos.ItemsSource= dao.selectServicio();
-            }
-            else
-                MessageBox.Show("Pos no");
+           
         }
     }
 }
