@@ -18,14 +18,47 @@ namespace GestorClientes
         string colorAzul = "#FF45A3CF";
         #endregion
         #region campos
+       
         bool _habilitado = false;//Habilita o deshabilita ciertos botones o opciones
-        string _mensaje;//Mensaje de informacion
-        string _mensajeInsercion;
+        string _mensaje;//Mensaje de informacion     
         string _mensajeActualizacion;
         string _conectadoDesconectado="Conectar";//Nombre que daremos al boton de conexion y desconexion segun el estado de dicha conexion
         bool _estadoConexion = false;//true abierta, false cerrada
         string _colorConexion= "#FF45A3CF";
         List<object> _listado;
+        //Campos pestaña Añadir/Insertar
+        string _mensajeInsercion;
+        List<string> _listablas;
+        string _tablaSelecionada; //tabla selecionada en el combobox de la pestaña añadir
+        //Datos Añdir Cliente
+        string _dniInsert;
+        string _nombreCliInsert;
+        string _apellidosCliInsert;
+        int _tlfInsert;
+
+        //Datos Añadir Servicio(Convertir PRopiedades)
+        string _descripcionInsert;
+        string _precioInsert;
+
+        //Datos Añadir Coche(Convertir PRopiedades)
+        string _matriculaInsert;
+        string _marcaInsert;
+        string _modeloInsert;
+
+        //Datos Añadir Reparacion(Convertir PRopiedades)
+        string _dniClirepaInsert;
+        string _matriculaRepaInsert;
+        string _codServicioRepa;
+        DateTime _fechaRepaInsert;
+        int _idRepaInsert;
+
+
+        //Campos pestaña Modificar
+        bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
+
+
+
+
         #endregion
 
         #region Propiedades
@@ -86,7 +119,6 @@ namespace GestorClientes
                 }
             }
         }
-
 
         public bool EstadoConexion {
             get { return _estadoConexion; }
@@ -158,6 +190,52 @@ namespace GestorClientes
                 }
             }
         }
+
+        //Propiedades de pestaña Añadir
+        public List<string> Listablas
+        {
+            get { return _listablas; }
+
+            set
+            {
+                if (_listablas != value)
+                {
+                    _listablas = value;
+                    Notificador("Listablas");
+                }
+            }
+        }
+
+        public string TablaSelecionada {
+            get { return _tablaSelecionada; }
+            set
+            {
+                if (_tablaSelecionada != value)
+                {
+                    _tablaSelecionada = value;
+                    Notificador("TablaSelecionada");
+                }
+            }
+        }
+
+
+
+        //Propiedades de pestaña Modificaciones
+        public bool HabilitarModificaciones
+        {
+            get { return _habilitarModificaciones; }
+            set
+            {
+                if (_habilitarModificaciones != value)
+                {
+                    _habilitarModificaciones = value;
+                    Notificador("HabilitarModificaciones");
+                }
+            }
+        }
+
+
+
         #endregion
 
         #region Metodos que invocan los Metodos que devuelven objetos RealyCommand mas abajo
@@ -173,6 +251,7 @@ namespace GestorClientes
                    
                     ConectadoDesconectado = "Desconectar";//Ya que esta conectado y este boton ademas lo mostraremos en rojo.. y cuando este desconectado, mostraremos la palabra'conectar' con el fondo verde
                     ColorConexion = colorRojo;
+                    Listablas = _dao.VerTablas();
                 }
                 else
                 {
@@ -182,6 +261,7 @@ namespace GestorClientes
                         Listado = null;
                         ConectadoDesconectado = "Conectar";//Ya que esta conectado y este boton ademas lo mostraremos en rojo.. y cuando este desconectado, mostraremos la palabra'conectar' con el fondo verde
                         ColorConexion = colorAzul;
+                        Mensaje = "";
                     }
                 }
             }
@@ -253,7 +333,6 @@ namespace GestorClientes
         }
         //----Fin Listado de registros---
 
-
         #endregion
 
         #region Metodos para propiedades Command de los componentes de la ventana
@@ -284,9 +363,6 @@ namespace GestorClientes
         }
         //----Fin Listado de registros---
         #endregion
-
-
-
 
 
         #region Conversion de tipo de listas a lista object
@@ -347,8 +423,6 @@ namespace GestorClientes
         #endregion
 
 
-
-
     }
 }
 /*
@@ -356,6 +430,9 @@ namespace GestorClientes
 1-
 
  //Tareas pendientes:
+-> controlar que la propiedad _tlfInsert en su textbox correspondiente
+no pueda añadirse otra cosa que no sean numeros.
+
  -Añadir.
  -Modificaciones.
  -Eliminacion.

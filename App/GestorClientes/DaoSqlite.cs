@@ -181,6 +181,36 @@ namespace GestorClientes
 
         }
 
+        public List<string> VerTablas()
+        {
+            List<string> lTablas = new List<string>();
+            string sql = "SELECT name FROM sqlite_master WHERE type =\"table\" and name !=\"sqlite_sequence\"";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+            //SELECT name FROM sqlite_master WHERE type = "table" and name !='sqlite_sequence'; <== Esto equivale desde .NET a ==>  .tables
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    string m = lector["name"].ToString();
+
+                    lTablas.Add(m);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lTablas;
+
+        }
+
+
+
+
 
 
     }

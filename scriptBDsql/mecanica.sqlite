@@ -61,3 +61,13 @@ drop table if exists cliente;
 		 insert into reparacion values(2,1,'2218CL',4,'2019-06-17');
 		 insert into reparacion values(3,1,'2218CL',4,'2019-06-17');
 		 insert into reparacion values(4,1,'2218CL',4,'2019-06-17');
+		 insert into reparacion values(1,2,'1700JPG',4,'2019-06-17');
+		 insert into reparacion values(2,2,'1700JPG',4,'2019-06-17');
+/*
+		drop trigger if exists bireparacion;
+		create trigger bireparacion before insert on reparacion
+			for each row
+			when(new.matriCoche==)
+			BEGIN
+
+			END;*/

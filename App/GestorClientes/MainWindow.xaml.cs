@@ -26,5 +26,38 @@ namespace GestorClientes
             InitializeComponent();
            
         }
+
+        //Mostrar los distintos grid con los distintos campos segun en que tabla se quiere realizar la insercion
+        private void CbxtipoInsercion_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbxtipoInsercion.SelectedItem.ToString() == "cliente"){
+                gridClienteInsert.Visibility = Visibility.Visible;
+                gridServicioInsert.Visibility = Visibility.Hidden;
+                gridCocheInsert.Visibility = Visibility.Hidden;
+                gridReparacionInsert.Visibility = Visibility.Hidden;
+            }
+
+            if (cbxtipoInsercion.SelectedItem.ToString() == "coche"){
+                gridClienteInsert.Visibility = Visibility.Hidden;
+                gridServicioInsert.Visibility = Visibility.Hidden;
+                gridCocheInsert.Visibility = Visibility.Visible;
+                gridReparacionInsert.Visibility = Visibility.Hidden;
+            }
+
+            if (cbxtipoInsercion.SelectedItem.ToString() == "servicio") {
+                gridClienteInsert.Visibility = Visibility.Hidden;
+                gridServicioInsert.Visibility = Visibility.Visible;
+                gridCocheInsert.Visibility = Visibility.Hidden;
+                gridReparacionInsert.Visibility = Visibility.Hidden;
+
+            }
+
+            if (cbxtipoInsercion.SelectedItem.ToString() == "reparacion") {
+                gridClienteInsert.Visibility = Visibility.Hidden;
+                gridServicioInsert.Visibility = Visibility.Hidden;
+                gridCocheInsert.Visibility = Visibility.Hidden;
+                gridReparacionInsert.Visibility = Visibility.Visible;
+            }
+        }
     }
 }
