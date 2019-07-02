@@ -26,7 +26,7 @@ namespace GestorClientes
             InitializeComponent();
            
         }
-
+        #region Añadir registros
         //Mostrar los distintos grid con los distintos campos segun en que tabla se quiere realizar la insercion
         private void CbxtipoInsercion_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -59,5 +59,23 @@ namespace GestorClientes
                 gridReparacionInsert.Visibility = Visibility.Visible;
             }
         }
+
+        private void BtncancelarInsert_Click(object sender, RoutedEventArgs e)
+        {
+            tbListado.IsEnabled = true;
+            tbListado.Focus();
+            tbAnadir.IsEnabled = false;
+            
+        }
+
+        //tabInsertar=añadir
+        private void BtnIraTabInsertar_Click(object sender, RoutedEventArgs e)
+        {
+            tbAnadir.IsEnabled = true;
+            tbListado.IsEnabled = false;
+            tbAnadir.Focus();
+
+        }
+        #endregion
     }
 }

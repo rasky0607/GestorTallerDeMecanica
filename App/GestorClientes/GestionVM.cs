@@ -40,7 +40,7 @@ namespace GestorClientes
 
         //Datos Añadir Servicio(Convertir Propiedades)
         string _descripcionInsert;
-        string _precioInsert;
+        double _precioInsert;
 
         //Datos Añadir Coche(Convertir Propiedades)
         string _matriculaInsert;
@@ -48,9 +48,11 @@ namespace GestorClientes
         string _modeloInsert;
 
         //Datos Añadir Reparacion(Convertir Propiedades)
-        string _dniClirepaInsert;
+        string _dniClirepaInsert;//Seleciona un string de un dni de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
+        int _idClienteRepaInsert;
         string _matriculaRepaInsert;
-        string _codServicioRepa;
+        string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
+        int _CodServicioRepa;
         DateTime _fechaRepaInsert;
         int _idRepaInsert;
 
@@ -299,7 +301,7 @@ namespace GestorClientes
             }
         }
 
-        public string PrecioInsert
+        public double PrecioInsert
         {
             get { return _precioInsert; }
             set
@@ -369,6 +371,19 @@ namespace GestorClientes
             }
         }
 
+        public int IdClienteRepaInsert
+        {
+            get { return _idClienteRepaInsert; }
+            set
+            {
+                if (_idClienteRepaInsert != value)
+                {
+                    _idClienteRepaInsert = value;
+                    Notificador("IdClienteRepaInsert");
+                }
+            }
+        }
+
         public string MatriculaRepaInsert
         {
             get { return _matriculaRepaInsert; }
@@ -382,14 +397,27 @@ namespace GestorClientes
             }
         }
 
-        public string CodServicioRepa
+        public string ServicioRepa
         {
-            get { return _codServicioRepa; }
+            get { return _ServicioRepa; }
             set
             {
-                if (_codServicioRepa != value)
+                if (_ServicioRepa != value)
                 {
-                    _codServicioRepa = value;
+                    _ServicioRepa = value;
+                    Notificador("ServicioRepa");
+                }
+            }
+        }
+
+        public int CodServicioRepa
+        {
+            get { return _CodServicioRepa; }
+            set
+            {
+                if (_CodServicioRepa != value)
+                {
+                    _CodServicioRepa = value;
                     Notificador("CodServicioRepa");
                 }
             }
@@ -554,27 +582,37 @@ namespace GestorClientes
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
                                 MostrarMensajeInsercion = "Visible";
-                            }
-                            else
+                            }                          
+                            break;
+                        case "coche":
+                            if (_dao.InsertCoche(MatriculaInsert, MarcaInsert, ModeloInsert))
                             {
-                                MensajeInsercion = "Insercion fallida.";
+                                MensajeInsercion = "Insercion realizada correctamente";
+                                MostrarMensajeInsercion = "Visible";
+                            }                   
+                            break;
+                        case "servicio":
+                            if (_dao.InsertServicio(DescripcionInsert, PrecioInsert))
+                            {
+                                MensajeInsercion = "Insercion realizada correctamente";
                                 MostrarMensajeInsercion = "Visible";
                             }
                             break;
-                        case "coche":
-                            MessageBox.Show("Coche: Me has selecionado!");
-                            break;
-                        case "servicio":
-                            MessageBox.Show("Servicio: Me has selecionado!");
-                            break;
-                        case "reparacion":
-                            MessageBox.Show("Reparacion: Me has selecionado!");
+                        case "reparacion": //REVISAR PROFUNDAMENTE(Sin probar y con cosas aun por picar) 
+                          //IdClienteRepara= consulta de cod cliente dado un dni sacado de DniClirepaInsert
+                            //CodServicioRepa se obtiene de realizar una consulta con el ServicioRepa(la descripcion del servicio)en la tabla servicios
+                            if (_dao.InsertReparacion(IdRepaInsert, IdClienteRepaInsert, MatriculaRepaInsert,CodServicioRepa,FechaRepaInsert))
+                            {
+                                MensajeInsercion = "Insercion realizada correctamente";
+                                MostrarMensajeInsercion = "Visible";
+                            }
                             break;
                     }
                 }
                 catch
                 {
-                    throw;
+                    MensajeInsercion = "Insercion fallida.";
+                    MostrarMensajeInsercion = "Visible";
                 }
             }
         }
@@ -685,8 +723,9 @@ namespace GestorClientes
  //Tareas pendientes:
 -> controlar que la propiedad _tlfInsert en su textbox correspondiente
 no pueda añadirse otra cosa que no sean numeros.
+->Comprobar la insercion de Reparacion.
+->Eliminacion de registro marcando en la pestaña de listado
 
- -Añadir.
  -Modificaciones.
  -Eliminacion.
  -Filtros

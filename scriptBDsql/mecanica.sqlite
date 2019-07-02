@@ -10,23 +10,22 @@ drop table if exists cliente;
 	create table cliente(
 		id integer primary key AUTOINCREMENT,
 		dni char(9) UNIQUE,
-		nombre varchar(200),
-		apellidos varchar(200),
-		tlf integer
+		nombre varchar(200) not null,
+		apellidos varchar(200) default null,
+		tlf integer not null
 		);
 
 	create table coche(
 		matricula varchar(10),
-		marca varchar(200),
-		modelo varchar(200),
+		marca varchar(200) default null,
+		modelo varchar(200) default null,
 		primary key(matricula)
 		);
 
 	create table servicio(
-		codigo integer,
-		descripcion varchar(255),
-		precio decimal(6,2),
-		primary key(codigo)
+		codigo integer primary key AUTOINCREMENT,
+		descripcion varchar(255) not null,
+		precio decimal(6,2) default null
 		);
 
 	create table reparacion(

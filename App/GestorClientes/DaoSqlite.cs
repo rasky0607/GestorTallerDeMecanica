@@ -217,9 +217,24 @@ namespace GestorClientes
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }
-            catch (SQLiteException e)
+            catch
             {
-                throw new Exception("Hubo un error al introducir el nuevo registro! "+e.Message);
+                throw;
+            }        
+            return true;
+
+        }
+
+        public bool InsertCoche(string matricula, string marca, string modelo)
+        {
+            try
+            {
+                if (matricula is null)
+                    throw new Exception();
+                string sql;
+                sql = "INSERT INTO coche (matricula,marca,modelo) values ('" + matricula + "','" + marca + "','" + modelo +"')";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
             }
             catch
             {
@@ -229,6 +244,45 @@ namespace GestorClientes
 
         }
 
+       
+        public bool InsertServicio(string descripcion, double precio)
+        {
+            try
+            {
+                if (descripcion is null)
+                    throw new Exception();
+                string sql;
+                sql = "INSERT INTO servicio (descripcion,precio) values ('" + descripcion + "'," + precio + ")";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                throw;
+            }
+            return true;
+
+        }
+
+        //REVISAR PROFUNDAMENTE(Sin probar y con cosas aun por picar) 
+        public bool InsertReparacion(int idReparacion, int idCliente,string matriculaCoche, int codServicio,DateTime fecha)
+        {
+            try
+            {
+                if (idReparacion <= 0 || idCliente < 0 || matriculaCoche is null || codServicio < 0 || fecha == null)
+                    throw new Exception();
+                string sql;
+                sql = "INSERT INTO reparacion (id,idCliente,matriculaCoche,codServicio,fecha) values ('" + idReparacion + "'," + idCliente + "'"+matriculaCoche+ ""+codServicio+ ""+fecha+")";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                throw;
+            }
+            return true;
+
+        }
 
 
 
