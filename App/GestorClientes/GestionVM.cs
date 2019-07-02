@@ -27,25 +27,27 @@ namespace GestorClientes
         string _colorConexion= "#FF45A3CF";
         List<object> _listado;
         //Campos pestaña Añadir/Insertar
+        string _mostrarMensajeInsercion="Hidden";//Hidden-Visible
         string _mensajeInsercion;
         List<string> _listablas;
         string _tablaSelecionada; //tabla selecionada en el combobox de la pestaña añadir
+
         //Datos Añdir Cliente
-        string _dniInsert;
+        string _dniCliInsert;
         string _nombreCliInsert;
         string _apellidosCliInsert;
-        int _tlfInsert;
+        int _tlfCliInsert;
 
-        //Datos Añadir Servicio(Convertir PRopiedades)
+        //Datos Añadir Servicio(Convertir Propiedades)
         string _descripcionInsert;
         string _precioInsert;
 
-        //Datos Añadir Coche(Convertir PRopiedades)
+        //Datos Añadir Coche(Convertir Propiedades)
         string _matriculaInsert;
         string _marcaInsert;
         string _modeloInsert;
 
-        //Datos Añadir Reparacion(Convertir PRopiedades)
+        //Datos Añadir Reparacion(Convertir Propiedades)
         string _dniClirepaInsert;
         string _matriculaRepaInsert;
         string _codServicioRepa;
@@ -55,9 +57,6 @@ namespace GestorClientes
 
         //Campos pestaña Modificar
         bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
-
-
-
 
         #endregion
 
@@ -191,7 +190,7 @@ namespace GestorClientes
             }
         }
 
-        //Propiedades de pestaña Añadir
+        #region  Propiedades pestaña Añadir
         public List<string> Listablas
         {
             get { return _listablas; }
@@ -206,7 +205,8 @@ namespace GestorClientes
             }
         }
 
-        public string TablaSelecionada {
+        public string TablaSelecionada
+        {
             get { return _tablaSelecionada; }
             set
             {
@@ -218,7 +218,216 @@ namespace GestorClientes
             }
         }
 
+        public string MostrarMensajeInsercion
+        {
+            get { return _mostrarMensajeInsercion; }
+            set
+            {
+                if (_mostrarMensajeInsercion != value)
+                {
+                    _mostrarMensajeInsercion = value;
+                    Notificador("MostrarMensajeInsercion");
+                }
+            }
+        }
 
+        #region Campos Cliente
+        public string DniCliInsert
+        {
+            get { return _dniCliInsert; }
+            set
+            {
+                if (_dniCliInsert != value)
+                {
+                    _dniCliInsert = value;
+                    Notificador("DniCliInsert");
+                }
+            }
+        }
+
+        public string NombreCliInsert
+        {
+            get { return _nombreCliInsert; }
+            set
+            {
+                if (_nombreCliInsert != value)
+                {
+                    _nombreCliInsert = value;
+                    Notificador("NombreCliInsert");
+                }
+            }
+        }
+
+        public string ApellidosCliInsert
+        {
+            get { return _apellidosCliInsert; }
+            set
+            {
+                if (_apellidosCliInsert != value)
+                {
+                    _apellidosCliInsert = value;
+                    Notificador("ApellidosCliInsert");
+                }
+            }
+        }
+
+        public int TlfCliInsert
+        {
+            get { return _tlfCliInsert; }
+            set
+            {
+                if (_tlfCliInsert != value)
+                {
+                    _tlfCliInsert = value;
+                    Notificador("TlfCliInsert");
+                }
+            }
+        }
+        #endregion
+
+        #region Campos Servicios
+        public string DescripcionInsert
+        {
+            get { return _descripcionInsert; }
+            set
+            {
+                if (_descripcionInsert != value)
+                {
+                    _descripcionInsert = value;
+                    Notificador("DescripcionInsert");
+                }
+            }
+        }
+
+        public string PrecioInsert
+        {
+            get { return _precioInsert; }
+            set
+            {
+                if (_precioInsert != value)
+                {
+                    _precioInsert = value;
+                    Notificador("PrecioInsert");
+                }
+            }
+        }
+        #endregion
+
+        #region Campos Coche
+        public string MatriculaInsert
+        {
+            get { return _matriculaInsert; }
+            set
+            {
+                if (_matriculaInsert != value)
+                {
+                    _matriculaInsert = value;
+                    Notificador("MatriculaInsert");
+                }
+            }
+        }
+
+        public string MarcaInsert
+        {
+            get { return _marcaInsert; }
+            set
+            {
+                if (_marcaInsert != value)
+                {
+                    _marcaInsert = value;
+                    Notificador("MarcaInsert");
+                }
+            }
+        }
+
+        public string ModeloInsert
+        {
+            get { return _modeloInsert; }
+            set
+            {
+                if (_modeloInsert != value)
+                {
+                    _modeloInsert = value;
+                    Notificador("ModeloInsert");
+                }
+            }
+        }
+        #endregion
+
+        #region Campos Reparacion
+
+        public string DniClirepaInsert
+        {
+            get { return _dniClirepaInsert; }
+            set
+            {
+                if (_dniClirepaInsert != value)
+                {
+                    _dniClirepaInsert = value;
+                    Notificador("DniClirepaInsert");
+                }
+            }
+        }
+
+        public string MatriculaRepaInsert
+        {
+            get { return _matriculaRepaInsert; }
+            set
+            {
+                if (_matriculaRepaInsert != value)
+                {
+                    _matriculaRepaInsert = value;
+                    Notificador("MatriculaRepaInsert");
+                }
+            }
+        }
+
+        public string CodServicioRepa
+        {
+            get { return _codServicioRepa; }
+            set
+            {
+                if (_codServicioRepa != value)
+                {
+                    _codServicioRepa = value;
+                    Notificador("CodServicioRepa");
+                }
+            }
+        }
+
+        public DateTime FechaRepaInsert
+        {
+            get { return _fechaRepaInsert; }
+            set
+            {
+                if (_fechaRepaInsert != value)
+                {
+                    _fechaRepaInsert = value;
+                    Notificador("FechaRepaInsert");
+                }
+            }
+        }
+
+        public int IdRepaInsert
+        {
+            get { return _idRepaInsert; }
+            set
+            {
+                if (_idRepaInsert != value)
+                {
+                    _idRepaInsert = value;
+                    Notificador("IdRepaInsert");
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+
+
+       
 
         //Propiedades de pestaña Modificaciones
         public bool HabilitarModificaciones
@@ -331,6 +540,45 @@ namespace GestorClientes
                 }
             }
         }
+
+        private void InsertarRegistro()
+        {
+            if (EstadoConexion)
+            {
+                try
+                {
+                    switch (TablaSelecionada)
+                    {
+                        case "cliente":
+                            if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert))
+                            {
+                                MensajeInsercion = "Insercion realizada correctamente";
+                                MostrarMensajeInsercion = "Visible";
+                            }
+                            else
+                            {
+                                MensajeInsercion = "Insercion fallida.";
+                                MostrarMensajeInsercion = "Visible";
+                            }
+                            break;
+                        case "coche":
+                            MessageBox.Show("Coche: Me has selecionado!");
+                            break;
+                        case "servicio":
+                            MessageBox.Show("Servicio: Me has selecionado!");
+                            break;
+                        case "reparacion":
+                            MessageBox.Show("Reparacion: Me has selecionado!");
+                            break;
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
         //----Fin Listado de registros---
 
         #endregion
@@ -359,7 +607,12 @@ namespace GestorClientes
 
         public RelayCommand RegistroReparaciones_click
         {
-            get { return new RelayCommand(listadoRep => ListadoReparacion(), ListadoRep => true); }
+            get { return new RelayCommand(insertRegis => ListadoReparacion(), insertRegis => true); }
+        }
+
+        public RelayCommand InsertarRegistro_click
+        {
+            get { return new RelayCommand(listadoRep => InsertarRegistro(), ListadoRep => true); }
         }
         //----Fin Listado de registros---
         #endregion
@@ -443,5 +696,10 @@ no pueda añadirse otra cosa que no sean numeros.
 //Tareas Finalizadas:
 Conectar
 Ver otros registros
+
+//Extras:
+1-Control de DniClientes solo puede tener una letra y debe ser el ultimo caracter "controlar en codigo o en un trigger de la BD"
+2-Controlar  insercion de fechas pasadas
+
 
  */

@@ -208,6 +208,28 @@ namespace GestorClientes
 
         }
 
+        public bool InsertCliente(string dni,string nombre,string apellidos, int tlf)
+        {
+            try
+            {
+                string sql;           
+                sql = "INSERT INTO cliente (dni,nombre,apellidos,tlf) values ('"+dni+"','"+nombre+"','"+apellidos+"',"+tlf+")";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+            }
+            catch (SQLiteException e)
+            {
+                throw new Exception("Hubo un error al introducir el nuevo registro! "+e.Message);
+            }
+            catch
+            {
+                throw;
+            }
+            return true;
+
+        }
+
+
 
 
 
