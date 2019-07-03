@@ -58,7 +58,7 @@ namespace GestorClientes
         public List<Cliente> selectCliente()
         {
             List<Cliente> lClientes = new List<Cliente>();
-            string sql = "select * from cliente;";
+            string sql = "select dni,nombre,apellidos,tlf from cliente;";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -69,7 +69,6 @@ namespace GestorClientes
                 while (lector.Read())
                 {
                     Cliente miCliente = new Cliente();
-                    miCliente.Id = int.Parse(lector["id"].ToString());
                     miCliente.Dni = lector["dni"].ToString();
                     miCliente.Nombre = lector["nombre"].ToString();
                     miCliente.Apellidos = lector["apellidos"].ToString();
@@ -85,6 +84,55 @@ namespace GestorClientes
 
         }
 
+        public List<string> selectClienteDni()
+        {
+            List<string> lClientes = new List<string>();
+            string sql = "select dni from cliente;";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {                               
+                    lClientes.Add(lector["dni"].ToString());              
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lClientes;
+
+        }
+
+        public int selectClienteID(string dni)
+        {
+            Cliente cli = new Cliente();
+            string sql = "select id from cliente where dni='"+dni+"';";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {                
+                    cli.Id=int.Parse(lector["id"].ToString());
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return cli.Id;
+
+        }
 
         public List<Coche> selectCoche()
         {
@@ -115,7 +163,30 @@ namespace GestorClientes
 
         }
 
+        public List<string> selectCocheMatricula()
+        {
+            List<string> lCoche = new List<string>();
+            string sql = "select matricula from coche;";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    lCoche.Add(lector["matricula"].ToString());
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lCoche;
+
+        }
 
         public List<Reparacion> selectReparacion()
         {
@@ -149,7 +220,6 @@ namespace GestorClientes
 
         }
 
-
         public List<Servicio> selectServicio()
         {
             List<Servicio> lServicio = new List<Servicio>();
@@ -180,6 +250,58 @@ namespace GestorClientes
             return lServicio;
 
         }
+
+        public List<string> selectServicioDescripcion()
+        {
+            List<string> lServicio = new List<string>();
+            string sql = "select descripcion from servicio;";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    lServicio.Add(lector["descripcion"].ToString());             
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lServicio;
+
+        }
+
+        public int selectServicioCodigo(string descripcion)
+        {
+            Servicio miservicio = new Servicio();
+            string sql = "select codigo from servicio where descripcion='"+descripcion+"';";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    miservicio.Codigo = int.Parse(lector["codigo"].ToString());  
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return miservicio.Codigo;
+
+        }
+
+
 
         public List<string> VerTablas()
         {
@@ -243,8 +365,7 @@ namespace GestorClientes
             return true;
 
         }
-
-       
+   
         public bool InsertServicio(string descripcion, double precio)
         {
             try
@@ -265,14 +386,14 @@ namespace GestorClientes
         }
 
         //REVISAR PROFUNDAMENTE(Sin probar y con cosas aun por picar) 
-        public bool InsertReparacion(int idReparacion, int idCliente,string matriculaCoche, int codServicio,DateTime fecha)
+        public bool InsertReparacion(int idReparacion, int idCliente,string matriculaCoche, int codServicio,string fecha)
         {
             try
             {
                 if (idReparacion <= 0 || idCliente < 0 || matriculaCoche is null || codServicio < 0 || fecha == null)
                     throw new Exception();
                 string sql;
-                sql = "INSERT INTO reparacion (id,idCliente,matriculaCoche,codServicio,fecha) values ('" + idReparacion + "'," + idCliente + "'"+matriculaCoche+ ""+codServicio+ ""+fecha+")";
+                sql = "INSERT INTO reparacion (id,idCliente,matriCoche,codServicio,fecha) values (" + idReparacion + "," + idCliente + ",'"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha)+"')";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }

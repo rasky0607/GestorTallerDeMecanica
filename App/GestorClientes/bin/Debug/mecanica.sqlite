@@ -24,7 +24,7 @@ drop table if exists cliente;
 
 	create table servicio(
 		codigo integer primary key AUTOINCREMENT,
-		descripcion varchar(255) not null,
+		descripcion varchar(255) UNIQUE not null,
 		precio decimal(6,2) default null
 		);
 
@@ -33,7 +33,7 @@ drop table if exists cliente;
 		idCliente integer,
 		matriCoche varchar(10),
 		codServicio integer,
-		fecha date,
+		fecha text,
 		primary key(id,idCliente,matriCoche,codServicio,fecha),
 		foreign key (idCliente) references cliente (id) on update cascade on delete restrict,
 		foreign key (matriCoche) references coche (matricula) on update cascade on delete restrict,

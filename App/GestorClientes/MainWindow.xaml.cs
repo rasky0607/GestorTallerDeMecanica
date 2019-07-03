@@ -23,7 +23,7 @@ namespace GestorClientes
     {
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();                     
            
         }
         #region Añadir registros
@@ -57,13 +57,31 @@ namespace GestorClientes
                 gridServicioInsert.Visibility = Visibility.Hidden;
                 gridCocheInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Visible;
+                //Preparacion  añadir de los combobox  una reparacion con los clientes,matriculas de vehiculos y servicios posibles
+                GestionVM gestion = new GestionVM();
+                if (!gestion._dao.EstadoConexion())
+                {
+                    gestion._dao.Conectar();
+                    cbxServicioInsert.ItemsSource = gestion._dao.selectServicioDescripcion();
+                    cbxDniClienteInsert.ItemsSource = gestion._dao.selectClienteDni();
+                    cbxMatriculaCocheInsert.ItemsSource = gestion._dao.selectCocheMatricula();
+                    gestion._dao.Desconectar();
+                }
+                //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
             }
         }
 
-        private void BtncancelarInsert_Click(object sender, RoutedEventArgs e)
+        private void btnVolverInsert_Click(object sender, RoutedEventArgs e)
         {
             tbListado.IsEnabled = true;
             tbListado.Focus();
+            GestionVM gestion = new GestionVM();
+            if (!gestion._dao.EstadoConexion())
+            {
+                gestion._dao.Conectar();
+                gestion.Listado =gestion.conversion(gestion._dao.selectReparacion());
+                gestion._dao.Desconectar();
+            }
             tbAnadir.IsEnabled = false;
             
         }
@@ -77,5 +95,18 @@ namespace GestorClientes
 
         }
         #endregion
+
+        //Cuando se cierra la ventana, desconectamos obtenido el objeto del contexto de datos de el grid base de la ventana
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            try
+            {
+                GestionVM g = (GestionVM)gdBase.DataContext;
+                g._dao.Desconectar();
+            }
+            catch {
+                throw new Exception("Fallo al cerrar la aplicacion.");
+            }
+        }
     }
 }

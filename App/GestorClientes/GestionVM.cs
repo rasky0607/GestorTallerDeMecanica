@@ -11,8 +11,8 @@ using System.Data.SQLite;
 namespace GestorClientes
 {
     class GestionVM: INotifyPropertyChanged
-    {
-        DaoSqlite _dao = new DaoSqlite();
+    {       
+        public DaoSqlite _dao = new DaoSqlite();
         #region Variables
         string colorRojo = "#FFD66E6E";
         string colorAzul = "#FF45A3CF";
@@ -53,9 +53,8 @@ namespace GestorClientes
         string _matriculaRepaInsert;
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
-        DateTime _fechaRepaInsert;
+        string _fechaRepaInsert = DateTime.Now.Date.ToShortDateString();
         int _idRepaInsert;
-
 
         //Campos pestaña Modificar
         bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
@@ -193,6 +192,7 @@ namespace GestorClientes
         }
 
         #region  Propiedades pestaña Añadir
+
         public List<string> Listablas
         {
             get { return _listablas; }
@@ -423,7 +423,7 @@ namespace GestorClientes
             }
         }
 
-        public DateTime FechaRepaInsert
+        public string FechaRepaInsert
         {
             get { return _fechaRepaInsert; }
             set
@@ -453,9 +453,7 @@ namespace GestorClientes
 
         #endregion
 
-
-
-       
+      
 
         //Propiedades de pestaña Modificaciones
         public bool HabilitarModificaciones
@@ -470,7 +468,8 @@ namespace GestorClientes
                 }
             }
         }
-
+     
+      
 
 
         #endregion
@@ -574,7 +573,7 @@ namespace GestorClientes
             if (EstadoConexion)
             {
                 try
-                {
+                {                  
                     switch (TablaSelecionada)
                     {
                         case "cliente":
@@ -598,9 +597,12 @@ namespace GestorClientes
                                 MostrarMensajeInsercion = "Visible";
                             }
                             break;
-                        case "reparacion": //REVISAR PROFUNDAMENTE(Sin probar y con cosas aun por picar) 
-                          //IdClienteRepara= consulta de cod cliente dado un dni sacado de DniClirepaInsert
-                            //CodServicioRepa se obtiene de realizar una consulta con el ServicioRepa(la descripcion del servicio)en la tabla servicios
+                        case "reparacion":
+                            //IdClienteRepara= se obtiene de realizar una consulta de Id cliente dado un dni sacado de DniClirepaInsert
+                            IdClienteRepaInsert = _dao.selectClienteID(DniClirepaInsert);
+                            //CodServicioRepa se obtiene de realizar una consulta con el ServicioRepa(la descripcion del servicio)en la tabla servicios y obteniendo el codigo del servicio
+                            CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);
+                           
                             if (_dao.InsertReparacion(IdRepaInsert, IdClienteRepaInsert, MatriculaRepaInsert,CodServicioRepa,FechaRepaInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
