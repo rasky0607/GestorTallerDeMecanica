@@ -33,21 +33,18 @@ namespace GestorClientes
             if (cbxtipoInsercion.SelectedItem.ToString() == "cliente"){
                 gridClienteInsert.Visibility = Visibility.Visible;
                 gridServicioInsert.Visibility = Visibility.Hidden;
-                gridCocheInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Hidden;
             }
 
             if (cbxtipoInsercion.SelectedItem.ToString() == "coche"){
                 gridClienteInsert.Visibility = Visibility.Hidden;
                 gridServicioInsert.Visibility = Visibility.Hidden;
-                gridCocheInsert.Visibility = Visibility.Visible;
                 gridReparacionInsert.Visibility = Visibility.Hidden;
             }
 
             if (cbxtipoInsercion.SelectedItem.ToString() == "servicio") {
                 gridClienteInsert.Visibility = Visibility.Hidden;
                 gridServicioInsert.Visibility = Visibility.Visible;
-                gridCocheInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Hidden;
 
             }
@@ -55,7 +52,6 @@ namespace GestorClientes
             if (cbxtipoInsercion.SelectedItem.ToString() == "reparacion") {
                 gridClienteInsert.Visibility = Visibility.Hidden;
                 gridServicioInsert.Visibility = Visibility.Hidden;
-                gridCocheInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Visible;
                 //Preparacion  añadir de los combobox  una reparacion con los clientes,matriculas de vehiculos y servicios posibles
                 GestionVM gestion = new GestionVM();
@@ -63,8 +59,7 @@ namespace GestorClientes
                 {
                     gestion._dao.Conectar();
                     cbxServicioInsert.ItemsSource = gestion._dao.selectServicioDescripcion();
-                    cbxDniClienteInsert.ItemsSource = gestion._dao.selectClienteDni();
-                    cbxMatriculaCocheInsert.ItemsSource = gestion._dao.selectCocheMatricula();
+                    cbxDniClienteInsert.ItemsSource = gestion._dao.selectClienteDni();                  
                     gestion._dao.Desconectar();
                 }
                 //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
@@ -107,6 +102,23 @@ namespace GestorClientes
             catch {
                 throw new Exception("Fallo al cerrar la aplicacion.");
             }
+        }
+
+        private void CbxDniClienteInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            GestionVM gestion = new GestionVM();
+            if (!gestion._dao.EstadoConexion())
+            {
+                gestion._dao.Conectar();
+                cbxMatriculaInsert.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteInsert.SelectedItem.ToString());                  
+                gestion._dao.Desconectar();
+            }
+        }
+
+        private void DtgDatos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Reparacion r = new Reparacion();
+              r = (Reparacion) dtgDatos.SelectedItem;
         }
     }
 }

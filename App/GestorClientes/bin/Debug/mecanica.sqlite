@@ -7,46 +7,36 @@ drop table if exists coche;
 drop table if exists cliente;
 
 
-	create table cliente(
-		id integer primary key AUTOINCREMENT,
-		dni char(9) UNIQUE,
-		nombre varchar(200) not null,
-		apellidos varchar(200) default null,
-		tlf integer not null
+	create table cliente(		
+		dni text,
+		nombre text not null,
+		apellidos text default null,
+		tlf integer not null,
+		matricula text,
+		marca text default null,
+		modelo text default null,
+		primary key(dni,matricula)
 		);
-
-	create table coche(
-		matricula varchar(10),
-		marca varchar(200) default null,
-		modelo varchar(200) default null,
-		primary key(matricula)
-		);
-
 	create table servicio(
 		codigo integer primary key AUTOINCREMENT,
-		descripcion varchar(255) UNIQUE not null,
+		descripcion text UNIQUE not null,
 		precio decimal(6,2) default null
 		);
 
 	create table reparacion(
-		id integer,
-		idCliente integer,
-		matriCoche varchar(10),
+		numReparacion integer,
+		dniCliente text,
+		matriCoche text,
 		codServicio integer,
 		fecha text,
-		primary key(id,idCliente,matriCoche,codServicio,fecha),
-		foreign key (idCliente) references cliente (id) on update cascade on delete restrict,
-		foreign key (matriCoche) references coche (matricula) on update cascade on delete restrict,
+		primary key(numReparacion,dniCliente,matriCoche,fecha),
+		foreign key (dniCliente,matriCoche) references cliente (dni,matricula) on update cascade on delete restrict,
 		foreign key (codServicio) references servicio (codigo) on update cascade on delete restrict
 		);
 
-		insert into cliente values(1,'12345678A','Francisco','Lanzat','638023928');
-		insert into cliente values(2,'87654321B','Pablo','Lopez','634023227');
-		insert into cliente values(3,'12365478C','Oscar','Castro','628025178');
-
-		insert into coche values('2218CL','NISSAN','SERENA');
-		insert into coche values('1700JPG','OPEL','CORSA');
-		insert into coche values('8792FLC','FORD','MUSTANG');
+		insert into cliente values('12345678A','Francisco','Lanzat','638023928','2218CL','Nissan','SERENA');
+		insert into cliente values('87654321B','Pablo','Lopez','634023227','1700JPG','OPEL','Corsa');
+		insert into cliente values('12365478C','Oscar','Castro','628025178','2019OPL','Suzuki','MIERDER');
 
 		insert into servicio values(1,'Mano de obra',15);
 		insert into servicio values(2,'aceite',20);
@@ -55,18 +45,4 @@ drop table if exists cliente;
 		insert into servicio values(5,'Pastillas de freno',30);
 		insert into servicio values(6,'Liquido de freno',25);
 
-
-		 insert into reparacion values(1,1,'2218CL',4,'2019-06-17');
-		 insert into reparacion values(2,1,'2218CL',4,'2019-06-17');
-		 insert into reparacion values(3,1,'2218CL',4,'2019-06-17');
-		 insert into reparacion values(4,1,'2218CL',4,'2019-06-17');
-		 insert into reparacion values(1,2,'1700JPG',4,'2019-06-17');
-		 insert into reparacion values(2,2,'1700JPG',4,'2019-06-17');
-/*
-		drop trigger if exists bireparacion;
-		create trigger bireparacion before insert on reparacion
-			for each row
-			when(new.matriCoche==)
-			BEGIN
-
-			END;*/
+		insert into reparacion values(1,'12345678A','2218CL',4,'2019-06-01');

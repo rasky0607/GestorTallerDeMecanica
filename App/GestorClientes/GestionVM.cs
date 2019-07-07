@@ -17,8 +17,9 @@ namespace GestorClientes
         string colorRojo = "#FFD66E6E";
         string colorAzul = "#FF45A3CF";
         #endregion
+
         #region campos
-       
+      
         bool _habilitado = false;//Habilita o deshabilita ciertos botones o opciones
         string _mensaje;//Mensaje de informacion     
         string _mensajeActualizacion;
@@ -27,7 +28,7 @@ namespace GestorClientes
         string _colorConexion= "#FF45A3CF";
         List<object> _listado;
         //Campos pestaña Añadir/Insertar
-        string _mostrarMensajeInsercion="Hidden";//Hidden-Visible
+        Visibility _mostrarMensajeInsercion= Visibility.Hidden;//Hidden-Visible
         string _mensajeInsercion;
         List<string> _listablas;
         string _tablaSelecionada; //tabla selecionada en el combobox de la pestaña añadir
@@ -53,11 +54,16 @@ namespace GestorClientes
         string _matriculaRepaInsert;
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
-        string _fechaRepaInsert = DateTime.Now.Date.ToShortDateString();
-        int _idRepaInsert;
+        string _fechaRepaInser = DateTime.Now.ToString();
+        int _numRepaInsert;
 
         //Campos pestaña Modificar
         bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
+        string _tablaAcltualListada;//Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
+        object _selecionRegistroAModificar; //Propiedad para el registro selecionado
+        Visibility _visibleGridClienteMod;//collapsed
+        Visibility _visibleGridServicioMod;
+        Visibility _visibleGridReparacionMod;
 
         #endregion
 
@@ -92,19 +98,6 @@ namespace GestorClientes
                 }
             }
 
-        }
-
-        public string MensajeInsercion {
-            get { return _mensajeInsercion; }
-
-            set
-            {
-                if (_mensajeInsercion != value)
-                {
-                    _mensajeInsercion = value;
-                    Notificador("MensajeInsercion");
-                }
-            }
         }
 
         public string MensajeActualizacion {
@@ -220,7 +213,21 @@ namespace GestorClientes
             }
         }
 
-        public string MostrarMensajeInsercion
+        public string MensajeInsercion
+        {
+            get { return _mensajeInsercion; }
+
+            set
+            {
+                if (_mensajeInsercion != value)
+                {
+                    _mensajeInsercion = value;
+                    Notificador("MensajeInsercion");
+                }
+            }
+        }
+
+        public Visibility MostrarMensajeInsercion
         {
             get { return _mostrarMensajeInsercion; }
             set
@@ -423,28 +430,30 @@ namespace GestorClientes
             }
         }
 
-        public string FechaRepaInsert
+        public string FechaRepaInser
         {
-            get { return _fechaRepaInsert; }
+            get { return _fechaRepaInser; }
             set
             {
-                if (_fechaRepaInsert != value)
+                if (_fechaRepaInser != value)
                 {
-                    _fechaRepaInsert = value;
-                    Notificador("FechaRepaInsert");
+                    _fechaRepaInser = value;
+                    Notificador("FechaRepaInser");
                 }
+                
             }
         }
 
-        public int IdRepaInsert
+  
+        public int NumRepaInsert
         {
-            get { return _idRepaInsert; }
+            get { return _numRepaInsert; }
             set
             {
-                if (_idRepaInsert != value)
+                if (_numRepaInsert != value)
                 {
-                    _idRepaInsert = value;
-                    Notificador("IdRepaInsert");
+                    _numRepaInsert = value;
+                    Notificador("NumRepaInsert");
                 }
             }
         }
@@ -453,9 +462,8 @@ namespace GestorClientes
 
         #endregion
 
-      
+        #region Propiedades pestaña Modificar
 
-        //Propiedades de pestaña Modificaciones
         public bool HabilitarModificaciones
         {
             get { return _habilitarModificaciones; }
@@ -468,8 +476,91 @@ namespace GestorClientes
                 }
             }
         }
-     
-      
+
+       
+        public string TablaAcltualListada //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
+        {
+            get { return _tablaAcltualListada; }
+
+            set
+            {
+                if (_tablaAcltualListada!=value)
+                {
+                    _tablaAcltualListada = value;
+                    Notificador("TablaAcltualListada");
+                }
+               
+            }
+
+        }
+
+        public object SelecionRegistroAModificar {
+            get { return _selecionRegistroAModificar; }
+
+            set
+            {
+                if (_selecionRegistroAModificar != value)
+                {
+                    _selecionRegistroAModificar = value;
+                    Notificador("SelecionRegistroAModificar");
+                }
+
+            }
+        }
+        //FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA!
+        public Visibility VisibleGridClienteMod
+        {
+            get { return _visibleGridClienteMod; }
+            set
+            {
+                if (_visibleGridClienteMod != value)
+                {
+                    _visibleGridClienteMod = value;
+                    Notificador("VisibleGridClienteMod");
+                }
+                
+            }
+        }
+        //FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA!
+        public Visibility VisibleGridReparacionMod
+        {
+            get { return _visibleGridReparacionMod; }
+            set
+            {
+
+                if (_visibleGridReparacionMod != value)
+                {
+                    _visibleGridReparacionMod = value;
+                    Notificador("VisibleGridReparacionMod");
+                }
+                
+            }
+        }
+        //FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA!
+        public Visibility VisibleGridServicioMod
+        {
+            get { return _visibleGridServicioMod; }
+            set
+            {
+                if (_visibleGridServicioMod != value)
+                {
+                    _visibleGridServicioMod = value;
+                    Notificador("VisibleGridServicioMod");
+                }
+                
+            }
+        }
+
+        //Propiedades de lso componentes de la pestaña modificaciones
+
+
+        #endregion
+
+
+
+        //Propiedades de pestaña Modificaciones
+
+
 
 
         #endregion
@@ -488,6 +579,12 @@ namespace GestorClientes
                     ConectadoDesconectado = "Desconectar";//Ya que esta conectado y este boton ademas lo mostraremos en rojo.. y cuando este desconectado, mostraremos la palabra'conectar' con el fondo verde
                     ColorConexion = colorRojo;
                     Listablas = _dao.VerTablas();
+                    //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
+                    TablaAcltualListada = "reparacion";
+                    VisibleGridClienteMod = Visibility.Hidden;
+                    VisibleGridReparacionMod = Visibility.Hidden;
+                    VisibleGridServicioMod = Visibility.Hidden;
+
                 }
                 else
                 {
@@ -515,28 +612,15 @@ namespace GestorClientes
                 try
                 {
                     Listado = conversion(_dao.selectCliente());
+                    //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
+                    TablaAcltualListada = "cliente";
                 }
                 catch
                 {
                     throw;
                 }
             }
-        }
-
-        private void ListadoCoches()
-        {
-            if (EstadoConexion)
-            {
-                try
-                {
-                    Listado = conversion(_dao.selectCoche());
-                }
-                catch
-                {
-                    throw;
-                }
-            }
-        }
+        }      
 
         private void ListadoServicios()
         {
@@ -545,6 +629,8 @@ namespace GestorClientes
                 try
                 {
                     Listado = conversion(_dao.selectServicio());
+                    //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
+                    TablaAcltualListada = "servicio";
                 }
                 catch
                 {
@@ -560,6 +646,8 @@ namespace GestorClientes
                 try
                 {
                     Listado = conversion(_dao.selectReparacion());
+                    //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
+                    TablaAcltualListada = "reparacion";
                 }
                 catch
                 {
@@ -577,36 +665,26 @@ namespace GestorClientes
                     switch (TablaSelecionada)
                     {
                         case "cliente":
-                            if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert))
+                            if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                                MostrarMensajeInsercion = "Visible";
+                                MostrarMensajeInsercion = Visibility.Visible;
                             }                          
-                            break;
-                        case "coche":
-                            if (_dao.InsertCoche(MatriculaInsert, MarcaInsert, ModeloInsert))
-                            {
-                                MensajeInsercion = "Insercion realizada correctamente";
-                                MostrarMensajeInsercion = "Visible";
-                            }                   
-                            break;
+                            break;                             
                         case "servicio":
                             if (_dao.InsertServicio(DescripcionInsert, PrecioInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                                MostrarMensajeInsercion = "Visible";
+                                MostrarMensajeInsercion = Visibility.Visible;
                             }
                             break;
-                        case "reparacion":
-                            //IdClienteRepara= se obtiene de realizar una consulta de Id cliente dado un dni sacado de DniClirepaInsert
-                            IdClienteRepaInsert = _dao.selectClienteID(DniClirepaInsert);
-                            //CodServicioRepa se obtiene de realizar una consulta con el ServicioRepa(la descripcion del servicio)en la tabla servicios y obteniendo el codigo del servicio
-                            CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);
-                           
-                            if (_dao.InsertReparacion(IdRepaInsert, IdClienteRepaInsert, MatriculaRepaInsert,CodServicioRepa,FechaRepaInsert))
+                        case "reparacion":                          
+                            CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);                         
+                            if (_dao.InsertReparacion(NumRepaInsert, DniClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                                MostrarMensajeInsercion = "Visible";
+                                MostrarMensajeInsercion = Visibility.Visible;
+                                Listado = conversion(_dao.selectReparacion());
                             }
                             break;
                     }
@@ -614,7 +692,38 @@ namespace GestorClientes
                 catch
                 {
                     MensajeInsercion = "Insercion fallida.";
-                    MostrarMensajeInsercion = "Visible";
+                    MostrarMensajeInsercion = Visibility.Visible;
+                }
+            }
+        }
+
+        private void ModificacionRegistro()
+        {
+            if (EstadoConexion)
+            {
+                try
+                {
+                    switch (TablaAcltualListada)
+                    {
+                        case "cliente":
+                            Cliente c = new Cliente();
+                            c = (Cliente)SelecionRegistroAModificar;
+
+                            break;
+                        case "servicio":
+                            Servicio s = new Servicio();
+                            s = (Servicio)SelecionRegistroAModificar;
+                            break;
+                        case "reparacion":
+                            Reparacion r = new Reparacion();
+                            r = (Reparacion)SelecionRegistroAModificar;
+                            break;
+                    }
+                }
+                catch
+                {
+                    MensajeInsercion = "Insercion fallida.";
+                    MostrarMensajeInsercion = Visibility.Visible;
                 }
             }
         }
@@ -635,11 +744,6 @@ namespace GestorClientes
             get { return new RelayCommand(listadoCli => ListadoClientes(), ListadoCli => true); }
         }
 
-        public RelayCommand RegistroCoches_click
-        {
-            get { return new RelayCommand(listadoCoh => ListadoCoches(), ListadoCoh => true); }
-        }
-
         public RelayCommand RegistroServicios_click
         {
             get { return new RelayCommand(listadoServ => ListadoServicios(), ListadoServ => true); }
@@ -653,6 +757,11 @@ namespace GestorClientes
         public RelayCommand InsertarRegistro_click
         {
             get { return new RelayCommand(listadoRep => InsertarRegistro(), ListadoRep => true); }
+        }
+
+        public RelayCommand ModificacionRegistro_click
+        {
+            get { return new RelayCommand(listadoRep => ModificacionRegistro(), ListadoRep => true); }
         }
         //----Fin Listado de registros---
         #endregion
@@ -715,7 +824,6 @@ namespace GestorClientes
         }
         #endregion
 
-
     }
 }
 /*
@@ -725,8 +833,10 @@ namespace GestorClientes
  //Tareas pendientes:
 -> controlar que la propiedad _tlfInsert en su textbox correspondiente
 no pueda añadirse otra cosa que no sean numeros.
-->Comprobar la insercion de Reparacion.
-->Eliminacion de registro marcando en la pestaña de listado
+->Eliminacion de registro marcando en la pestaña de listado.
+-> crear propiedades para componentes de la pesñata modificaciones y realizar lo mismo que enla insercion.
+->//FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA! de -> public Visibility VisibleGridServicioMod y de mas.
+
 
  -Modificaciones.
  -Eliminacion.

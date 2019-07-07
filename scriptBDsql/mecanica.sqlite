@@ -8,7 +8,7 @@ drop table if exists cliente;
 
 
 	create table cliente(		
-		dni text UNIQUE,
+		dni text,
 		nombre text not null,
 		apellidos text default null,
 		tlf integer not null,
@@ -29,7 +29,7 @@ drop table if exists cliente;
 		matriCoche text,
 		codServicio integer,
 		fecha text,
-		primary key(numReparacion,dniCliente,matriCoche,codServicio,fecha),
+		primary key(numReparacion,dniCliente,matriCoche,fecha),
 		foreign key (dniCliente,matriCoche) references cliente (dni,matricula) on update cascade on delete restrict,
 		foreign key (codServicio) references servicio (codigo) on update cascade on delete restrict
 		);

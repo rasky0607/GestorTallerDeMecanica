@@ -58,7 +58,7 @@ namespace GestorClientes
         public List<Cliente> selectCliente()
         {
             List<Cliente> lClientes = new List<Cliente>();
-            string sql = "select dni,nombre,apellidos,tlf from cliente;";
+            string sql = "select dni,nombre,apellidos,tlf,matricula,marca,modelo from cliente;";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -73,6 +73,9 @@ namespace GestorClientes
                     miCliente.Nombre = lector["nombre"].ToString();
                     miCliente.Apellidos = lector["apellidos"].ToString();
                     miCliente.Tlf = int.Parse(lector["tlf"].ToString());
+                    miCliente.Matricula = lector["matricula"].ToString();
+                    miCliente.Marca = lector["marca"].ToString();
+                    miCliente.Modelo = lector["modelo"].ToString();
                     lClientes.Add(miCliente);
                 }
                 lector.Close();
@@ -109,35 +112,10 @@ namespace GestorClientes
 
         }
 
-        public int selectClienteID(string dni)
+        public List<string> selectClienteMatricula(string dni)
         {
-            Cliente cli = new Cliente();
-            string sql = "select id from cliente where dni='"+dni+"';";
-            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
-
-            SQLiteDataReader lector = null;
-
-            try
-            {
-                lector = sqlYconec.ExecuteReader();
-                while (lector.Read())
-                {                
-                    cli.Id=int.Parse(lector["id"].ToString());
-                }
-                lector.Close();
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-            return cli.Id;
-
-        }
-
-        public List<Coche> selectCoche()
-        {
-            List<Coche> lCoche = new List<Coche>();
-            string sql = "select * from coche;";
+            List<string> listMatricula = new List<string>();
+            string sql = "select matricula from cliente where dni='"+dni+"';";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -147,11 +125,9 @@ namespace GestorClientes
                 lector = sqlYconec.ExecuteReader();
                 while (lector.Read())
                 {
-                    Coche miCoche = new Coche();
-                    miCoche.Matricula = lector["matricula"].ToString();
-                    miCoche.Marca = lector["marca"].ToString();
-                    miCoche.Modelo = lector["modelo"].ToString();
-                    lCoche.Add(miCoche);
+                    Cliente cli = new Cliente();
+                    cli.Matricula=lector["matricula"].ToString();
+                    listMatricula.Add(cli.Matricula);
                 }
                 lector.Close();
             }
@@ -159,32 +135,7 @@ namespace GestorClientes
             {
                 throw new Exception(e.Message);
             }
-            return lCoche;
-
-        }
-
-        public List<string> selectCocheMatricula()
-        {
-            List<string> lCoche = new List<string>();
-            string sql = "select matricula from coche;";
-            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
-
-            SQLiteDataReader lector = null;
-
-            try
-            {
-                lector = sqlYconec.ExecuteReader();
-                while (lector.Read())
-                {
-                    lCoche.Add(lector["matricula"].ToString());
-                }
-                lector.Close();
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-            return lCoche;
+            return listMatricula;
 
         }
 
@@ -202,8 +153,8 @@ namespace GestorClientes
                 while (lector.Read())
                 {
                     Reparacion miReparacion = new Reparacion();
-                    miReparacion.Id = int.Parse(lector["id"].ToString());
-                    miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
+                    miReparacion.DniCliente = lector["dniCliente"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
@@ -301,8 +252,6 @@ namespace GestorClientes
 
         }
 
-
-
         public List<string> VerTablas()
         {
             List<string> lTablas = new List<string>();
@@ -330,12 +279,12 @@ namespace GestorClientes
 
         }
 
-        public bool InsertCliente(string dni,string nombre,string apellidos, int tlf)
+        public bool InsertCliente(string dni,string nombre,string apellidos, int tlf,string matricula, string marca, string modelo)
         {
             try
             {
                 string sql;           
-                sql = "INSERT INTO cliente (dni,nombre,apellidos,tlf) values ('"+dni+"','"+nombre+"','"+apellidos+"',"+tlf+")";
+                sql = "INSERT INTO cliente (dni,nombre,apellidos,tlf,matricula,marca,modelo) values ('"+dni+"','"+nombre+"','"+apellidos+"',"+tlf+",'"+matricula+ "','"+marca+ "','"+modelo+"');";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }
@@ -343,25 +292,6 @@ namespace GestorClientes
             {
                 throw;
             }        
-            return true;
-
-        }
-
-        public bool InsertCoche(string matricula, string marca, string modelo)
-        {
-            try
-            {
-                if (matricula is null)
-                    throw new Exception();
-                string sql;
-                sql = "INSERT INTO coche (matricula,marca,modelo) values ('" + matricula + "','" + marca + "','" + modelo +"')";
-                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
-                cmd.ExecuteNonQuery();
-            }
-            catch
-            {
-                throw;
-            }
             return true;
 
         }
@@ -386,14 +316,14 @@ namespace GestorClientes
         }
 
         //REVISAR PROFUNDAMENTE(Sin probar y con cosas aun por picar) 
-        public bool InsertReparacion(int idReparacion, int idCliente,string matriculaCoche, int codServicio,string fecha)
+        public bool InsertReparacion(int idReparacion, string dniCliente,string matriculaCoche, int codServicio,string fecha)
         {
             try
             {
-                if (idReparacion <= 0 || idCliente < 0 || matriculaCoche is null || codServicio < 0 || fecha == null)
+                if (idReparacion <= 0 || dniCliente  is null || matriculaCoche is null || codServicio < 0 || fecha == null)
                     throw new Exception();
                 string sql;
-                sql = "INSERT INTO reparacion (id,idCliente,matriCoche,codServicio,fecha) values (" + idReparacion + "," + idCliente + ",'"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha)+"')";
+                sql = "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha)+"')";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }

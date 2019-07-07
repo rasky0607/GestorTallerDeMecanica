@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GestorClientes"
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Gestor de clientes" Height="450" Width="800" Closed="Window_Closed">
+        Title="Gestor de clientes" Height="450" Width="800" Closed="Window_Closed" Icon="img/logo.PNG">
     <Grid Name="gdBase">
         <Grid.DataContext>
             <local:GestionVM/>
@@ -52,7 +52,6 @@
             <MenuItem ToolTip="Muestra una ventana los registros de el indole seleccionado" IsEnabled="{Binding Habilitado}" >
                 <MenuItem.Header>Ver otros registros</MenuItem.Header>
                 <MenuItem Header="Registros de clientes." ToolTip="Muestra los regístro de todos los clientes registrados." Command="{Binding RegistroClientes_click, Mode=OneWay}"/>
-                <MenuItem Header="Registros de vehiculos." ToolTip="Muestra los regístro de todos los vehiculos registrados." Command="{Binding RegistroCoches_click, Mode=OneWay}"/>
                 <MenuItem Header="Registro de servicios." ToolTip="Muestra los regístro de todos los servicios dados de alta." Command="{Binding RegistroServicios_click, Mode=OneWay}"/>
                 <MenuItem Header="Registro de reparaciones." ToolTip="Muestra los regístro de todos las reparaciónes realizadas" Command="{Binding RegistroReparaciones_click, Mode=OneWay}"/>
             </MenuItem>
@@ -105,7 +104,7 @@
                     <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}" />
 
                     <!--DataGrid para los datos de la BD-->
-                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}" >
+                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}" SelectionChanged="DtgDatos_SelectionChanged" SelectedItem="{Binding SelecionRegistroAModificar}" >
 
 
 
@@ -179,31 +178,29 @@
                         <ComboBox x:Name="cbxtipoInsercion" Background="White" Margin="49,31,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="212"  ItemsSource="{Binding Listablas}" SelectionChanged="CbxtipoInsercion_SelectionChanged" SelectedItem="{Binding TablaSelecionada}"  />
                     </Grid>
                     <!--Datos De cliente a insertar-->
-                    <Grid x:Name="gridClienteInsert" Margin="150,10" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden">
-                        <Label x:Name="lbdni" Content="DNI:" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
-                        <TextBox x:Name="tbxdni" Margin="0,26,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="166" Height="25" VerticalAlignment="Top" Text="{Binding DniCliInsert}"/>
-                        <Label x:Name="lbnombre" Content="Nombre:" Margin="317,0,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
-                        <TextBox x:Name="tbxnombre" Margin="317,34,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding NombreCliInsert}"/>
-                        <Label x:Name="lbapellidos" Content="Apellidos:" Margin="320,0,0,40" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
-                        <TextBox x:Name="tbxapellidos" Margin="317,0,0,10" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" Text="{Binding ApellidosCliInsert}"/>
-                        <Label x:Name="lbtlf" Content="Teléfono:" Margin="0,0,0,40" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="26" VerticalAlignment="Bottom"/>
-                        <TextBox x:Name="tbxtlf" Margin="0,101,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding TlfCliInsert}"/>
+                    <Grid x:Name="gridClienteInsert" Margin="36,86,22,65" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" Height="164" Width="713">
+                        <Label x:Name="lbdni" Content="DNI:" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top" Margin="10,9,0,0"/>
+                        <TextBox x:Name="tbxdni" Margin="10,35,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="151" Height="25" VerticalAlignment="Top" Text="{Binding DniCliInsert}"/>
+                        <Label x:Name="lbnombre" Content="Nombre:" Margin="191,10,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
+                        <TextBox x:Name="tbxnombre" Margin="191,35,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding NombreCliInsert}"/>
+                        <Label x:Name="lbapellidos" Content="Apellidos:" Margin="375,0,0,134" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxapellidos" Margin="375,0,0,104" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" Text="{Binding ApellidosCliInsert}"/>
+                        <Label x:Name="lbtlf" Content="Teléfono:" Margin="553,0,0,128" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="26" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxtlf" Margin="553,35,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding TlfCliInsert}"/>
+
+                        <Label x:Name="lbMatricula" Content="Matricula:" Margin="60,0,0,62" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxMatricula" Margin="60,0,0,37" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" Text="{Binding MatriculaInsert}"/>
+                        <Label x:Name="lbMarca" Content="Marca:" Margin="268,0,0,62" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="26" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxMarca" Margin="268,102,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding MarcaInsert}"/>
+                        <Label x:Name="lbModelo" Content="Modelo:" Margin="481,0,0,61" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="26" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxModelo" Margin="481,102,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding ModeloInsert}"/>
                     </Grid>
 
-                    <!--Datos De coche a insertar-->
-                    <Grid x:Name="gridCocheInsert" Margin="217,86,258,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="296" Visibility="Hidden">
-                        <Label x:Name="lbMatricula" Content="Matricula:" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top" Margin="109,0,0,0"/>
-                        <TextBox x:Name="tbxMatricula" Margin="109,26,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding MatriculaInsert}"/>
-                        <Label x:Name="lbMarca" Content="Marca:" Margin="109,51,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
-                        <TextBox x:Name="tbxMarca" Margin="109,74,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" Text="{Binding MarcaInsert}"/>
-                        <Label x:Name="lbModelo" Content="Modelo:" Margin="109,0,0,35" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
-                        <TextBox x:Name="tbxModelo" Margin="109,0,0,10" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" Text="{Binding ModeloInsert}"/>
-                    </Grid>
 
                     <!--Datos De servicio a insertar-->
                     <Grid x:Name="gridServicioInsert" Margin="217,86,258,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="296" Visibility="Hidden">
                         <Label x:Name="lbDescripcion" Content="Descripción:" Margin="0,25,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
-                        <TextBox x:Name="tbxDescripcion" Margin="79,15,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="207" Height="69" VerticalAlignment="Top" Text="{Binding DescripcionInsert}"/>
+                        <TextBox x:Name="tbxDescripcion" Margin="79,15,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="207" Height="36" VerticalAlignment="Top" Text="{Binding DescripcionInsert}"/>
                         <Label x:Name="lbPrecio" Content="Precio:" Margin="10,0,0,39" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
                         <TextBox x:Name="tbxPrecio" Margin="79,0,0,39" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="65" Height="25" VerticalAlignment="Bottom" Text="{Binding PrecioInsert}"/>
                     </Grid>
@@ -211,21 +208,22 @@
                     <!--Datos De Reparacion a insertar-->
                     <Grid x:Name="gridReparacionInsert" Margin="70,86,136,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="565" Visibility="Hidden">
                         <Label x:Name="lbDniCliente" Content=" DNI Cliente:" Margin="66,65,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
-                        <ComboBox x:Name="cbxDniClienteInsert" Margin="156,65,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="26" VerticalAlignment="Top" SelectedItem="{Binding DniClirepaInsert}"/>
+                        <ComboBox x:Name="cbxDniClienteInsert" Margin="156,65,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="26" VerticalAlignment="Top" SelectedItem="{Binding DniClirepaInsert}" SelectionChanged="CbxDniClienteInsert_SelectionChanged"/>
                         <Label x:Name="lbMatriculaCoche" Content="Matricula del coche:" Margin="21,0,0,22" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
-                        <ComboBox x:Name="cbxMatriculaCocheInsert" Margin="156,0,0,22" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedItem="{Binding MatriculaRepaInsert}"/>
+                        <ComboBox x:Name="cbxMatriculaInsert" Margin="156,0,0,22" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedItem="{Binding MatriculaRepaInsert}"/>
                         <Label x:Name="lbServicio" Content="Servicio Realizado:" Margin="304,0,0,121" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
                         <ComboBox x:Name="cbxServicioInsert" Margin="431,0,0,121" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedItem="{Binding ServicioRepa}"/>
                         <Label x:Name="lbFecha" Content="Fecha:" Margin="373,0,0,22" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
-                        <DatePicker x:Name="dpFecha" Margin="431,0,0,22" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" Text="{Binding FechaRepaInsert}"/>
-                        <Label x:Name="lbIdReparacion" Content="Numero de reparación:" Margin="11,0,0,121" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" ToolTip="Número de reparación para un coche de un cliente en una misma fecha"/>
-                        <TextBox x:Name="tbxIdReparacion" Margin="156,0,0,121" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="51" Height="25" VerticalAlignment="Bottom" ToolTip="Número de reparación para un coche de un cliente en una misma fecha" IsEnabled="True" Text="{Binding IdRepaInsert}"/>
+                        <DatePicker x:Name="dpFecha" Margin="431,0,0,22" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedDate="{Binding FechaRepaInser}" />
+                        <Label x:Name="lbIdReparacion" Content="Numero de reparación:" Margin="11,0,0,121" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" ToolTip="Número de reparación para un coche de un cliente en una misma fecha" />
+                        <TextBox x:Name="tbxIdReparacion" Margin="156,0,0,121" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="51" Height="25" VerticalAlignment="Bottom" ToolTip="Número de reparación para un coche de un cliente en una misma fecha" IsEnabled="True" Text="{Binding NumRepaInsert}"/>
+                        
                     </Grid>
 
                     <Grid Name="gridbtnInsert" Margin="229,0,206,10" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="336" Height="66">
                         <Button Name="btnVolverInsert" Content="Volver" RenderTransformOrigin="0.227,0.5" Height="28" Margin="0,0,224,5"  VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="93" Background="#FFD66E6E" BorderBrush="#FFD66E6E" Click="btnVolverInsert_Click" />
                         <Button Content="Insertar" Margin="219,0,0,5" Height="28" RenderTransformOrigin="0.356,0.625"  HorizontalAlignment="Left" Width="98" VerticalAlignment="Bottom" Background="#FF45A3CF" BorderBrush="#FF45A3CF" Command="{Binding InsertarRegistro_click, Mode=OneWay}" />
-                        <Label Name="lbMensajeInsercion"  HorizontalAlignment="Left" Margin="96,0,0,0" VerticalAlignment="Top" Width="171" Height="33" Visibility="Visible" Content="{Binding MensajeInsercion}" />
+                        <Label Name="lbMensajeInsercion"  HorizontalAlignment="Left" Margin="96,0,0,0" VerticalAlignment="Top" Width="171" Height="33" Visibility="{Binding MostrarMensajeInsercion}" Content="{Binding MensajeInsercion}" />
 
                     </Grid>
 
@@ -235,8 +233,66 @@
             </TabItem>
             <!--Tab o pestaña Modificacion-->
             <TabItem Name="tbModificacion" Header="Modificaciones" TabIndex="3" Margin="16,-2,-20,-2" Visibility="Visible" ToolTip="En esta pestaña podrá modificar un registro seleccionado en la pestaña 'Listado.'" IsEnabled="{Binding HabilitarModificaciones}" >
+                <!-- IsEnabled="{Binding HabilitarModificaciones}"-->
+
+                <Grid Name="gridGeneralModificar" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+
+                    <!--Datos De cliente a Modificar-->
+                    <Grid x:Name="gridClienteMod" Margin="36,86,22,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="713" Visibility="{Binding VisibleGridClienteMod}">
+                        <Label x:Name="lbdniMod" Content="DNI:" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top" Margin="10,9,0,0"/>
+                        <TextBox x:Name="tbxdniMod" Margin="10,35,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="151" Height="25" VerticalAlignment="Top"/>
+                        <Label x:Name="lbnombreMod" Content="Nombre:" Margin="191,10,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
+                        <TextBox x:Name="tbxnombreMod" Margin="191,35,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top"/>
+                        <Label x:Name="lbapellidosMod" Content="Apellidos:" Margin="375,0,0,134" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxapellidosMod" Margin="375,0,0,104" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" />
+                        <Label x:Name="lbtlfMod" Content="Teléfono:" Margin="553,0,0,128" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="26" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxtlfMod" Margin="553,35,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" />
+
+                        <Label x:Name="lbMatriculaMod" Content="Matricula:" Margin="60,0,0,62" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxMatriculaMod" Margin="60,0,0,37" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <Label x:Name="lbMarcaMod" Content="Marca:" Margin="268,0,0,62" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="26" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxMarcaMod" Margin="268,102,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top" />
+                        <Label x:Name="lbModeloMod" Content="Modelo:" Margin="481,0,0,61" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="26" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxModeloMod" Margin="481,102,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Top"/>
+                    </Grid>
+
+
+                    <!--Datos De servicio a Modificar-->
+                    <Grid x:Name="gridServicioMod" Margin="217,86,258,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="296" Visibility="{Binding VisibleGirdServicioMod}">
+                        <Label x:Name="lbDescripcionMod" Content="Descripción:" Margin="0,25,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
+                        <TextBox x:Name="tbxDescripcionMod" Margin="79,15,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="207" Height="36" VerticalAlignment="Top" />
+                        <Label x:Name="lbPrecioMod" Content="Precio:" Margin="10,0,0,39" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbxPrecioMod" Margin="79,0,0,39" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="65" Height="25" VerticalAlignment="Bottom"/>
+                    </Grid>
+
+                    <!--Datos De Reparacion a Modificar-->
+                    <Grid x:Name="gridReparacionMod" Margin="70,86,136,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="565" Visibility="{Binding VisibleGirdReparacionMod}">
+                        <Label x:Name="lbDniClienteMod" Content=" DNI Cliente:" Margin="66,65,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="cbxDniClienteMod" Margin="156,65,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="26" VerticalAlignment="Top" SelectedItem="{Binding DniClirepaInsert}" SelectionChanged="CbxDniClienteInsert_SelectionChanged"/>
+                        <Label x:Name="lbMatriculaCochMode" Content="Matricula del coche:" Margin="21,0,0,22" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <ComboBox x:Name="cbxMatriculaMod" Margin="156,0,0,22" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedItem="{Binding MatriculaRepaInsert}"/>
+                        <Label x:Name="lbServicioMod" Content="Servicio Realizado:" Margin="304,0,0,121" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <ComboBox x:Name="cbxServicioMod" Margin="431,0,0,121" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedItem="{Binding ServicioRepa}"/>
+                        <Label x:Name="lbFechaMod" Content="Fecha:" Margin="373,0,0,22" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <DatePicker x:Name="dpFechaMod" Margin="431,0,0,22" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedDate="{Binding FechaRepaInser}" />
+                        <Label x:Name="lbIdReparacionMod" Content="Numero de reparación:" Margin="11,0,0,121" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" ToolTip="Número de reparación para un coche de un cliente en una misma fecha" />
+                        <TextBox x:Name="tbxIdReparacionMod" Margin="156,0,0,121" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="51" Height="25" VerticalAlignment="Bottom" ToolTip="Número de reparación para un coche de un cliente en una misma fecha" IsEnabled="True" Text="{Binding NumRepaInsert}"/>
+
+                    </Grid>
+
+                    <Grid Name="gridbtnMod" Margin="229,0,206,10" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="336" Height="66">
+                        <Button Name="btnVolverMod" Content="Volver" RenderTransformOrigin="0.227,0.5" Height="28" Margin="0,0,224,5"  VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="93" Background="#FFD66E6E" BorderBrush="#FFD66E6E" Click="btnVolverInsert_Click" />
+                        <Button Name="btnModificar" Content="Insertar" Margin="219,0,0,5" Height="28" RenderTransformOrigin="0.356,0.625"  HorizontalAlignment="Left" Width="98" VerticalAlignment="Bottom" Background="#FF45A3CF" BorderBrush="#FF45A3CF" Command="{Binding InsertarRegistro_click, Mode=OneWay}" />
+                        <Label Name="lbMensajeInsercionMod"  HorizontalAlignment="Left" Margin="96,0,0,0" VerticalAlignment="Top" Width="171" Height="33" Visibility="Visible" Content="{Binding MensajeInsercion}" />
+
+                    </Grid>
+
+
+                </Grid>
+
 
             </TabItem>
+            
 
         </TabControl>
 
