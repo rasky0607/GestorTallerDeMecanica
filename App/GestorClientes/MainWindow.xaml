@@ -106,8 +106,6 @@
                     <!--DataGrid para los datos de la BD-->
                     <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}" SelectionChanged="DtgDatos_SelectionChanged" SelectedItem="{Binding SelecionRegistroAModificar}" >
 
-
-
                     </DataGrid>
 
                     <!--Filtros-->
@@ -232,13 +230,19 @@
 
             </TabItem>
             <!--Tab o pestaña Modificacion-->
-            <TabItem Name="tbModificacion" Header="Modificaciones" TabIndex="3" Margin="16,-2,-20,-2" Visibility="Visible" ToolTip="En esta pestaña podrá modificar un registro seleccionado en la pestaña 'Listado.'" IsEnabled="{Binding HabilitarModificaciones}" >
+            <TabItem Name="tbModificacion" Header="Modificaciones" TabIndex="3" Margin="16,-2,-20,-2" Visibility="Visible" ToolTip="En esta pestaña podrá modificar un registro seleccionado en la pestaña 'Listado.'"  >
                 <!-- IsEnabled="{Binding HabilitarModificaciones}"-->
 
                 <Grid Name="gridGeneralModificar" ScrollViewer.HorizontalScrollBarVisibility="Auto">
 
+                    <Grid Name="gridSelectTablaMod"  Margin="252,10,258,-22" VerticalAlignment="Top" HorizontalAlignment="Center" >
+                        <materialDesign:PackIcon Kind="DatabasePlus" Height="31" Width="58" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <Label Content="Estas modificando el dato de un:" Margin="49,0,0,0" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Width="202" />
+                        <TextBox x:Name="tbxtipoTablaMod" Background="White" Margin="49,31,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="212"  IsEnabled="False" Text="{Binding TablaAcltualListada}" TextChanged="CbxtipoTablaMod_TextChanged" />
+                    </Grid>
+
                     <!--Datos De cliente a Modificar-->
-                    <Grid x:Name="gridClienteMod" Margin="36,86,22,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="713" Visibility="{Binding VisibleGridClienteMod}">
+                    <Grid x:Name="gridClienteMod" Margin="36,86,22,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="713"  Visibility="Hidden" >
                         <Label x:Name="lbdniMod" Content="DNI:" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top" Margin="10,9,0,0"/>
                         <TextBox x:Name="tbxdniMod" Margin="10,35,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="151" Height="25" VerticalAlignment="Top"/>
                         <Label x:Name="lbnombreMod" Content="Nombre:" Margin="191,10,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
@@ -258,7 +262,7 @@
 
 
                     <!--Datos De servicio a Modificar-->
-                    <Grid x:Name="gridServicioMod" Margin="217,86,258,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="296" Visibility="{Binding VisibleGirdServicioMod}">
+                    <Grid x:Name="gridServicioMod" Margin="217,86,258,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="296" Visibility="Hidden">
                         <Label x:Name="lbDescripcionMod" Content="Descripción:" Margin="0,25,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
                         <TextBox x:Name="tbxDescripcionMod" Margin="79,15,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="207" Height="36" VerticalAlignment="Top" />
                         <Label x:Name="lbPrecioMod" Content="Precio:" Margin="10,0,0,39" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
@@ -266,7 +270,7 @@
                     </Grid>
 
                     <!--Datos De Reparacion a Modificar-->
-                    <Grid x:Name="gridReparacionMod" Margin="70,86,136,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="565" Visibility="{Binding VisibleGirdReparacionMod}">
+                    <Grid x:Name="gridReparacionMod" Margin="70,86,136,65" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="164" Width="565" Visibility="Hidden">
                         <Label x:Name="lbDniClienteMod" Content=" DNI Cliente:" Margin="66,65,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
                         <ComboBox x:Name="cbxDniClienteMod" Margin="156,65,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="26" VerticalAlignment="Top" SelectedItem="{Binding DniClirepaInsert}" SelectionChanged="CbxDniClienteInsert_SelectionChanged"/>
                         <Label x:Name="lbMatriculaCochMode" Content="Matricula del coche:" Margin="21,0,0,22" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>

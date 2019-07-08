@@ -120,5 +120,29 @@ namespace GestorClientes
             Reparacion r = new Reparacion();
               r = (Reparacion) dtgDatos.SelectedItem;
         }
+
+        private void CbxtipoTablaMod_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            switch (tbxtipoTablaMod.Text)
+            {
+                case "cliente":
+                    gridClienteMod.Visibility = Visibility.Visible;
+                    gridReparacionMod.Visibility = Visibility.Hidden;
+                    gridServicioMod.Visibility = Visibility.Hidden;
+                    break;
+
+                case "servicio":
+                    gridClienteMod.Visibility = Visibility.Hidden;
+                    gridReparacionMod.Visibility = Visibility.Hidden;
+                    gridServicioMod.Visibility = Visibility.Visible;
+                    break;
+
+                case "reparacion":
+                    gridClienteMod.Visibility = Visibility.Hidden;
+                    gridReparacionMod.Visibility = Visibility.Visible;
+                    gridServicioMod.Visibility = Visibility.Hidden;
+                    break;
+            }
+        }
     }
 }

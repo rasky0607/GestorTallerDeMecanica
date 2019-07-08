@@ -28,7 +28,7 @@ namespace GestorClientes
         string _colorConexion= "#FF45A3CF";
         List<object> _listado;
         //Campos pestaña Añadir/Insertar
-        Visibility _mostrarMensajeInsercion= Visibility.Hidden;//Hidden-Visible
+      
         string _mensajeInsercion;
         List<string> _listablas;
         string _tablaSelecionada; //tabla selecionada en el combobox de la pestaña añadir
@@ -61,10 +61,7 @@ namespace GestorClientes
         bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
         string _tablaAcltualListada;//Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
         object _selecionRegistroAModificar; //Propiedad para el registro selecionado
-        Visibility _visibleGridClienteMod;//collapsed
-        Visibility _visibleGridServicioMod;
-        Visibility _visibleGridReparacionMod;
-
+      
         #endregion
 
         #region Propiedades
@@ -227,18 +224,7 @@ namespace GestorClientes
             }
         }
 
-        public Visibility MostrarMensajeInsercion
-        {
-            get { return _mostrarMensajeInsercion; }
-            set
-            {
-                if (_mostrarMensajeInsercion != value)
-                {
-                    _mostrarMensajeInsercion = value;
-                    Notificador("MostrarMensajeInsercion");
-                }
-            }
-        }
+     
 
         #region Campos Cliente
         public string DniCliInsert
@@ -476,8 +462,7 @@ namespace GestorClientes
                 }
             }
         }
-
-       
+      
         public string TablaAcltualListada //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
         {
             get { return _tablaAcltualListada; }
@@ -507,49 +492,7 @@ namespace GestorClientes
 
             }
         }
-        //FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA!
-        public Visibility VisibleGridClienteMod
-        {
-            get { return _visibleGridClienteMod; }
-            set
-            {
-                if (_visibleGridClienteMod != value)
-                {
-                    _visibleGridClienteMod = value;
-                    Notificador("VisibleGridClienteMod");
-                }
-                
-            }
-        }
-        //FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA!
-        public Visibility VisibleGridReparacionMod
-        {
-            get { return _visibleGridReparacionMod; }
-            set
-            {
-
-                if (_visibleGridReparacionMod != value)
-                {
-                    _visibleGridReparacionMod = value;
-                    Notificador("VisibleGridReparacionMod");
-                }
-                
-            }
-        }
-        //FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA!
-        public Visibility VisibleGridServicioMod
-        {
-            get { return _visibleGridServicioMod; }
-            set
-            {
-                if (_visibleGridServicioMod != value)
-                {
-                    _visibleGridServicioMod = value;
-                    Notificador("VisibleGridServicioMod");
-                }
-                
-            }
-        }
+       
 
         //Propiedades de lso componentes de la pestaña modificaciones
 
@@ -580,10 +523,7 @@ namespace GestorClientes
                     ColorConexion = colorRojo;
                     Listablas = _dao.VerTablas();
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
-                    TablaAcltualListada = "reparacion";
-                    VisibleGridClienteMod = Visibility.Hidden;
-                    VisibleGridReparacionMod = Visibility.Hidden;
-                    VisibleGridServicioMod = Visibility.Hidden;
+                    TablaAcltualListada = "reparacion";                 
 
                 }
                 else
@@ -668,22 +608,21 @@ namespace GestorClientes
                             if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                                MostrarMensajeInsercion = Visibility.Visible;
+                               
                             }                          
                             break;                             
                         case "servicio":
                             if (_dao.InsertServicio(DescripcionInsert, PrecioInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                                MostrarMensajeInsercion = Visibility.Visible;
+                               
                             }
                             break;
                         case "reparacion":                          
                             CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);                         
                             if (_dao.InsertReparacion(NumRepaInsert, DniClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser))
                             {
-                                MensajeInsercion = "Insercion realizada correctamente";
-                                MostrarMensajeInsercion = Visibility.Visible;
+                                MensajeInsercion = "Insercion realizada correctamente";                               
                                 Listado = conversion(_dao.selectReparacion());
                             }
                             break;
@@ -691,8 +630,7 @@ namespace GestorClientes
                 }
                 catch
                 {
-                    MensajeInsercion = "Insercion fallida.";
-                    MostrarMensajeInsercion = Visibility.Visible;
+                    MensajeInsercion = "Insercion fallida.";                   
                 }
             }
         }
@@ -722,8 +660,7 @@ namespace GestorClientes
                 }
                 catch
                 {
-                    MensajeInsercion = "Insercion fallida.";
-                    MostrarMensajeInsercion = Visibility.Visible;
+                    MensajeInsercion = "Insercion fallida.";                  
                 }
             }
         }
@@ -835,7 +772,7 @@ namespace GestorClientes
 no pueda añadirse otra cosa que no sean numeros.
 ->Eliminacion de registro marcando en la pestaña de listado.
 -> crear propiedades para componentes de la pesñata modificaciones y realizar lo mismo que enla insercion.
-->//FALLA AL PROPAGAR LA PROPIEDAD,NO SE OCULTA! de -> public Visibility VisibleGridServicioMod y de mas.
+
 
 
  -Modificaciones.
