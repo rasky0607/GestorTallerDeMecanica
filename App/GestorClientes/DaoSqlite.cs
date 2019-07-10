@@ -58,7 +58,7 @@ namespace GestorClientes
         public List<Cliente> selectCliente()
         {
             List<Cliente> lClientes = new List<Cliente>();
-            string sql = "select dni,nombre,apellidos,tlf,matricula,marca,modelo from cliente;";
+            string sql = "select idCliente,dni,nombre,apellidos,tlf,matricula,marca,modelo from cliente;";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -69,6 +69,7 @@ namespace GestorClientes
                 while (lector.Read())
                 {
                     Cliente miCliente = new Cliente();
+                    miCliente.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miCliente.Dni = lector["dni"].ToString();
                     miCliente.Nombre = lector["nombre"].ToString();
                     miCliente.Apellidos = lector["apellidos"].ToString();
@@ -140,9 +141,11 @@ namespace GestorClientes
         }
 
         public List<Reparacion> selectReparacion()
-        {
+        {          
+            //select numReparacion,dniCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select * from reparacion;";
+            //string sql = "select * from reparacion;";
+            string sql = "select numReparacion,dniCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -157,6 +160,7 @@ namespace GestorClientes
                     miReparacion.DniCliente = lector["dniCliente"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    miReparacion.NombreServicio = lector["servicio"].ToString();
                     miReparacion.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
             
                     lReparacion.Add(miReparacion);
@@ -283,14 +287,43 @@ namespace GestorClientes
         {
             try
             {
-                string sql;           
-                sql = "INSERT INTO cliente (dni,nombre,apellidos,tlf,matricula,marca,modelo) values ('"+dni+"','"+nombre+"','"+apellidos+"',"+tlf+",'"+matricula+ "','"+marca+ "','"+modelo+"');";
-                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
-                cmd.ExecuteNonQuery();
+                if (dni == " " || dni is null || matricula is null || matricula == " ")
+                    throw new Exception("El campo dni y el campo matricula no pueden estar vacios!");
+                else
+                {
+                    //Obtencion  del IdCliente autoincremental buscando el max(idcleinte) o el id mas alto  y sumandole 1 para el siguiente cliente
+                    #region obtencion
+                    string sql1;
+                    sql1 = "select max(idCliente)as maximoid from cliente";
+                    SQLiteCommand cmd1 = new SQLiteCommand(sql1, conexion);
+                    int idCliente=0;
+                    SQLiteDataReader lector = null;
+                  
+                    try
+                    {
+                        lector = cmd1.ExecuteReader();
+                        while (lector.Read())
+                        {
+                           idCliente = int.Parse(lector["maximoid"].ToString());
+                        }
+                        lector.Close();
+                        idCliente ++;
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception(e.Message);
+                    }
+                    #endregion
+                    //Insercion
+                    string sql;
+                    sql = "INSERT INTO cliente (idCliente,dni,nombre,apellidos,tlf,matricula,marca,modelo) values ("+idCliente+",'" + dni + "','" + nombre + "','" + apellidos + "'," + tlf + ",'" + matricula + "','" + marca + "','" + modelo + "');";
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                    cmd.ExecuteNonQuery();
+                }
             }
-            catch
+            catch(Exception e)
             {
-                throw;
+                throw new Exception(e.Message);
             }        
             return true;
 
@@ -300,7 +333,7 @@ namespace GestorClientes
         {
             try
             {
-                if (descripcion is null)
+                if (descripcion is null || descripcion== " " || precio <0)
                     throw new Exception();
                 string sql;
                 sql = "INSERT INTO servicio (descripcion,precio) values ('" + descripcion + "'," + precio + ")";
@@ -315,7 +348,6 @@ namespace GestorClientes
 
         }
 
-        //REVISAR PROFUNDAMENTE(Sin probar y con cosas aun por picar) 
         public bool InsertReparacion(int idReparacion, string dniCliente,string matriculaCoche, int codServicio,string fecha)
         {
             try
@@ -323,7 +355,7 @@ namespace GestorClientes
                 if (idReparacion <= 0 || dniCliente  is null || matriculaCoche is null || codServicio < 0 || fecha == null)
                     throw new Exception();
                 string sql;
-                sql = "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha)+"')";
+                sql = "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha).ToShortDateString()+"')";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }
@@ -335,10 +367,58 @@ namespace GestorClientes
 
         }
 
+        public bool UpdateCliente(int idCliente,string dni, string nombre, string apellidos, int tlf, string matricula, string marca, string modelo)
+        {
+            try
+            {
+                if (dni == " " || dni is null || matricula is null || matricula == " ")
+                    throw new Exception("El campo dni y el campo matricula no pueden estar vacios!");
+                else
+                {
+                    //update cliente set nombre='Fran',apellidos='Lanzat' where idCliente=1;
+                    //Actualizacion
+                    string sql;
+                    sql = "update cliente set dni='"+dni+"',nombre='"+nombre+"',apellidos='"+apellidos+"',tlf="+tlf+",matricula='"+matricula+"',marca='"+marca+"',modelo='"+modelo+"' where idCliente="+idCliente+"";
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
 
+        }
 
+        public bool UpdateServicio(int codiServicio,string descripcion, double precio)
+        {
+            try
+            {
+                if (descripcion == " " || descripcion is null)
+                    throw new Exception("El campo descripcion no puede estar vacio!");
+                else
+                {
+                  
+                    //Actualizacion
+                    string sql;
+                   sql = "update servicio set descripcion='"+descripcion+"',precio="+precio+" where codigo="+codiServicio+"";
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
 
+        }
+    
 
+        /*No se podra Actualizacion reparacion por consenso ya que es como una factura y necesita de los 4 
+         * campos para  modificarla,es mejor crear y eliminarla y crear una nueva reparacion*/
 
     }
+
 }

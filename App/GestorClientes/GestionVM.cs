@@ -12,23 +12,31 @@ namespace GestorClientes
 {
     class GestionVM: INotifyPropertyChanged
     {       
-        public DaoSqlite _dao = new DaoSqlite();
+      
         #region Variables
         string colorRojo = "#FFD66E6E";
         string colorAzul = "#FF45A3CF";
+        public DaoSqlite _dao = new DaoSqlite();
         #endregion
 
         #region campos
-      
+
+        #region campos generales 
         bool _habilitado = false;//Habilita o deshabilita ciertos botones o opciones
         string _mensaje;//Mensaje de informacion     
-        string _mensajeActualizacion;
         string _conectadoDesconectado="Conectar";//Nombre que daremos al boton de conexion y desconexion segun el estado de dicha conexion
         bool _estadoConexion = false;//true abierta, false cerrada
         string _colorConexion= "#FF45A3CF";
+        #endregion
+
+        #region Campos pestaña listar
+
         List<object> _listado;
+        #endregion
+
+        #region campos pestaña Añadir
         //Campos pestaña Añadir/Insertar
-      
+
         string _mensajeInsercion;
         List<string> _listablas;
         string _tablaSelecionada; //tabla selecionada en el combobox de la pestaña añadir
@@ -38,33 +46,57 @@ namespace GestorClientes
         string _nombreCliInsert;
         string _apellidosCliInsert;
         int _tlfCliInsert;
-
-        //Datos Añadir Servicio(Convertir Propiedades)
-        string _descripcionInsert;
-        double _precioInsert;
-
-        //Datos Añadir Coche(Convertir Propiedades)
         string _matriculaInsert;
         string _marcaInsert;
         string _modeloInsert;
 
+        //Datos Añadir Servicio(Convertir Propiedades)
+        string _descripcionInsert;
+        double _precioInsert;  
+
         //Datos Añadir Reparacion(Convertir Propiedades)
         string _dniClirepaInsert;//Seleciona un string de un dni de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
-        int _idClienteRepaInsert;
         string _matriculaRepaInsert;
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
         string _fechaRepaInser = DateTime.Now.ToString();
         int _numRepaInsert;
 
+        #endregion
+
+        #region Campos pestaña Modificar
         //Campos pestaña Modificar
         bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
         string _tablaAcltualListada;//Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
-        object _selecionRegistroAModificar; //Propiedad para el registro selecionado
-      
+        object _selecionRegistroAModificar = null; //Propiedad para el registro selecionado
+        string _mensajeActualizacion="";
+
+        //Datos Modificar Cliente
+        string _dniCliMod;
+        string _nombreCliMod;
+        string _apellidosCliMod;
+        int _tlfCliMod;
+        string _matriculaMod;
+        string _marcaMod;
+        string _modeloMod;
+
+        //Datos Modificar Servicio(Convertir Propiedades)
+        string _descripcionMod;
+        double _precioMod;
+
+        //Datos Modificar Reparacion(Convertir Propiedades)
+        string _dniClirepaMod;//Seleciona un string de un dni de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
+        string _matriculaRepaMod;
+        string _ServicioRepaMod;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
+        int _CodServicioRepaMod;
+        string _fechaRepaMod = DateTime.Now.ToShortTimeString();
+        int _numRepaMod;
         #endregion
 
+        #endregion
         #region Propiedades
+
+        #region Propiedades Generales
         public bool Habilitado {
             get { return _habilitado; }
             set {
@@ -82,7 +114,6 @@ namespace GestorClientes
                 }
             }
         }
-
         public string Mensaje {
             get { return _mensaje; }
 
@@ -95,21 +126,7 @@ namespace GestorClientes
                 }
             }
 
-        }
-
-        public string MensajeActualizacion {
-            get { return _mensajeActualizacion; }
-
-            set
-            {
-                if (_mensajeActualizacion != value)
-                {
-                    _mensajeActualizacion = value;
-                    Notificador("MensajeActualizacion");
-                }
-            }
-        }
-
+        }      
         public bool EstadoConexion {
             get { return _estadoConexion; }
 
@@ -122,8 +139,6 @@ namespace GestorClientes
                 }
             }
         }
-
-
         //Propiedad Content de el boton conectar/desconectar
         public string ConectadoDesconectado
         {
@@ -146,7 +161,6 @@ namespace GestorClientes
                 }
             }
         }
-
         public string ColorConexion {
             get { return _colorConexion; }
 
@@ -167,6 +181,9 @@ namespace GestorClientes
             
         }
 
+        #endregion
+
+        #region Propiedades pestaña Listar
         public List<object> Listado
         {
             get { return _listado; }
@@ -176,10 +193,12 @@ namespace GestorClientes
                 if (_listado != value)
                 {
                     _listado = value;
+                    SelecionRegistroAModificar = null;
                     Notificador("Listado");
                 }
             }
         }
+        #endregion
 
         #region  Propiedades pestaña Añadir
 
@@ -363,19 +382,7 @@ namespace GestorClientes
                 }
             }
         }
-
-        public int IdClienteRepaInsert
-        {
-            get { return _idClienteRepaInsert; }
-            set
-            {
-                if (_idClienteRepaInsert != value)
-                {
-                    _idClienteRepaInsert = value;
-                    Notificador("IdClienteRepaInsert");
-                }
-            }
-        }
+       
 
         public string MatriculaRepaInsert
         {
@@ -479,6 +486,7 @@ namespace GestorClientes
 
         }
 
+       
         public object SelecionRegistroAModificar {
             get { return _selecionRegistroAModificar; }
 
@@ -487,24 +495,268 @@ namespace GestorClientes
                 if (_selecionRegistroAModificar != value)
                 {
                     _selecionRegistroAModificar = value;
+                    if (_selecionRegistroAModificar != null)//Debemos pregunar si el selectItem de el listado  en este caso_selecionRegistroAModificar esta a NULL para evitar excepcion
+                    {
+                        //Preparacion de propiedades segun la fila del datagrid selecionada
+                        switch (TablaAcltualListada)
+                        {
+                            case "cliente":
+                                Cliente c = new Cliente();
+                                c = (Cliente)_selecionRegistroAModificar;
+                                DniCliMod = c.Dni;
+                                NombreCliMod = c.Nombre;
+                                ApellidosCliMod = c.Apellidos;
+                                TlfCliMod = c.Tlf;
+                                MatriculaMod = c.Matricula;
+                                MarcaMod = c.Marca;
+                                ModeloMod = c.Modelo;
+                                break;
+
+                            case "servicio":
+                                Servicio s = new Servicio();
+                                s = (Servicio)_selecionRegistroAModificar;
+                                DescripcionMod = s.Descripcion;
+                                PrecioMod = s.Precio;
+                                break;
+                                /*La preparacion de los datos selecionado de el registro de reaparacion en el datagrid de listado para su modificacion
+                                 * son preparados en la clase MainWindow en el metodo:
+                                 (Clase MainWIndows en BtnEditar_Click)
+                                */
+
+
+                        }
+                    }
+
                     Notificador("SelecionRegistroAModificar");
                 }
 
             }
         }
-       
 
-        //Propiedades de lso componentes de la pestaña modificaciones
+        public string MensajeActualizacion
+        {
+            get { return _mensajeActualizacion; }
 
+            set
+            {
+                if (_mensajeActualizacion != value)
+                {
+                    _mensajeActualizacion = value;
+                    Notificador("MensajeActualizacion");
+                }
+            }
+        }
+
+
+        //Propiedades de los componentes de la pestaña modificaciones
+
+        #region Campos Cliente
+        public string DniCliMod
+        {
+            get { return _dniCliMod; }
+            set
+            {
+                if (_dniCliMod != value)
+                {
+                    _dniCliMod = value;
+                    Notificador("DniCliMod");
+                }
+            }
+        }
+
+        public string NombreCliMod
+        {
+            get { return _nombreCliMod; }
+            set
+            {
+                if (_nombreCliMod != value)
+                {
+                    _nombreCliMod = value;
+                    Notificador("NombreCliMod");
+                }
+            }
+        }
+
+        public string ApellidosCliMod
+        {
+            get { return _apellidosCliMod; }
+            set
+            {
+                if (_apellidosCliMod != value)
+                {
+                    _apellidosCliMod = value;
+                    Notificador("ApellidosCliMod");
+                }
+            }
+        }
+
+        public int TlfCliMod
+        {
+            get { return _tlfCliMod; }
+            set
+            {
+                if (_tlfCliMod != value)
+                {
+                    _tlfCliMod = value;
+                    Notificador("TlfCliMod");
+                }
+            }
+        }
+
+        public string MatriculaMod
+        {
+            get { return _matriculaMod; }
+            set
+            {
+                if (_matriculaMod != value)
+                {
+                    _matriculaMod = value;
+                    Notificador("MatriculaMod");
+                }
+            }
+        }
+
+        public string MarcaMod
+        {
+            get { return _marcaMod; }
+            set
+            {
+                if (_marcaMod != value)
+                {
+                    _marcaMod = value;
+                    Notificador("MarcaMod");
+                }
+            }
+        }
+
+        public string ModeloMod
+        {
+            get { return _modeloMod; }
+            set
+            {
+                if (_modeloMod != value)
+                {
+                    _modeloMod = value;
+                    Notificador("ModeloMod");
+                }
+            }
+        }
+   
+        #endregion
+
+        #region Campos Servicios
+        public string DescripcionMod
+        {
+            get { return _descripcionMod; }
+            set
+            {
+                if (_descripcionMod != value)
+                {
+                    _descripcionMod = value;
+                    Notificador("DescripcionMod");
+                }
+            }
+        }
+
+        public double PrecioMod
+        {
+            get { return _precioMod; }
+            set
+            {
+                if (_precioMod != value)
+                {
+                    _precioMod = value;
+                    Notificador("PrecioMod");
+                }
+            }
+        }
+        #endregion
+
+        #region Campos Reparacion
+
+        public string DniClirepaMod
+        {
+            get { return _dniClirepaMod; }
+            set
+            {
+                if (_dniClirepaMod != value)
+                {
+                    _dniClirepaMod = value;
+                    Notificador("DniClirepaMod");
+                }
+            }
+        }     
+
+        public string MatriculaRepaMod
+        {
+            get { return _matriculaRepaMod; }
+            set
+            {
+                if (_matriculaRepaMod != value)
+                {
+                    _matriculaRepaMod = value;
+                    Notificador("MatriculaRepaMod");
+                }
+            }
+        }
+
+        public string ServicioRepaMod
+        {
+            get { return _ServicioRepaMod; }
+            set
+            {
+                if (_ServicioRepaMod != value)
+                {
+                    _ServicioRepaMod = value;
+                    Notificador("ServicioRepaMod");
+                }
+            }
+        }
+
+        public int CodServicioRepaMod
+        {
+            get { return _CodServicioRepaMod; }
+            set
+            {
+                if (_CodServicioRepaMod != value)
+                {
+                    _CodServicioRepaMod = value;
+                    Notificador("CodServicioRepaMod");
+                }
+            }
+        }
+
+        public string FechaRepaMod
+        {
+            get { return _fechaRepaMod; }
+            set
+            {
+                if (_fechaRepaMod != value)
+                {
+                    _fechaRepaMod = value;
+                    Notificador("FechaRepaMod");
+                }
+
+            }
+        }
+
+        public int NumRepaMod
+        {
+            get { return _numRepaMod; }
+            set
+            {
+                if (_numRepaMod != value)
+                {
+                    _numRepaMod = value;
+                    Notificador("NumRepaMod");
+                }
+            }
+        }
 
         #endregion
 
 
-
-        //Propiedades de pestaña Modificaciones
-
-
-
+        #endregion
 
         #endregion
 
@@ -608,14 +860,14 @@ namespace GestorClientes
                             if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                               
+                                Listado = conversion(_dao.selectCliente());
                             }                          
                             break;                             
                         case "servicio":
                             if (_dao.InsertServicio(DescripcionInsert, PrecioInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                               
+                                Listado = conversion(_dao.selectServicio());
                             }
                             break;
                         case "reparacion":                          
@@ -634,7 +886,7 @@ namespace GestorClientes
                 }
             }
         }
-
+        //POR AQUI  
         private void ModificacionRegistro()
         {
             if (EstadoConexion)
@@ -646,21 +898,31 @@ namespace GestorClientes
                         case "cliente":
                             Cliente c = new Cliente();
                             c = (Cliente)SelecionRegistroAModificar;
+                            if (_dao.UpdateCliente(c.IdCliente, DniCliMod, NombreCliMod, ApellidosCliMod, TlfCliMod, MatriculaMod, MarcaMod, ModeloMod))
+                            {
+                                Mensaje = "Actualizacion realizada con exito";
+                                Listado = conversion(_dao.selectCliente());
+                            }
 
                             break;
                         case "servicio":
                             Servicio s = new Servicio();
                             s = (Servicio)SelecionRegistroAModificar;
+                            if (_dao.UpdateServicio(s.Codigo,DescripcionMod,PrecioMod))
+                            {
+                                Mensaje = "Actualizacion realizada con exito";
+                                MensajeActualizacion = "Actualizacion realizada con exito";
+                                Listado = conversion(_dao.selectServicio());
+                            }
                             break;
                         case "reparacion":
-                            Reparacion r = new Reparacion();
-                            r = (Reparacion)SelecionRegistroAModificar;
+                            
                             break;
                     }
                 }
                 catch
                 {
-                    MensajeInsercion = "Insercion fallida.";                  
+                    MensajeActualizacion = "Insercion fallida.";                  
                 }
             }
         }
@@ -718,17 +980,7 @@ namespace GestorClientes
                 listobjetos.Add(cli);
             }
             return listobjetos;
-        }
-
-        public List<object> conversion(List<Coche> lcoche)
-        {
-            List<object> listobjetos = new List<object>();
-            foreach (Coche micoche in lcoche)
-            {
-                listobjetos.Add(micoche);
-            }
-            return listobjetos;
-        }
+        }   
 
         public List<object> conversion(List<Servicio> lservicios)
         {
@@ -771,8 +1023,7 @@ namespace GestorClientes
 -> controlar que la propiedad _tlfInsert en su textbox correspondiente
 no pueda añadirse otra cosa que no sean numeros.
 ->Eliminacion de registro marcando en la pestaña de listado.
--> crear propiedades para componentes de la pesñata modificaciones y realizar lo mismo que enla insercion.
-
+-> Intentar que al actualizar un registro la pestaba tbModificaciones devuelva el foco a tbListado
 
 
  -Modificaciones.

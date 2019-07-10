@@ -7,7 +7,8 @@ drop table if exists coche;
 drop table if exists cliente;
 
 
-	create table cliente(		
+	create table cliente(
+		idCliente integer UNIQUE not null,					
 		dni text,
 		nombre text not null,
 		apellidos text default null,
@@ -34,9 +35,9 @@ drop table if exists cliente;
 		foreign key (codServicio) references servicio (codigo) on update cascade on delete restrict
 		);
 
-		insert into cliente values('12345678A','Francisco','Lanzat','638023928','2218CL','Nissan','SERENA');
-		insert into cliente values('87654321B','Pablo','Lopez','634023227','1700JPG','OPEL','Corsa');
-		insert into cliente values('12365478C','Oscar','Castro','628025178','2019OPL','Suzuki','MIERDER');
+		insert into cliente values(1,'12345678A','Francisco','Lanzat','638023928','2218CL','Nissan','SERENA');
+		insert into cliente values(2,'87654321B','Pablo','Lopez','634023227','1700JPG','OPEL','Corsa');
+		insert into cliente values(3,'12365478C','Oscar','Castro','628025178','2019OPL','Suzuki','MIERDER');
 
 		insert into servicio values(1,'Mano de obra',15);
 		insert into servicio values(2,'aceite',20);
@@ -46,3 +47,6 @@ drop table if exists cliente;
 		insert into servicio values(6,'Liquido de freno',25);
 
 		insert into reparacion values(1,'12345678A','2218CL',4,'2019-06-01');
+		insert into reparacion values(2,'12345678A','2218CL',3,'2019-06-01');
+		insert into reparacion values(1,'87654321B','1700JPG',5,'2019-02-21');
+		insert into reparacion values(1,'12365478C','2019OPL',6,'2019-03-19');

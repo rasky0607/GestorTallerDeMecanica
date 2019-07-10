@@ -79,7 +79,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Coche.cs" />
     <Compile Include="GestionVM.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Reparacion.cs" />

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 
 namespace GestorClientes
@@ -66,6 +67,17 @@ namespace GestorClientes
             }
         }
 
+        //Dado un Dni de un cliente selecionado, rellena el cbxMatriculaInsert con la coleccion de matriculas disponibles para ese cliente
+        private void CbxDniClienteInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            GestionVM gestion = new GestionVM();
+            if (!gestion._dao.EstadoConexion())
+            {
+                gestion._dao.Conectar();
+                cbxMatriculaInsert.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteInsert.SelectedItem.ToString());
+                gestion._dao.Desconectar();
+            }
+        }
         private void btnVolverInsert_Click(object sender, RoutedEventArgs e)
         {
             tbListado.IsEnabled = true;
@@ -104,45 +116,121 @@ namespace GestorClientes
             }
         }
 
-        private void CbxDniClienteInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //POR AQUI!!
+        #region Modificaciones de registros
+        private void CbxDniClienteMod_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             GestionVM gestion = new GestionVM();
             if (!gestion._dao.EstadoConexion())
             {
                 gestion._dao.Conectar();
-                cbxMatriculaInsert.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteInsert.SelectedItem.ToString());                  
+                cbxMatriculaRepaMod.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteRepaMod.SelectedItem.ToString());
                 gestion._dao.Desconectar();
             }
         }
 
-        private void DtgDatos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void BtnEditar_Click(object sender, RoutedEventArgs e)
         {
-            Reparacion r = new Reparacion();
-              r = (Reparacion) dtgDatos.SelectedItem;
-        }
-
-        private void CbxtipoTablaMod_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            switch (tbxtipoTablaMod.Text)
+            if (dtgDatos.SelectedItem != null)
             {
-                case "cliente":
-                    gridClienteMod.Visibility = Visibility.Visible;
-                    gridReparacionMod.Visibility = Visibility.Hidden;
-                    gridServicioMod.Visibility = Visibility.Hidden;
-                    break;
+              
+                switch (tbxtipoTablaMod.Text)
+                {
+                    case "cliente":
+                        tbListado.IsEnabled = false;
+                        tbModificacion.IsEnabled = true;
+                        tbModificacion.Focus();
+                        gridClienteMod.Visibility = Visibility.Visible;
+                        gridReparacionMod.Visibility = Visibility.Hidden;
+                        gridServicioMod.Visibility = Visibility.Hidden;
+                        break;
 
-                case "servicio":
-                    gridClienteMod.Visibility = Visibility.Hidden;
-                    gridReparacionMod.Visibility = Visibility.Hidden;
-                    gridServicioMod.Visibility = Visibility.Visible;
-                    break;
+                    case "servicio":
+                        tbListado.IsEnabled = false;
+                        tbModificacion.IsEnabled = true;
+                        tbModificacion.Focus();
+                        gridClienteMod.Visibility = Visibility.Hidden;
+                        gridReparacionMod.Visibility = Visibility.Hidden;
+                        gridServicioMod.Visibility = Visibility.Visible;
+                        break;
 
-                case "reparacion":
-                    gridClienteMod.Visibility = Visibility.Hidden;
-                    gridReparacionMod.Visibility = Visibility.Visible;
-                    gridServicioMod.Visibility = Visibility.Hidden;
-                    break;
+                    case "reparacion":
+                        /* gridClienteMod.Visibility = Visibility.Hidden;
+                         gridReparacionMod.Visibility = Visibility.Visible;
+                         gridServicioMod.Visibility = Visibility.Hidden;
+                         //Preparacion  Modificar de los combobox  una reparacion con los clientes,matriculas de vehiculos y servicios posibles y preparacion de el resto de campos de esta tabla
+                         if (dtgDatos.SelectedItem != null)
+                         {
+                             GestionVM gestion = new GestionVM();
+                             if (!gestion._dao.EstadoConexion())
+                             {
+                                 gestion._dao.Conectar();
+                                 cbxServicioRepaMod.ItemsSource = gestion._dao.selectServicioDescripcion();
+                                 cbxDniClienteRepaMod.ItemsSource = gestion._dao.selectClienteDni();
+                                 cbxServicioRepaMod.ItemsSource = gestion._dao.selectServicioDescripcion();
+
+                                 Reparacion r = new Reparacion();
+                                /* r = (Reparacion)dtgDatos.SelectedItem;
+                                 cbxDniClienteRepaMod.SelectedItem = r.DniCliente;
+                                 cbxMatriculaRepaMod.SelectedItem = r.MatriCoche;
+                                 cbxServicioRepaMod.SelectedItem = r.NombreServicio;
+                                 dpFechaRepaMod.SelectedDate = DateTime.Parse(r.Fecha);
+                                 tbxNumReparacionRepaMod.Text = r.NumReparacion.ToString();
+                                 gestion._dao.Desconectar();
+                             }
+                         }*/
+                        MessageBox.Show("Las reparaciones no pueden ser modificas.\nPuedes eliminar la reparación selecionada y posteriormente crear una nueva con los datos que necesites.", "(◑ω◐)¡Ops!.");
+                        //----Fin preparacion de combobox de pestaña Modificar en la tabla reapracion y preparacion de el resto de campos de esta tabla---
+                        break;
+                }
+            }
+            else//Si no ha selecionado un registro
+            {
+                MessageBox.Show("¡ATENCIÓN!:\nDebe selecionar un registro antes de ir a la ventana de Modificaciones. ", "(◑ω◐)¡Ops!.");
             }
         }
+
+        private void btnVolverMod_Click(object sender, RoutedEventArgs e)
+        {
+            //limpiamos la propiedad selecteitem, por si vuelve a pulsar editar sin selecionar nada al volver, no le lleva al apestaña editar por el anterior selecteItem selecionado
+            dtgDatos.SelectedItem = null;
+
+            tbListado.IsEnabled = true;
+            tbListado.Focus();        
+            GestionVM gestion = new GestionVM();
+            if (!gestion._dao.EstadoConexion())
+            {
+                gestion._dao.Conectar();
+                gestion.Listado = gestion.conversion(gestion._dao.selectReparacion());
+                gestion._dao.Desconectar();
+            }
+            tbModificacion.IsEnabled = false;
+        }
+
+        #endregion
+        #region Apartado general estetico
+        private void DtgDatos_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            if (this.dtgDatos.Columns != null)
+            {
+                if (dtgDatos.Columns.Count >= 4)//Cuando el numero total de columnas del datagris es mayor o igual que 4
+                {
+                    if (dtgDatos.Columns[3].Header is "CodServicio")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
+                    {
+                        dtgDatos.Columns[3].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
+                    }
+                    if (dtgDatos.Columns[0].Header is "IdCliente")
+                    {
+                        dtgDatos.Columns[0].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna IdCliente cuando esta aparece(en este caso solo ocurre cuando listamos la tabla clientes)
+                    }
+                }
+            }
+        }
+
+
+
+        #endregion
+
+  
     }
 }
