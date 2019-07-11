@@ -72,3 +72,5 @@ E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\Entit
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Data.SQLite.xml
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Data.SQLite.dll.config
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GeneratedInternalTypeHelper.g.cs
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\AcercaDe.g.cs
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\AcercaDe.baml

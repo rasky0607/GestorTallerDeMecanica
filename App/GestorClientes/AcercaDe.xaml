@@ -1,0 +1,25 @@
+﻿<Window x:Class="GestorClientes.AcercaDe"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GestorClientes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="Acerca de..." Height="333.293" Width="324.878" Background="#FFCECECE"
+        ResizeMode="NoResize" Icon="./img/Acercade.PNG">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF45A3CF" Offset="0"/>
+                <GradientStop Color="#FF45CF7D" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Button x:Name="Boton_AcercaDe_Cerrar" Content="Cerrar" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="124,248,0,0" Click="Boton_AcercaDe_Cerrar_Click" Background="#FF45A3CF" BorderBrush="#FF45A3CF"/>
+        <TextBlock HorizontalAlignment="Left" Margin="95,163,0,0" TextWrapping="Wrap" Text="Desarrollado por:" VerticalAlignment="Top" FontWeight="Bold" FontFamily="Linux Biolinum G" FontSize="16"/>
+        <TextBlock HorizontalAlignment="Left" Margin="95,186,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Linux Biolinum G" FontSize="14" FontStyle="Italic" TextDecorations="Underline"><Run Text="Pablo Lopez Santana"/></TextBlock>
+        <Image Margin="104,22,120,159" RenderTransformOrigin="0.468,0.834" Source="./img/pablito.jpg"/>
+        <TextBlock HorizontalAlignment="Left" Margin="95,207,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Linux Biolinum G" FontStyle="Italic" TextDecorations="Underline" FontWeight="Bold"><Run Text="esviasalpa@gmail.com"/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="240,281,0,0" TextWrapping="Wrap" Text="Versión: 1.0.1" VerticalAlignment="Top" FontSize="10" FontStyle="Italic"/>
+    </Grid>
+</Window>

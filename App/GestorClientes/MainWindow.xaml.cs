@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
-
+using System.Diagnostics;
 
 namespace GestorClientes
 {
@@ -290,11 +290,11 @@ namespace GestorClientes
                             }
                             catch
                             {
-                                MessageBox.Show("Uno o alguno de los servicios selecionados no pueden ser eliminados,posiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
+                                MessageBox.Show("Uno o alguno de los servicios seleccionados no pueden ser eliminados,posiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
                             }
 
                             break;
-
+                            //REVISAR
                         case "reparacion":
                             int regisRepaborradoconExito = 0;
                             try
@@ -308,13 +308,13 @@ namespace GestorClientes
                                 }
                                 if (regisRepaborradoconExito == dtgDatos.SelectedItems.Count)
                                 {
-                                    lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
+                                    lbmensaje.Content = "Se ha eliminado con exito los registros indicados";
                                    // dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectReparacion());
                                 }
                             }
                             catch
                             {
-                                MessageBox.Show("Uno o alguno de los servicios selecionados no pueden ser eliminados,posiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
+                                MessageBox.Show("Uno o alguno de los servicios selecionados no pueden ser eliminados.\nPosiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
                             }
 
                             break;
@@ -330,6 +330,17 @@ namespace GestorClientes
             }
         }
 
-        
+        private void MiMenu_Git_Pablo_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/rasky0607/");
+        }
+
+        private void BtnAcercaDe_Click(object sender, RoutedEventArgs e)
+        {
+            AcercaDe vAcercaDe = new AcercaDe();
+            vAcercaDe.Show();
+        }
+
+       
     }
 }

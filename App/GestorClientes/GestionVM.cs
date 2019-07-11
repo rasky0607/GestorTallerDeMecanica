@@ -485,8 +485,7 @@ namespace GestorClientes
             }
 
         }
-
-       
+      
         public object SelecionRegistroAModificar {
             get { return _selecionRegistroAModificar; }
 

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GestorClientes"
-         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="Gestor de clientes" Height="450" Width="800" Closed="Window_Closed" Icon="img/logo.PNG">
     <Grid Name="gdBase">
@@ -44,7 +44,6 @@
             </MenuItem>
             <MenuItem ToolTip="Filtrar últimos repostajes." IsEnabled="{Binding Habilitado}" >
                 <MenuItem.Header>Otros Filtros</MenuItem.Header>
-                <MenuItem Header="Repostajes de mes actual." ToolTip="Muestra los regístro de del mes actual guardados hasta el momento."/>
                 <MenuItem Header="Los 10 últimos Repostajes."  ToolTip="Muestra los regístros de los ultimos 10 depostajes guardados."/>
                 <MenuItem Header="Los 30 últimos Repostajes." ToolTip="Muestra los regístros de los ultimos 30 depostajes guardados."/>
                 <MenuItem Name="btnAbrirVentanaBuscarConductor" Header="Buscar respostajes de un conductor concreto." ToolTip="Muestra los regístros de los repostajes relacionado con el nombre de un conductor indicado."/>
@@ -62,7 +61,7 @@
                         <materialDesign:PackIcon Kind="GithubCircle" Height="19" Width="17" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Name="btnAcercaDe" Header="Acerca de..."  ToolTip="Información sobre del desarrollador y versión de la aplicación.">
+                <MenuItem Name="btnAcercaDe" Header="Acerca de..."  ToolTip="Información sobre del desarrollador y versión de la aplicación." Click="BtnAcercaDe_Click">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="InformationVariant" Height="19" Width="17" />
                     </MenuItem.Icon>
@@ -101,7 +100,7 @@
 
 
                     <!--Boton conectar/Desconectar-->
-                    <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}" />
+                    <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}"/>
 
                     <!--DataGrid para los datos de la BD-->
                     <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow" >
