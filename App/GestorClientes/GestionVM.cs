@@ -11,8 +11,8 @@ using System.Data.SQLite;
 namespace GestorClientes
 {
     class GestionVM: INotifyPropertyChanged
-    {       
-      
+    {
+    
         #region Variables
         string colorRojo = "#FFD66E6E";
         string colorAzul = "#FF45A3CF";
@@ -26,7 +26,7 @@ namespace GestorClientes
         string _mensaje;//Mensaje de informacion     
         string _conectadoDesconectado="Conectar";//Nombre que daremos al boton de conexion y desconexion segun el estado de dicha conexion
         bool _estadoConexion = false;//true abierta, false cerrada
-        string _colorConexion= "#FF45A3CF";
+        string _colorConexion= "#FF45A3CF";      
         #endregion
 
         #region Campos pestaña listar
@@ -179,7 +179,7 @@ namespace GestorClientes
                 }
             }
             
-        }
+        }     
 
         #endregion
 
@@ -847,6 +847,7 @@ namespace GestorClientes
                 }
             }
         }
+        //----Fin Listado de registros---
 
         private void InsertarRegistro()
         {
@@ -886,7 +887,7 @@ namespace GestorClientes
                 }
             }
         }
-        //POR AQUI  
+
         private void ModificacionRegistro()
         {
             if (EstadoConexion)
@@ -926,13 +927,39 @@ namespace GestorClientes
                 }
             }
         }
+       //Este metodo refresca el listado despues de haber eliminado los registros desde la clase MainWindow en el metodo BtnEliminar_Click
+        private void EliminarRegistro()
+        {
+            if (EstadoConexion)
+            {
+                try
+                {                  
+                    switch (TablaAcltualListada)
+                    {
+                        case "cliente":                    
+                                Listado = conversion(_dao.selectCliente());
+                            break;
+                        case "servicio":
+                         
+                                Listado = conversion(_dao.selectServicio());
+                            break;
+                        case "reparacion":
+                            Listado = conversion(_dao.selectReparacion());
+                            break;
+                    }
+                }
+                catch
+                {
+                    MensajeActualizacion = "Eliminacion fallida.";
+                }
+            }
+        }
 
-        //----Fin Listado de registros---
+
 
         #endregion
 
         #region Metodos para propiedades Command de los componentes de la ventana
-        //Listado de registros
         public RelayCommand Conectar_click
         {
             get { return new RelayCommand(conectando => ConectarListado(), conectando => true); }
@@ -950,18 +977,24 @@ namespace GestorClientes
 
         public RelayCommand RegistroReparaciones_click
         {
-            get { return new RelayCommand(insertRegis => ListadoReparacion(), insertRegis => true); }
+            get { return new RelayCommand(listadoRep => ListadoReparacion(), ListadoRep => true); }           
         }
 
         public RelayCommand InsertarRegistro_click
         {
-            get { return new RelayCommand(listadoRep => InsertarRegistro(), ListadoRep => true); }
+            get { return new RelayCommand(insertRegis => InsertarRegistro(), ListadoRep => true); }
         }
-
+   
         public RelayCommand ModificacionRegistro_click
         {
             get { return new RelayCommand(listadoRep => ModificacionRegistro(), ListadoRep => true); }
         }
+
+        public RelayCommand EliminarRegistro_click
+        {
+            get { return new RelayCommand(EliminarRegis => EliminarRegistro(), EliminarRegis => true); }
+        }
+
         //----Fin Listado de registros---
         #endregion
 
@@ -1020,25 +1053,32 @@ namespace GestorClientes
 1-
 
  //Tareas pendientes:
--> controlar que la propiedad _tlfInsert en su textbox correspondiente
+ ---Actualmente en curso---
+1-> controlar que la propiedad _tlfInsert en su textbox correspondiente
 no pueda añadirse otra cosa que no sean numeros.
-->Eliminacion de registro marcando en la pestaña de listado.
--> Intentar que al actualizar un registro la pestaba tbModificaciones devuelva el foco a tbListado
+2-> Intentar que al actualizar un registro la pestaba tbModificaciones devuelva el foco a tbListado
+3-> Comprobar detalles  de insercion o modificacion como que en la tabla cliente que ni el dni ni la matricula esten vacios
+y especificarlo en caso de fallo,el numero d tlf solo puede ser un campo  numerico.
+En la tabla servicios a la hora de insertar la descripcion no puede tener numeros ni el precio letras.
+4-> filtros.
 
-
- -Modificaciones.
- -Eliminacion.
+--En cola---
  -Filtros
  -Generar Factura()
  -Copia de seguridad BD automatica
 
 //Tareas Finalizadas:
-Conectar
-Ver otros registros
+ -Conectar
+ -Inserciones
+ -Modificaciones.
+ -Eliminacion.
+ -Ver otros registros
+
 
 //Extras:
 1-Control de DniClientes solo puede tener una letra y debe ser el ultimo caracter "controlar en codigo o en un trigger de la BD"
 2-Controlar  insercion de fechas pasadas
+
 
 
  */

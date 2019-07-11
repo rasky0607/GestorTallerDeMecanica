@@ -24,33 +24,37 @@ namespace GestorClientes
     {
         public MainWindow()
         {
-            InitializeComponent();                     
-           
+            InitializeComponent();
+
         }
         #region Añadir registros
         //Mostrar los distintos grid con los distintos campos segun en que tabla se quiere realizar la insercion
         private void CbxtipoInsercion_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cbxtipoInsercion.SelectedItem.ToString() == "cliente"){
+            if (cbxtipoInsercion.SelectedItem.ToString() == "cliente")
+            {
                 gridClienteInsert.Visibility = Visibility.Visible;
                 gridServicioInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Hidden;
             }
 
-            if (cbxtipoInsercion.SelectedItem.ToString() == "coche"){
+            if (cbxtipoInsercion.SelectedItem.ToString() == "coche")
+            {
                 gridClienteInsert.Visibility = Visibility.Hidden;
                 gridServicioInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Hidden;
             }
 
-            if (cbxtipoInsercion.SelectedItem.ToString() == "servicio") {
+            if (cbxtipoInsercion.SelectedItem.ToString() == "servicio")
+            {
                 gridClienteInsert.Visibility = Visibility.Hidden;
                 gridServicioInsert.Visibility = Visibility.Visible;
                 gridReparacionInsert.Visibility = Visibility.Hidden;
 
             }
 
-            if (cbxtipoInsercion.SelectedItem.ToString() == "reparacion") {
+            if (cbxtipoInsercion.SelectedItem.ToString() == "reparacion")
+            {
                 gridClienteInsert.Visibility = Visibility.Hidden;
                 gridServicioInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Visible;
@@ -60,7 +64,7 @@ namespace GestorClientes
                 {
                     gestion._dao.Conectar();
                     cbxServicioInsert.ItemsSource = gestion._dao.selectServicioDescripcion();
-                    cbxDniClienteInsert.ItemsSource = gestion._dao.selectClienteDni();                  
+                    cbxDniClienteInsert.ItemsSource = gestion._dao.selectClienteDni();
                     gestion._dao.Desconectar();
                 }
                 //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
@@ -86,11 +90,11 @@ namespace GestorClientes
             if (!gestion._dao.EstadoConexion())
             {
                 gestion._dao.Conectar();
-                gestion.Listado =gestion.conversion(gestion._dao.selectReparacion());
+                gestion.Listado = gestion.conversion(gestion._dao.selectReparacion());
                 gestion._dao.Desconectar();
             }
             tbAnadir.IsEnabled = false;
-            
+
         }
 
         //tabInsertar=añadir
@@ -111,7 +115,8 @@ namespace GestorClientes
                 GestionVM g = (GestionVM)gdBase.DataContext;
                 g._dao.Desconectar();
             }
-            catch {
+            catch
+            {
                 throw new Exception("Fallo al cerrar la aplicacion.");
             }
         }
@@ -133,7 +138,7 @@ namespace GestorClientes
         {
             if (dtgDatos.SelectedItem != null)
             {
-              
+
                 switch (tbxtipoTablaMod.Text)
                 {
                     case "cliente":
@@ -196,7 +201,7 @@ namespace GestorClientes
             dtgDatos.SelectedItem = null;
 
             tbListado.IsEnabled = true;
-            tbListado.Focus();        
+            tbListado.Focus();
             GestionVM gestion = new GestionVM();
             if (!gestion._dao.EstadoConexion())
             {
@@ -221,7 +226,7 @@ namespace GestorClientes
                     }
                     if (dtgDatos.Columns[0].Header is "IdCliente")
                     {
-                        dtgDatos.Columns[0].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna IdCliente cuando esta aparece(en este caso solo ocurre cuando listamos la tabla clientes)
+                        dtgDatos.Columns[0].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna IdCliente cuando esta aparece(en este caso solo ocurre cuando listamos la tabla clientes)                                 
                     }
                 }
             }
@@ -229,8 +234,102 @@ namespace GestorClientes
 
 
 
+
         #endregion
 
-  
+        private void BtnEliminar_Click(object sender, RoutedEventArgs e)
+        {
+            if (dtgDatos.SelectedItems != null)
+            {
+                GestionVM gestion = new GestionVM();
+                if (!gestion._dao.EstadoConexion())
+                {
+
+                    gestion._dao.Conectar();
+                    switch (tbxtipoTablaMod.Text)
+                    {
+                        case "cliente":
+                            int regisCliborradoconExito = 0;
+                            try
+                            {
+                                for (int i = 0; i < dtgDatos.SelectedItems.Count; i++)
+                                {
+                                    Cliente c = new Cliente();
+                                    c = (Cliente)dtgDatos.SelectedItems[i];
+                                    if (gestion._dao.DeleteCliente(c.Dni, c.Matricula))
+                                        regisCliborradoconExito++;
+                                }
+                                if (regisCliborradoconExito == dtgDatos.SelectedItems.Count)
+                                {
+                                    lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
+                                    //dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectCliente());
+                                }                               
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Uno o alguno de los cliente selecionados no pueden ser eliminados,posiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
+                            }
+                            break;
+
+                        case "servicio":
+                            int regisSerborradoconExito = 0;
+                            try
+                            {
+                                for (int i = 0; i < dtgDatos.SelectedItems.Count; i++)
+                                {
+                                    Servicio s = new Servicio();
+                                    s = (Servicio)dtgDatos.SelectedItems[i];
+                                    if (gestion._dao.DeleteServicio(s.Codigo))
+                                        regisSerborradoconExito++;
+                                }
+                                if (regisSerborradoconExito == dtgDatos.SelectedItems.Count)
+                                {
+                                    lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
+                                    //dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectServicio());
+                                }
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Uno o alguno de los servicios selecionados no pueden ser eliminados,posiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
+                            }
+
+                            break;
+
+                        case "reparacion":
+                            int regisRepaborradoconExito = 0;
+                            try
+                            {
+                                for (int i = 0; i < dtgDatos.SelectedItems.Count; i++)
+                                {
+                                    Servicio s = new Servicio();
+                                    s = (Servicio)dtgDatos.SelectedItems[i];
+                                    if (gestion._dao.DeleteServicio(s.Codigo))
+                                        regisRepaborradoconExito++;
+                                }
+                                if (regisRepaborradoconExito == dtgDatos.SelectedItems.Count)
+                                {
+                                    lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
+                                   // dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectReparacion());
+                                }
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Uno o alguno de los servicios selecionados no pueden ser eliminados,posiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
+                            }
+
+                            break;
+                    }
+                    gestion._dao.Desconectar();
+
+
+                }
+            }
+            else//Si no ha selecionado un registro
+            {
+                MessageBox.Show("¡ATENCIÓN!:\nDebe selecionar algun/os registro/os antes de poder eliminar uno o varios registros. ", "(◑ω◐)¡Ops!.");
+            }
+        }
+
+        
     }
 }

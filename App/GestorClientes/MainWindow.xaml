@@ -150,13 +150,13 @@
                                     <GradientStop Color="#FF45CF7D" Offset="1"/>
                                 </LinearGradientBrush>
                             </StackPanel.Background>
-                            <Button Name="btnEditar" ToolTip="Edita el registro selecionado" Click="BtnEditar_Click" >
-                                <materialDesign:PackIcon Kind="Edit" Height="22" Width="30" />
-                            </Button>
                             <Button Name="btnIraTabInsertar"  ToolTip="Añadir un registro nuevo" Click="BtnIraTabInsertar_Click">
                                 <materialDesign:PackIcon Kind="ExpandAll" Height="22" Width="30" />
                             </Button>
-                            <Button Name="btnEliminar" ToolTip="Elimina el registro selecionado">
+                            <Button Name="btnEditar" ToolTip="Edita el registro selecionado" Click="BtnEditar_Click" >
+                                <materialDesign:PackIcon Kind="Edit" Height="22" Width="30" />
+                            </Button>
+                            <Button Name="btnEliminar" ToolTip="Elimina el registro selecionado" Command="{Binding EliminarRegistro_click}" Click="BtnEliminar_Click">
                                 <materialDesign:PackIcon Kind="Delete" Height="22" Width="30" />
                             </Button>
                         </StackPanel>

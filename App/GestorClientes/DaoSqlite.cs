@@ -18,7 +18,7 @@ namespace GestorClientes
         public bool Conectar()
         {
             string db = @".\taller";
-            string cadenaConecxion = string.Format("Data Source=" + db + ";Version=3;FailIfMissing=true;");
+            string cadenaConecxion = string.Format("Data Source=" + db + ";Version=3;FailIfMissing=true;foreign keys=true;");//PRobando foreign keys=true;
             try
             {
                 conexion = new SQLiteConnection(cadenaConecxion);
@@ -414,10 +414,67 @@ namespace GestorClientes
             return true;
 
         }
-    
+
 
         /*No se podra Actualizacion reparacion por consenso ya que es como una factura y necesita de los 4 
          * campos para  modificarla,es mejor crear y eliminarla y crear una nueva reparacion*/
+
+        //Eliminar
+        public bool DeleteCliente(string dni,string matricula)
+        {
+            //delete from cliente where dni='12345678A' and matricula='2218CL';
+            try
+            {                              
+                    string sql;
+                    sql = "delete from cliente where dni='"+dni+"' and matricula='"+matricula+"'";
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                    cmd.ExecuteNonQuery();
+                
+            }
+            catch
+            {
+                throw;
+            }
+            return true;
+        }
+
+        public bool DeleteServicio(int codigo)
+        {
+            //delete from cliente where dni='12345678A' and matricula='2218CL';
+            try
+            {
+                string sql;
+                sql = "delete from servicio where codigo=" +codigo + "";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+        }
+
+        public bool DeleteReparacion(int numReparacion, string dniCliente, string matriculaCoche, string fecha)
+        {
+            //delete from cliente where dni='12345678A' and matricula='2218CL';
+            //// "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha).ToShortDateString()+"')"
+            try
+            {
+                string sql;
+                sql = "delete from cliente where numReparacion=" + numReparacion + " and dniCliente='" + dniCliente + "'" + " and matriCoche='" + matriculaCoche+ "' and fecha='" + DateTime.Parse(fecha).ToShortDateString()+"'";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+        }
+
 
     }
 
