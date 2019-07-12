@@ -355,7 +355,7 @@ namespace GestorClientes
                 if (idReparacion <= 0 || dniCliente  is null || matriculaCoche is null || codServicio < 0 || fecha == null)
                     throw new Exception();
                 string sql;
-                sql = "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha).ToShortDateString()+"')";
+                sql = "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+(DateTime.Parse(fecha)).ToString("yyyy-dd-MM")+"')";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }
@@ -463,7 +463,7 @@ namespace GestorClientes
             try
             {
                 string sql;
-                sql = "delete from cliente where numReparacion=" + numReparacion + " and dniCliente='" + dniCliente + "'" + " and matriCoche='" + matriculaCoche+ "' and fecha='" + DateTime.Parse(fecha).ToShortDateString()+"'";
+                sql = "delete from reparacion where numReparacion=" + numReparacion + " and dniCliente='" + dniCliente + "'" + " and matriCoche='" + matriculaCoche+ "' and fecha='" + Convert.ToDateTime(DateTime.Parse(fecha)).ToString("yyyy-MM-dd")+"'";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
 

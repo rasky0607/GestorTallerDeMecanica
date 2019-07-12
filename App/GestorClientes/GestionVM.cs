@@ -59,7 +59,7 @@ namespace GestorClientes
         string _matriculaRepaInsert;
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
-        string _fechaRepaInser = DateTime.Now.ToString();
+        string _fechaRepaInser = (DateTime.Now).ToString("yyyy/MM/dd");
         int _numRepaInsert;
 
         #endregion
@@ -83,14 +83,8 @@ namespace GestorClientes
         //Datos Modificar Servicio(Convertir Propiedades)
         string _descripcionMod;
         double _precioMod;
-
-        //Datos Modificar Reparacion(Convertir Propiedades)
-        string _dniClirepaMod;//Seleciona un string de un dni de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
-        string _matriculaRepaMod;
-        string _ServicioRepaMod;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
-        int _CodServicioRepaMod;
-        string _fechaRepaMod = DateTime.Now.ToShortTimeString();
-        int _numRepaMod;
+        //No hay Modificacion para reparaciones
+      
         #endregion
 
         #endregion
@@ -195,7 +189,7 @@ namespace GestorClientes
                     _listado = value;
                     SelecionRegistroAModificar = null;
                     Notificador("Listado");
-                }
+                }             
             }
         }
         #endregion
@@ -671,88 +665,7 @@ namespace GestorClientes
         }
         #endregion
 
-        #region Campos Reparacion
-
-        public string DniClirepaMod
-        {
-            get { return _dniClirepaMod; }
-            set
-            {
-                if (_dniClirepaMod != value)
-                {
-                    _dniClirepaMod = value;
-                    Notificador("DniClirepaMod");
-                }
-            }
-        }     
-
-        public string MatriculaRepaMod
-        {
-            get { return _matriculaRepaMod; }
-            set
-            {
-                if (_matriculaRepaMod != value)
-                {
-                    _matriculaRepaMod = value;
-                    Notificador("MatriculaRepaMod");
-                }
-            }
-        }
-
-        public string ServicioRepaMod
-        {
-            get { return _ServicioRepaMod; }
-            set
-            {
-                if (_ServicioRepaMod != value)
-                {
-                    _ServicioRepaMod = value;
-                    Notificador("ServicioRepaMod");
-                }
-            }
-        }
-
-        public int CodServicioRepaMod
-        {
-            get { return _CodServicioRepaMod; }
-            set
-            {
-                if (_CodServicioRepaMod != value)
-                {
-                    _CodServicioRepaMod = value;
-                    Notificador("CodServicioRepaMod");
-                }
-            }
-        }
-
-        public string FechaRepaMod
-        {
-            get { return _fechaRepaMod; }
-            set
-            {
-                if (_fechaRepaMod != value)
-                {
-                    _fechaRepaMod = value;
-                    Notificador("FechaRepaMod");
-                }
-
-            }
-        }
-
-        public int NumRepaMod
-        {
-            get { return _numRepaMod; }
-            set
-            {
-                if (_numRepaMod != value)
-                {
-                    _numRepaMod = value;
-                    Notificador("NumRepaMod");
-                }
-            }
-        }
-
-        #endregion
+       
 
 
         #endregion
@@ -774,7 +687,11 @@ namespace GestorClientes
                     ColorConexion = colorRojo;
                     Listablas = _dao.VerTablas();
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
-                    TablaAcltualListada = "reparacion";                 
+                    TablaAcltualListada = "reparacion";
+                    if (Listado.Count == 0)
+                        Mensaje = "No hay registros de reparaciones actualmente.";
+                    else
+                        Mensaje = "";
 
                 }
                 else
@@ -805,6 +722,10 @@ namespace GestorClientes
                     Listado = conversion(_dao.selectCliente());
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "cliente";
+                    if (Listado.Count == 0)
+                        Mensaje = "No clientes registrados actualmente.";
+                    else
+                        Mensaje = "";
                 }
                 catch
                 {
@@ -822,6 +743,10 @@ namespace GestorClientes
                     Listado = conversion(_dao.selectServicio());
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "servicio";
+                    if (Listado.Count == 0)
+                        Mensaje = "No hay servicios dados de alta actualmente.";
+                    else
+                        Mensaje = "";
                 }
                 catch
                 {
@@ -839,6 +764,10 @@ namespace GestorClientes
                     Listado = conversion(_dao.selectReparacion());
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "reparacion";
+                    if (Listado.Count == 0)
+                        Mensaje = "No hay registros de reparaciones actualmente.";
+                    else
+                        Mensaje = "";
                 }
                 catch
                 {
@@ -860,22 +789,25 @@ namespace GestorClientes
                             if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                                Listado = conversion(_dao.selectCliente());
+                                //Listado = conversion(_dao.selectCliente());
+                                ListadoClientes();
                             }                          
                             break;                             
                         case "servicio":
                             if (_dao.InsertServicio(DescripcionInsert, PrecioInsert))
                             {
                                 MensajeInsercion = "Insercion realizada correctamente";
-                                Listado = conversion(_dao.selectServicio());
+                                //Listado = conversion(_dao.selectServicio());
+                                ListadoServicios();
                             }
                             break;
                         case "reparacion":                          
                             CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);                         
                             if (_dao.InsertReparacion(NumRepaInsert, DniClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser))
                             {
-                                MensajeInsercion = "Insercion realizada correctamente";                               
-                                Listado = conversion(_dao.selectReparacion());
+                                MensajeInsercion = "Insercion realizada correctamente";
+                                // Listado = conversion(_dao.selectReparacion());
+                                ListadoReparacion();
                             }
                             break;
                     }
@@ -1060,6 +992,7 @@ no pueda añadirse otra cosa que no sean numeros.
 y especificarlo en caso de fallo,el numero d tlf solo puede ser un campo  numerico.
 En la tabla servicios a la hora de insertar la descripcion no puede tener numeros ni el precio letras.
 4-> filtros.
+5-> intentar que los mensajes se muestren solo durante unos segundos y luego cambie(Hilos??)
 
 --En cola---
  -Filtros

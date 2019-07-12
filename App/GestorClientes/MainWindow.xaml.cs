@@ -301,9 +301,9 @@ namespace GestorClientes
                             {
                                 for (int i = 0; i < dtgDatos.SelectedItems.Count; i++)
                                 {
-                                    Servicio s = new Servicio();
-                                    s = (Servicio)dtgDatos.SelectedItems[i];
-                                    if (gestion._dao.DeleteServicio(s.Codigo))
+                                    Reparacion r = new Reparacion();
+                                    r = (Reparacion)dtgDatos.SelectedItems[i];
+                                    if (gestion._dao.DeleteReparacion(r.NumReparacion,r.DniCliente,r.MatriCoche,r.Fecha))
                                         regisRepaborradoconExito++;
                                 }
                                 if (regisRepaborradoconExito == dtgDatos.SelectedItems.Count)
