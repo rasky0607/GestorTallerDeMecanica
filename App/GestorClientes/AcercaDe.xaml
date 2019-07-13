@@ -20,6 +20,6 @@
         <TextBlock HorizontalAlignment="Left" Margin="95,186,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Linux Biolinum G" FontSize="14" FontStyle="Italic" TextDecorations="Underline"><Run Text="Pablo Lopez Santana"/></TextBlock>
         <Image Margin="104,22,120,159" RenderTransformOrigin="0.468,0.834" Source="./img/pablito.jpg"/>
         <TextBlock HorizontalAlignment="Left" Margin="95,207,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Linux Biolinum G" FontStyle="Italic" TextDecorations="Underline" FontWeight="Bold"><Run Text="esviasalpa@gmail.com"/></TextBlock>
-        <TextBlock HorizontalAlignment="Left" Margin="240,281,0,0" TextWrapping="Wrap" Text="Versión: 1.0.1" VerticalAlignment="Top" FontSize="10" FontStyle="Italic"/>
+        <TextBlock HorizontalAlignment="Left" Margin="240,281,0,0" TextWrapping="Wrap" Text="Versión: 1.0.0" VerticalAlignment="Top" FontSize="10" FontStyle="Italic"/>
     </Grid>
 </Window>

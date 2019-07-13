@@ -256,6 +256,32 @@ namespace GestorClientes
 
         }
 
+        public int selectNumRepara(string dniCliRepara,string matriculaRepa, string fecha)
+        {
+            int nreparaciones = -1;
+            //select count(*)as cantidad from reparacion where dniCliente='12365478C' and matriCoche='2019OPL' and fecha='2019-07-11';
+            string sql = "select count(*)as cantidad from reparacion where dniCliente='" + dniCliRepara + "'and matriCoche='"+matriculaRepa+ "'and fecha='" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "'";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                   nreparaciones = int.Parse(lector["cantidad"].ToString());
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return nreparaciones;
+
+        }
+
         public List<string> VerTablas()
         {
             List<string> lTablas = new List<string>();
@@ -354,14 +380,15 @@ namespace GestorClientes
             {
                 if (idReparacion <= 0 || dniCliente  is null || matriculaCoche is null || codServicio < 0 || fecha == null)
                     throw new Exception();
-                string sql;
-                sql = "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+(DateTime.Parse(fecha)).ToString("yyyy-dd-MM")+"')";
+                string sql;            
+                sql = "INSERT INTO reparacion (numReparacion,dniCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + dniCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+fecha+"')";
+               
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }
-            catch
+            catch(Exception e)
             {
-                throw;
+                throw new Exception(e.Message);
             }
             return true;
 

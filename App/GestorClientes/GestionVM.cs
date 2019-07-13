@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows;
 using System.Data.SQLite;
+using System.Threading;
 
 namespace GestorClientes
 {
@@ -26,7 +27,8 @@ namespace GestorClientes
         string _mensaje;//Mensaje de informacion     
         string _conectadoDesconectado="Conectar";//Nombre que daremos al boton de conexion y desconexion segun el estado de dicha conexion
         bool _estadoConexion = false;//true abierta, false cerrada
-        string _colorConexion= "#FF45A3CF";      
+        string _colorConexion= "#FF45A3CF";
+        bool _activarFiltros = false;//Activa la ventana de filtros cuandola tabla listada sea reparaciones
         #endregion
 
         #region Campos pestaña listar
@@ -36,7 +38,7 @@ namespace GestorClientes
 
         #region campos pestaña Añadir
         //Campos pestaña Añadir/Insertar
-
+        int _esCorrecto = -1;//Si la insercion es 0 es que es correcto si es 1 falso
         string _mensajeInsercion;
         List<string> _listablas;
         string _tablaSelecionada; //tabla selecionada en el combobox de la pestaña añadir
@@ -59,13 +61,14 @@ namespace GestorClientes
         string _matriculaRepaInsert;
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
-        string _fechaRepaInser = (DateTime.Now).ToString("yyyy/MM/dd");
-        int _numRepaInsert;
+        DateTime _fechaRepaInser = DateTime.Now;
+        int _numRepaInsert=1;
 
         #endregion
 
         #region Campos pestaña Modificar
         //Campos pestaña Modificar
+        int _esCorrectoMod = -1;//Si la modificaion es 0 es que es correcto si es 1 falso
         bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
         string _tablaAcltualListada;//Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
         object _selecionRegistroAModificar = null; //Propiedad para el registro selecionado
@@ -173,7 +176,21 @@ namespace GestorClientes
                 }
             }
             
-        }     
+        }
+
+        public bool ActivarFiltros
+        {
+            get { return _activarFiltros; }
+            set
+            {
+                if (_activarFiltros !=value)
+                {
+                    _activarFiltros = value;
+                    Notificador("ActivarFiltros");
+                }
+                
+            }
+        }
 
         #endregion
 
@@ -195,6 +212,20 @@ namespace GestorClientes
         #endregion
 
         #region  Propiedades pestaña Añadir
+        
+        public int EsCorrectoInsert
+        {
+            get { return _esCorrecto; }
+
+            set
+            {
+                if (_esCorrecto != value)
+                {
+                    _esCorrecto = value;
+                    Notificador("EsCorrectoInsert");
+                }
+            }
+        }
 
         public List<string> Listablas
         {
@@ -238,7 +269,6 @@ namespace GestorClientes
         }
 
      
-
         #region Campos Cliente
         public string DniCliInsert
         {
@@ -291,37 +321,7 @@ namespace GestorClientes
                 }
             }
         }
-        #endregion
 
-        #region Campos Servicios
-        public string DescripcionInsert
-        {
-            get { return _descripcionInsert; }
-            set
-            {
-                if (_descripcionInsert != value)
-                {
-                    _descripcionInsert = value;
-                    Notificador("DescripcionInsert");
-                }
-            }
-        }
-
-        public double PrecioInsert
-        {
-            get { return _precioInsert; }
-            set
-            {
-                if (_precioInsert != value)
-                {
-                    _precioInsert = value;
-                    Notificador("PrecioInsert");
-                }
-            }
-        }
-        #endregion
-
-        #region Campos Coche
         public string MatriculaInsert
         {
             get { return _matriculaInsert; }
@@ -361,6 +361,35 @@ namespace GestorClientes
             }
         }
         #endregion
+
+        #region Campos Servicios
+        public string DescripcionInsert
+        {
+            get { return _descripcionInsert; }
+            set
+            {
+                if (_descripcionInsert != value)
+                {
+                    _descripcionInsert = value;
+                    Notificador("DescripcionInsert");
+                }
+            }
+        }
+
+        public double PrecioInsert
+        {
+            get { return _precioInsert; }
+            set
+            {
+                if (_precioInsert != value)
+                {
+                    _precioInsert = value;
+                    Notificador("PrecioInsert");
+                }
+            }
+        }
+        #endregion
+
 
         #region Campos Reparacion
 
@@ -417,7 +446,7 @@ namespace GestorClientes
             }
         }
 
-        public string FechaRepaInser
+        public DateTime FechaRepaInser
         {
             get { return _fechaRepaInser; }
             set
@@ -451,6 +480,20 @@ namespace GestorClientes
 
         #region Propiedades pestaña Modificar
 
+        public int EsCorrectoMod
+        {
+            get { return _esCorrectoMod; }
+
+            set
+            {
+                if (_esCorrectoMod != value)
+                {
+                    _esCorrectoMod = value;
+                    Notificador("EsCorrectoMod");
+                }
+            }
+        }
+
         public bool HabilitarModificaciones
         {
             get { return _habilitarModificaciones; }
@@ -474,6 +517,10 @@ namespace GestorClientes
                 {
                     _tablaAcltualListada = value;
                     Notificador("TablaAcltualListada");
+                    if (_tablaAcltualListada == "reparacion")//Si la tabla listada es reparacion activa filtros si no, no
+                        ActivarFiltros = true;
+                    else
+                        ActivarFiltros = false;
                 }
                
             }
@@ -665,8 +712,6 @@ namespace GestorClientes
         }
         #endregion
 
-       
-
 
         #endregion
 
@@ -688,6 +733,7 @@ namespace GestorClientes
                     Listablas = _dao.VerTablas();
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "reparacion";
+                    ActivarFiltros = true;
                     if (Listado.Count == 0)
                         Mensaje = "No hay registros de reparaciones actualmente.";
                     else
@@ -703,6 +749,7 @@ namespace GestorClientes
                         ConectadoDesconectado = "Conectar";//Ya que esta conectado y este boton ademas lo mostraremos en rojo.. y cuando este desconectado, mostraremos la palabra'conectar' con el fondo verde
                         ColorConexion = colorAzul;
                         Mensaje = "";
+                        ActivarFiltros = false;
                     }
                 }
             }
@@ -745,8 +792,8 @@ namespace GestorClientes
                     TablaAcltualListada = "servicio";
                     if (Listado.Count == 0)
                         Mensaje = "No hay servicios dados de alta actualmente.";
-                    else
-                        Mensaje = "";
+                    /*else
+                        Mensaje = "";*/
                 }
                 catch
                 {
@@ -766,8 +813,8 @@ namespace GestorClientes
                     TablaAcltualListada = "reparacion";
                     if (Listado.Count == 0)
                         Mensaje = "No hay registros de reparaciones actualmente.";
-                    else
-                        Mensaje = "";
+                    /*else
+                        Mensaje = "";*/
                 }
                 catch
                 {
@@ -788,33 +835,58 @@ namespace GestorClientes
                         case "cliente":
                             if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
                             {
-                                MensajeInsercion = "Insercion realizada correctamente";
+                                //MensajeInsercion = "Insercion realizada correctamente";
+                                EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+                                //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
+                                Thread h1 = new Thread(new ThreadStart(MensajeInformacionInsercion));
+                                h1.Start();
                                 //Listado = conversion(_dao.selectCliente());
                                 ListadoClientes();
+                                EsCorrectoInsert = -1;//Reiniciamos la propiedad,para que en la siguiente ronda que vaya a añadir produzca de nuevo un cambio en la propiedad y ejecute el metodo de MainWindows TbxInserCorrect_TextChanged
                             }                          
                             break;                             
                         case "servicio":
                             if (_dao.InsertServicio(DescripcionInsert, PrecioInsert))
                             {
-                                MensajeInsercion = "Insercion realizada correctamente";
+                                //MensajeInsercion = "Insercion realizada correctamente";
+                                EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+                                //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
+                                Thread h1 = new Thread(new ThreadStart(MensajeInformacionInsercion));
+                                h1.Start();
+
                                 //Listado = conversion(_dao.selectServicio());
                                 ListadoServicios();
+                                EsCorrectoInsert = -1;//Reiniciamos la propiedad,para que en la siguiente ronda que vaya a añadir produzca de nuevo un cambio en la propiedad y ejecute el metodo de MainWindows TbxInserCorrect_TextChanged
                             }
                             break;
                         case "reparacion":                          
-                            CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);                         
-                            if (_dao.InsertReparacion(NumRepaInsert, DniClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser))
+                            CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);
+                            /*Necesario para comprobar el numero de reparacion en el partado de los datos, ya que la comprobacion de CbxDniClienteInsert_SelectionChanged de la clase MainWindow solo afecta ala parte grafica,
+                            ya que el cambio no consigue activar  una alteracion de el dato de la propiead,de esta forma queda asegurada*/
+                            NumRepaInsert = _dao.selectNumRepara(DniClirepaInsert, MatriculaRepaInsert, FechaRepaInser.ToString("yyyy-MM-dd"));
+                            if (NumRepaInsert >= 1)
+                                NumRepaInsert++;
+                            else
+                                NumRepaInsert = 1;
+                            if (_dao.InsertReparacion(NumRepaInsert, DniClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser.ToString("yyyy-MM-dd")))
                             {
-                                MensajeInsercion = "Insercion realizada correctamente";
+                                //MensajeInsercion = "Insercion realizada correctamente";
+                                EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+                                 //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
+                                Thread h1 = new Thread(new ThreadStart(MensajeInformacionInsercion));
+                                h1.Start();
                                 // Listado = conversion(_dao.selectReparacion());
                                 ListadoReparacion();
+                                EsCorrectoInsert = -1;//Reiniciamos la propiedad,para que en la siguiente ronda que vaya a añadir produzca de nuevo un cambio en la propiedad y ejecute el metodo de MainWindows TbxInserCorrect_TextChanged
                             }
                             break;
                     }
                 }
                 catch
                 {
-                    MensajeInsercion = "Insercion fallida.";                   
+                    MensajeInsercion = "Insercion fallida.";
+                    EsCorrectoInsert = 1;//es falso
+                    EsCorrectoInsert = -1;//Reiniciamos la propiedad,para que en la siguiente ronda que vaya a añadir produzca de nuevo un cambio en la propiedad y ejecute el metodo de MainWindows TbxInserCorrect_TextChanged
                 }
             }
         }
@@ -832,8 +904,22 @@ namespace GestorClientes
                             c = (Cliente)SelecionRegistroAModificar;
                             if (_dao.UpdateCliente(c.IdCliente, DniCliMod, NombreCliMod, ApellidosCliMod, TlfCliMod, MatriculaMod, MarcaMod, ModeloMod))
                             {
+                                EsCorrectoMod = 0;//es correcto  la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
                                 Mensaje = "Actualizacion realizada con exito";
+                                //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
+                                Thread h1 = new Thread(new ThreadStart(MensajeInformacionModCorrec));
+                                h1.Start();
                                 Listado = conversion(_dao.selectCliente());
+                                EsCorrectoMod = -1;
+                                //Limpieza por si vuelve clicar en el mismo registro para m odificar justo despues de haberlo hecho antes:
+                                DniCliMod = string.Empty;
+                                NombreCliMod = string.Empty;
+                                ApellidosCliMod = string.Empty;
+                                TlfCliMod= 0;
+                                MatriculaMod = string.Empty;
+                                MarcaMod = string.Empty;
+                                ModeloMod = string.Empty;
+
                             }
 
                             break;
@@ -842,19 +928,25 @@ namespace GestorClientes
                             s = (Servicio)SelecionRegistroAModificar;
                             if (_dao.UpdateServicio(s.Codigo,DescripcionMod,PrecioMod))
                             {
-                                Mensaje = "Actualizacion realizada con exito";
+                                EsCorrectoMod = 0;//es correcta la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
                                 MensajeActualizacion = "Actualizacion realizada con exito";
+                                //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
+                                Thread h1 = new Thread(new ThreadStart(MensajeInformacionModCorrec));
+                                h1.Start();
                                 Listado = conversion(_dao.selectServicio());
+                                EsCorrectoMod = -1;
+                                //Limpieza por si vuelve clicar en el mismo registro para m odificar justo despues de haberlo hecho antes:
+                                DescripcionMod = string.Empty;
+                                PrecioMod = 0;
                             }
-                            break;
-                        case "reparacion":
-                            
                             break;
                     }
                 }
                 catch
                 {
-                    MensajeActualizacion = "Insercion fallida.";                  
+                    MensajeActualizacion = "Insercion fallida.";
+                    Thread h1 = new Thread(new ThreadStart(MensajeInformacionModIncorrec));
+                    h1.Start();
                 }
             }
         }
@@ -878,6 +970,9 @@ namespace GestorClientes
                             Listado = conversion(_dao.selectReparacion());
                             break;
                     }
+                    Thread h1 = new Thread(new ThreadStart(MensajeInformacionEliminacionCorrecta));
+                    h1.Start();
+
                 }
                 catch
                 {
@@ -886,7 +981,61 @@ namespace GestorClientes
             }
         }
 
+        private void VolverAtrasInsert()
+        {
+            #region Limpieza de propiedades
+            //Cliente
+            MensajeInsercion = string.Empty;
+            DniCliInsert = string.Empty;
+            NombreCliInsert = string.Empty;
+            ApellidosCliInsert = string.Empty;
+            MatriculaInsert = string.Empty;
+            MarcaInsert = string.Empty;
+            ModeloInsert = string.Empty;
+            //TlfCliInsert = int.Parse(string.Empty);
+            TlfCliInsert = 0;
+            //Servicio
+            DescripcionInsert = string.Empty;
+            PrecioInsert = 0;
 
+            //Reparacion
+            DniClirepaInsert = string.Empty;
+            MatriculaRepaInsert = string.Empty;
+            ServicioRepa = string.Empty;
+            FechaRepaInser = DateTime.Now;
+            CodServicioRepa = 0;
+            NumRepaInsert = 1;
+            EsCorrectoInsert = -1;
+
+            //Otros
+            Mensaje = string.Empty;
+            #endregion
+
+        }
+
+        private void VolverAtrasMod()
+        {
+            #region Limpieza de propiedades
+            //Cliente
+            MensajeActualizacion = string.Empty;
+            DniCliMod = string.Empty;
+            NombreCliMod = string.Empty;
+            ApellidosCliMod = string.Empty;
+            MatriculaMod = string.Empty;
+            MarcaMod = string.Empty;
+            ModeloMod = string.Empty;
+            //TlfCliInsert = int.Parse(string.Empty);
+            TlfCliMod = 0;
+            //Servicio
+            DescripcionMod = string.Empty;
+            PrecioMod = 0;
+           
+            //Reparacions(No hay modificaciones de reparaciones)
+
+            //Otros
+            Mensaje = string.Empty;
+            #endregion
+        }
 
         #endregion
 
@@ -925,6 +1074,17 @@ namespace GestorClientes
         {
             get { return new RelayCommand(EliminarRegis => EliminarRegistro(), EliminarRegis => true); }
         }
+
+        public RelayCommand VolverInsert_click
+        {
+            get { return new RelayCommand(volver => VolverAtrasInsert(), volver => true); }
+        }
+
+        public RelayCommand VolverMod_click
+        {
+            get { return new RelayCommand(volver => VolverAtrasMod(), volver => true); }
+        }
+
 
         //----Fin Listado de registros---
         #endregion
@@ -977,6 +1137,40 @@ namespace GestorClientes
         }
         #endregion
 
+        #region Metodos llamados por los hilos de ejecucion paralela en los mensajes de insercion y modificacion
+        private void MensajeInformacionInsercion()
+        {           
+            Mensaje = "Insercion Correcta";
+            Thread.Sleep(3000);
+            Mensaje = string.Empty;
+            
+        }
+
+        private void MensajeInformacionModCorrec()
+        {          
+            Mensaje = "Modificacion realizada Correctamente";
+            Thread.Sleep(3000);
+            Mensaje = string.Empty;
+
+        }
+
+        private void MensajeInformacionModIncorrec()
+        {
+            Mensaje = "Error al realizar la modificacion";
+            Thread.Sleep(3000);
+            Mensaje = string.Empty;
+
+        }
+
+        private void MensajeInformacionEliminacionCorrecta()
+        {
+            Mensaje = "Se ha eliminado con existo los registros indicados";
+            Thread.Sleep(3000);
+            Mensaje = string.Empty;
+
+        }
+        #endregion
+      
     }
 }
 /*

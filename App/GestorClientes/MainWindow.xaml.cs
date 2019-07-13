@@ -25,63 +25,100 @@ namespace GestorClientes
         public MainWindow()
         {
             InitializeComponent();
+          
 
         }
         #region Añadir registros
         //Mostrar los distintos grid con los distintos campos segun en que tabla se quiere realizar la insercion
         private void CbxtipoInsercion_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cbxtipoInsercion.SelectedItem.ToString() == "cliente")
+            if (cbxtipoInsercion.SelectedItem != null)
             {
-                gridClienteInsert.Visibility = Visibility.Visible;
-                gridServicioInsert.Visibility = Visibility.Hidden;
-                gridReparacionInsert.Visibility = Visibility.Hidden;
-            }
-
-            if (cbxtipoInsercion.SelectedItem.ToString() == "coche")
-            {
-                gridClienteInsert.Visibility = Visibility.Hidden;
-                gridServicioInsert.Visibility = Visibility.Hidden;
-                gridReparacionInsert.Visibility = Visibility.Hidden;
-            }
-
-            if (cbxtipoInsercion.SelectedItem.ToString() == "servicio")
-            {
-                gridClienteInsert.Visibility = Visibility.Hidden;
-                gridServicioInsert.Visibility = Visibility.Visible;
-                gridReparacionInsert.Visibility = Visibility.Hidden;
-
-            }
-
-            if (cbxtipoInsercion.SelectedItem.ToString() == "reparacion")
-            {
-                gridClienteInsert.Visibility = Visibility.Hidden;
-                gridServicioInsert.Visibility = Visibility.Hidden;
-                gridReparacionInsert.Visibility = Visibility.Visible;
-                //Preparacion  añadir de los combobox  una reparacion con los clientes,matriculas de vehiculos y servicios posibles
-                GestionVM gestion = new GestionVM();
-                if (!gestion._dao.EstadoConexion())
+                if (cbxtipoInsercion.SelectedItem.ToString() == "cliente")
                 {
-                    gestion._dao.Conectar();
-                    cbxServicioInsert.ItemsSource = gestion._dao.selectServicioDescripcion();
-                    cbxDniClienteInsert.ItemsSource = gestion._dao.selectClienteDni();
-                    gestion._dao.Desconectar();
+                    gridClienteInsert.Visibility = Visibility.Visible;
+                    gridServicioInsert.Visibility = Visibility.Hidden;
+                    gridReparacionInsert.Visibility = Visibility.Hidden;
                 }
-                //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
+
+                if (cbxtipoInsercion.SelectedItem.ToString() == "coche")
+                {
+                    gridClienteInsert.Visibility = Visibility.Hidden;
+                    gridServicioInsert.Visibility = Visibility.Hidden;
+                    gridReparacionInsert.Visibility = Visibility.Hidden;
+                }
+
+                if (cbxtipoInsercion.SelectedItem.ToString() == "servicio")
+                {
+                    gridClienteInsert.Visibility = Visibility.Hidden;
+                    gridServicioInsert.Visibility = Visibility.Visible;
+                    gridReparacionInsert.Visibility = Visibility.Hidden;
+
+                }
+
+                if (cbxtipoInsercion.SelectedItem.ToString() == "reparacion")
+                {
+                    gridClienteInsert.Visibility = Visibility.Hidden;
+                    gridServicioInsert.Visibility = Visibility.Hidden;
+                    gridReparacionInsert.Visibility = Visibility.Visible;
+                    //Preparacion  añadir de los combobox  una reparacion con los clientes,matriculas de vehiculos y servicios posibles
+                    GestionVM gestion = new GestionVM();
+                    if (!gestion._dao.EstadoConexion())
+                    {
+                        gestion._dao.Conectar();
+                        cbxServicioInsert.ItemsSource = gestion._dao.selectServicioDescripcion();
+                        cbxDniClienteRepaInsert.ItemsSource = gestion._dao.selectClienteDni();
+                        gestion._dao.Desconectar();
+                    }
+                    //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
+                }
+            }
+            else//En caso  de no haber nada selecionado como cuando ocurre al darle al boton de volver, ocultamos todo para cuadno vuelve a la ventana insercion estar como al pricipio
+            {
+                gridClienteInsert.Visibility = Visibility.Hidden;
+                gridServicioInsert.Visibility = Visibility.Hidden;
+                gridReparacionInsert.Visibility = Visibility.Hidden;
+                cbxDniClienteRepaInsert.ItemsSource = null;
+                cbxMatriculaRepaInsert.ItemsSource = null;
+                cbxServicioInsert.ItemsSource = null;
             }
         }
 
         //Dado un Dni de un cliente selecionado, rellena el cbxMatriculaInsert con la coleccion de matriculas disponibles para ese cliente
+        //Y  Para preaprar el numReparacion de forma automatica dada una fecha un dniCliente y una matricula en caso de que cambie el DniCliente selecionado
         private void CbxDniClienteInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             GestionVM gestion = new GestionVM();
             if (!gestion._dao.EstadoConexion())
             {
-                gestion._dao.Conectar();
-                cbxMatriculaInsert.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteInsert.SelectedItem.ToString());
-                gestion._dao.Desconectar();
+                if (cbxDniClienteRepaInsert.SelectedItem != null)
+                {
+                    gestion._dao.Conectar();
+                    cbxMatriculaRepaInsert.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteRepaInsert.SelectedItem.ToString());
+                    gestion._dao.Desconectar();
+                }
             }
+
+            //Para preaprar el numReparacion de forma automatica dada una fecha un dniCliente y una matricula en caso de que cambie el DniCliente selecionado
+            if (dpFecha.SelectedDate != null && cbxDniClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
+            {
+                if (!gestion._dao.EstadoConexion())
+                {
+
+                    int numeroDeReparaciones = -1;
+                    gestion._dao.Conectar();
+                    //Buscar numero de registros de en reparaciones con esa misma fecha dni y matricula de reparaciones
+                    numeroDeReparaciones = gestion._dao.selectNumRepara(cbxDniClienteRepaInsert.SelectedItem.ToString(), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
+                    //Si el resultado es 0 o cualquier otro mayor(osea no hay reparaciones en esa fecha para ese cliente y esa matricula o 1 2 etc...) entonces esta sera la numero el resultado +1 p ++ que es lo mismo
+                    numeroDeReparaciones++;
+
+                    tbxNumReparacion.Text = numeroDeReparaciones.ToString();//asignamos el numero de reparacion automaticamente en el textbox sin intervencion de usuario
+                    gestion._dao.Desconectar();
+                }
+            }
+
         }
+
         private void btnVolverInsert_Click(object sender, RoutedEventArgs e)
         {
             tbListado.IsEnabled = true;
@@ -94,12 +131,16 @@ namespace GestorClientes
                 gestion._dao.Desconectar();
             }
             tbAnadir.IsEnabled = false;
+            cbxtipoInsercion.SelectedItem = null;
+            lbMensajeInsercion.Content = string.Empty;
+
 
         }
 
         //tabInsertar=añadir
         private void BtnIraTabInsertar_Click(object sender, RoutedEventArgs e)
         {
+            cbxtipoInsercion.SelectedItem = null;
             tbAnadir.IsEnabled = true;
             tbListado.IsEnabled = false;
             tbAnadir.Focus();
@@ -107,30 +148,19 @@ namespace GestorClientes
         }
         #endregion
 
-        //Cuando se cierra la ventana, desconectamos obtenido el objeto del contexto de datos de el grid base de la ventana
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            try
-            {
-                GestionVM g = (GestionVM)gdBase.DataContext;
-                g._dao.Desconectar();
-            }
-            catch
-            {
-                throw new Exception("Fallo al cerrar la aplicacion.");
-            }
-        }
 
-        //POR AQUI!!
         #region Modificaciones de registros
         private void CbxDniClienteMod_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             GestionVM gestion = new GestionVM();
             if (!gestion._dao.EstadoConexion())
             {
-                gestion._dao.Conectar();
-                cbxMatriculaRepaMod.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteRepaMod.SelectedItem.ToString());
-                gestion._dao.Desconectar();
+                if (cbxDniClienteRepaMod.SelectedItem != null)
+                {
+                    gestion._dao.Conectar();
+                    cbxMatriculaRepaMod.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteRepaMod.SelectedItem.ToString());
+                    gestion._dao.Desconectar();
+                }
             }
         }
 
@@ -159,33 +189,8 @@ namespace GestorClientes
                         gridServicioMod.Visibility = Visibility.Visible;
                         break;
 
-                    case "reparacion":
-                        /* gridClienteMod.Visibility = Visibility.Hidden;
-                         gridReparacionMod.Visibility = Visibility.Visible;
-                         gridServicioMod.Visibility = Visibility.Hidden;
-                         //Preparacion  Modificar de los combobox  una reparacion con los clientes,matriculas de vehiculos y servicios posibles y preparacion de el resto de campos de esta tabla
-                         if (dtgDatos.SelectedItem != null)
-                         {
-                             GestionVM gestion = new GestionVM();
-                             if (!gestion._dao.EstadoConexion())
-                             {
-                                 gestion._dao.Conectar();
-                                 cbxServicioRepaMod.ItemsSource = gestion._dao.selectServicioDescripcion();
-                                 cbxDniClienteRepaMod.ItemsSource = gestion._dao.selectClienteDni();
-                                 cbxServicioRepaMod.ItemsSource = gestion._dao.selectServicioDescripcion();
-
-                                 Reparacion r = new Reparacion();
-                                /* r = (Reparacion)dtgDatos.SelectedItem;
-                                 cbxDniClienteRepaMod.SelectedItem = r.DniCliente;
-                                 cbxMatriculaRepaMod.SelectedItem = r.MatriCoche;
-                                 cbxServicioRepaMod.SelectedItem = r.NombreServicio;
-                                 dpFechaRepaMod.SelectedDate = DateTime.Parse(r.Fecha);
-                                 tbxNumReparacionRepaMod.Text = r.NumReparacion.ToString();
-                                 gestion._dao.Desconectar();
-                             }
-                         }*/
+                    case "reparacion": //Las reparaciones no se pueden modificar                       
                         MessageBox.Show("Las reparaciones no pueden ser modificas.\nPuedes eliminar la reparación selecionada y posteriormente crear una nueva con los datos que necesites.", "(◑ω◐)¡Ops!.");
-                        //----Fin preparacion de combobox de pestaña Modificar en la tabla reapracion y preparacion de el resto de campos de esta tabla---
                         break;
                 }
             }
@@ -210,10 +215,12 @@ namespace GestorClientes
                 gestion._dao.Desconectar();
             }
             tbModificacion.IsEnabled = false;
+            lbMensajeMod.Content = string.Empty;//Limpieza de mensajes al darle a volver
+
         }
 
         #endregion
-        #region Apartado general estetico
+        #region Apartado general estetico de columnas de el datagrid
         private void DtgDatos_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             if (this.dtgDatos.Columns != null)
@@ -231,9 +238,6 @@ namespace GestorClientes
                 }
             }
         }
-
-
-
 
         #endregion
 
@@ -261,9 +265,9 @@ namespace GestorClientes
                                 }
                                 if (regisCliborradoconExito == dtgDatos.SelectedItems.Count)
                                 {
-                                    lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
+                                    //lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
                                     //dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectCliente());
-                                }                               
+                                }
                             }
                             catch
                             {
@@ -284,7 +288,7 @@ namespace GestorClientes
                                 }
                                 if (regisSerborradoconExito == dtgDatos.SelectedItems.Count)
                                 {
-                                    lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
+                                    //lbmensaje.Content = "Se ha eliminado con existo los registros indicados";
                                     //dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectServicio());
                                 }
                             }
@@ -294,7 +298,7 @@ namespace GestorClientes
                             }
 
                             break;
-                            //REVISAR
+                        //REVISAR
                         case "reparacion":
                             int regisRepaborradoconExito = 0;
                             try
@@ -303,13 +307,13 @@ namespace GestorClientes
                                 {
                                     Reparacion r = new Reparacion();
                                     r = (Reparacion)dtgDatos.SelectedItems[i];
-                                    if (gestion._dao.DeleteReparacion(r.NumReparacion,r.DniCliente,r.MatriCoche,r.Fecha))
+                                    if (gestion._dao.DeleteReparacion(r.NumReparacion, r.DniCliente, r.MatriCoche, r.Fecha))
                                         regisRepaborradoconExito++;
                                 }
                                 if (regisRepaborradoconExito == dtgDatos.SelectedItems.Count)
                                 {
-                                    lbmensaje.Content = "Se ha eliminado con exito los registros indicados";
-                                   // dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectReparacion());
+                                    //lbmensaje.Content = "Se ha eliminado con exito los registros indicados";
+                                    // dtgDatos.ItemsSource = gestion.conversion(gestion._dao.selectReparacion());
                                 }
                             }
                             catch
@@ -341,6 +345,97 @@ namespace GestorClientes
             vAcercaDe.Show();
         }
 
-       
+        //Para preparar el numReparacion de la insercion de reparaciones en caso de que cambie la fecha selecionada
+        private void DpFecha_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dpFecha.SelectedDate != null && cbxDniClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
+            {
+                GestionVM gestion = new GestionVM();
+                if (!gestion._dao.EstadoConexion())
+                {
+                    int numeroDeReparaciones = -1;
+                    gestion._dao.Conectar();
+                    //Buscar numero de registros de en reparaciones con esa misma fecha dni y matricula de reparaciones
+                    numeroDeReparaciones = gestion._dao.selectNumRepara(cbxDniClienteRepaInsert.SelectedItem.ToString(), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
+                    //Si el resultado es 0 o cualquier otro mayor(osea no hay reparaciones en esa fecha para ese cliente y esa matricula o 1 2 etc...) entonces esta sera la numero el resultado +1 p ++ que es lo mismo
+                    numeroDeReparaciones++;
+
+                    tbxNumReparacion.Text = numeroDeReparaciones.ToString();//asignamos el numero de reparacion automaticamente en el textbox sin intervencion de usuario
+                    gestion._dao.Desconectar();
+                }
+            }
+        }
+        //Para preparar el numReparacion de la insercion de reparaciones en caso de que cambie la matricula selecionada
+        private void CbxMatriculaRepaInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dpFecha.SelectedDate != null && cbxDniClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
+            {
+                GestionVM gestion = new GestionVM();
+                if (!gestion._dao.EstadoConexion())
+                {
+
+                    int numeroDeReparaciones = -1;
+                    gestion._dao.Conectar();
+                    //Buscar numero de registros de en reparaciones con esa misma fecha dni y matricula de reparaciones
+                    numeroDeReparaciones = gestion._dao.selectNumRepara(cbxDniClienteRepaInsert.SelectedItem.ToString(), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
+                    //Si el resultado es 0 o cualquier otro mayor(osea no hay reparaciones en esa fecha para ese cliente y esa matricula o 1 2 etc...) entonces esta sera la numero el resultado +1 p ++ que es lo mismo
+                    numeroDeReparaciones++;
+
+                    tbxNumReparacion.Text = numeroDeReparaciones.ToString();//asignamos el numero de reparacion automaticamente en el textbox sin intervencion de usuario
+                    gestion._dao.Desconectar();
+                }
+            }
+        }
+
+
+        //Cuando se cierra la ventana, desconectamos obtenido el objeto del contexto de datos de el grid base de la ventana
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            try
+            {
+                GestionVM g = (GestionVM)gdBase.DataContext;
+                g._dao.Desconectar();
+            }
+            catch
+            {
+                throw new Exception("Fallo al cerrar la aplicacion.");
+            }
+        }
+
+        //Al ponerse a0 el componente tbxInserCorrect es por que la insercion fue correcta y cambia el foco a tblistado 
+        private void TbxInserCorrect_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (int.Parse(tbxInserCorrect.Text) == 0)
+            {
+                tbListado.IsEnabled = true;
+                tbListado.Focus();
+                tbAnadir.IsEnabled = false;
+                
+            }
+        }
+
+        private void TbxModCorrect_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (int.Parse(tbxModCorrect.Text) == 0)
+            {
+                tbListado.IsEnabled = true;
+                tbListado.Focus();
+                tbModificacion.IsEnabled = false;
+            }
+        }
+
+        private void StackPanel_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (spFiltros.IsEnabled)
+            {
+                GestionVM gestion = new GestionVM();
+                if (!gestion._dao.EstadoConexion())
+                {
+                    gestion._dao.Conectar();
+                    cbxfiltroDni.ItemsSource = gestion._dao.selectClienteDni();
+                    gestion._dao.Desconectar();
+                }
+            }
+        }
     }
 }
