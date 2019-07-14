@@ -111,7 +111,7 @@
                         </materialDesign:Card.Background>
                         <StackPanel Name="spFiltros" IsEnabled="{Binding ActivarFiltros}" IsEnabledChanged="StackPanel_IsEnabledChanged">
                             <TextBlock Text="Filtros:" Margin="16 16 12 8" FontSize="16"/>
-                            <DatePicker Name="dtpFiltroCalendario" Margin="16 4 16 0" Foreground="#FFFBF9FD" SelectedDate="{Binding FiltroFecha}"/>
+                            <DatePicker Name="dtpFiltroCalendario" Margin="16 4 16 0" Foreground="#FF040404" SelectedDate="{Binding FiltroFecha}"/>
                             <!--Tipo de filtro-->
                             <RadioButton Name="rbFiltroFecha" Content="Filtrar fecha." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtra reparaciones de una fecha concreta" IsChecked="{Binding FiltrarFechaConcreta}"/>
                             <RadioButton Name="rbFiltroMes" Content="Filtrar un mes." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtrar solo por las reparaciones de un determinado mes" IsChecked="{Binding FiltrarMesFecha}"/>

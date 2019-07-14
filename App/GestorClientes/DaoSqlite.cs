@@ -503,7 +503,7 @@ namespace GestorClientes
         }
 
         //Consultas de filtro:
-        //PROBAR AUN
+
         //Con un DNI selecionado
         public List<Reparacion> selectReparacionFiltroFecha(string dnicliRepa, string fecha)
         {           
@@ -570,7 +570,7 @@ namespace GestorClientes
             return lReparacion;
 
         }
-        //PROBAR AUN
+
         //Con DNI selecioando
         public List<Reparacion> selectReparacionFiltroFechaMes(string dnicliRepa, string fecha)
         {
@@ -642,14 +642,13 @@ namespace GestorClientes
 
         }
 
-        //PENDIENTE DE MODIFICAR AUN
         public double selectReparacionFiltroCalculoMes(string fecha)
         {
             double total = 0;
             //select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where strftime('%m','2019-07-10')= strftime('%m',fecha));
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where strftime('%m','"+fecha+"')= strftime('%m',fecha));";
+            string sql = "select sum((select precio from servicio where codigo=r.codServicio))as total from reparacion r where strftime('%m','"+fecha+"')= strftime('%m',fecha);";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -658,10 +657,8 @@ namespace GestorClientes
             {
                 lector = sqlYconec.ExecuteReader();
                 while (lector.Read())
-                {
-
-                    total = double.Parse(lector["total"].ToString());
-                  
+                {                   
+                     double.TryParse(lector["total"].ToString(),out total);
                 }
                 lector.Close();
             }

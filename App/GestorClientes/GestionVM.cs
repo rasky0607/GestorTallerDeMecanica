@@ -917,8 +917,8 @@ namespace GestorClientes
                     TablaAcltualListada = "cliente";
                     if (Listado.Count == 0)
                         Mensaje = "No clientes registrados actualmente.";
-                    else
-                        Mensaje = "";
+                    /*else
+                        Mensaje = "";*/
                 }
                 catch
                 {
@@ -1190,6 +1190,7 @@ namespace GestorClientes
             FiltrarFechaConcreta = false;
             FiltrarMesFecha = false;
             FiltroFecha = DateTime.Now;
+            ResultadoCalculoTotalMes = 0;
             Listado = conversion(_dao.selectReparacion());
         }
 
