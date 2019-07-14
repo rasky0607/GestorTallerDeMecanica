@@ -334,10 +334,6 @@ namespace GestorClientes
             }
         }
 
-        private void MiMenu_Git_Pablo_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://github.com/rasky0607/");
-        }
 
         private void BtnAcercaDe_Click(object sender, RoutedEventArgs e)
         {
@@ -436,6 +432,11 @@ namespace GestorClientes
                     gestion._dao.Desconectar();
                 }
             }
+        }
+
+        private void MiMenu_Git_Pablo_Click_1(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/rasky0607/");
         }
     }
 }

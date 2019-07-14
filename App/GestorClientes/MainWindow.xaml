@@ -56,7 +56,7 @@
             </MenuItem>
             <MenuItem>
                 <MenuItem.Header>Ayuda</MenuItem.Header>
-                <MenuItem x:Name="MiMenu_Git_Pablo" Header="Rasky0607 (Pablo)" ToolTip="Enlace a Github de el desarrollador.">
+                <MenuItem x:Name="MiMenu_Git_Pablo" Header="Rasky0607 (Pablo)" ToolTip="Enlace a Github de el desarrollador." Click="MiMenu_Git_Pablo_Click_1">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="GithubCircle" Height="19" Width="17" />
                     </MenuItem.Icon>
