@@ -87,8 +87,20 @@ namespace GestorClientes
         string _descripcionMod;
         double _precioMod;
         //No hay Modificacion para reparaciones
-      
+
         #endregion
+            //POR AQUI
+        #region Campos Filtros
+        string _filtroDniSelecionado;
+        DateTime _filtroFecha = DateTime.Now;//Luego hay que tratarla pra que sea diferente ala hora de realizar la consulta con formato 'yyyy-MM-dd'
+        bool _filtrarFechaConcreta;//Filtra reparaciones de una fecha concreta
+        bool _filtrarMesFecha;//Filtra reapraciones de el mes de la fecha selecionada
+        bool _filtrarCalculoTotalMes;//Calcula la suma total de los precio de todos los serivicios realizados en todo el mes ischeckd
+        double _resultadoCalculoTotalMes;
+        string _estadoVisible = "Hidden";//Si _filtrarCalculoTotalMes no es true (osea no esta checkeado) esta propiedad valdra hidden"Es decir ocultara  el lbResultado y tbcResultado de el apartado de filtros"
+        string _estadoVisiblecbxDniFiltro = "Visible"; //Al contrario que  la propiedad _estadoVisible para el componente de resultado del mes.Si _filtrarCalculoTotalMes es falso, entonces _estadoVisiblecbxDniFiltro sera visible,"Es decir el cbxDniFiltros estara visible y su titulo "DNI:" tambien
+        #endregion
+
 
         #endregion
         #region Propiedades
@@ -191,6 +203,140 @@ namespace GestorClientes
                 
             }
         }
+
+        #endregion
+
+        //POR AQUI
+        #region Propiedades Filtros
+        public string FiltroDniSelecionado
+        {
+            get { return _filtroDniSelecionado; }
+
+            set
+            {
+                if (_filtroDniSelecionado != value)
+                {
+                    _filtroDniSelecionado = value;
+                    Notificador("FiltroDniSelecionado");
+                }
+            }
+
+        }
+
+        public DateTime FiltroFecha
+        {
+            get { return _filtroFecha; }
+
+            set
+            {
+                if (_filtroFecha != value)
+                {
+                    _filtroFecha = value;
+                    Notificador("FiltroFecha");
+                }
+            }
+
+        }
+
+        public double ResultadoCalculoTotalMes
+        {
+            get { return _resultadoCalculoTotalMes; }
+
+            set
+            {
+                if (_resultadoCalculoTotalMes != value)
+                {
+                    _resultadoCalculoTotalMes = value;
+                    Notificador("ResultadoCalculoTotalMes");
+                }
+            }
+
+        }
+
+        public string EstadoVisible
+        {
+            get { return _estadoVisible; }
+
+            set
+            {
+                if (_estadoVisible != value)
+                {
+                    _estadoVisible = value;
+                    Notificador("EstadoVisible");
+                }
+            }
+
+        }
+
+        public string EstadoVisiblecbxDniFiltro
+        {
+            get { return _estadoVisiblecbxDniFiltro; }
+
+            set
+            {
+                if (_estadoVisiblecbxDniFiltro != value)
+                {
+                    _estadoVisiblecbxDniFiltro = value;
+                    Notificador("EstadoVisiblecbxDniFiltro");
+                }
+            }
+
+        }
+
+        //Selecion de radioButtons de filtros:
+
+        public bool FiltrarFechaConcreta
+        {
+            get { return _filtrarFechaConcreta; }
+
+            set
+            {
+                if (_filtrarFechaConcreta != value)
+                {
+                    _filtrarFechaConcreta = value;
+                    Notificador("FiltrarFechaConcreta");
+                }
+            }
+        }
+
+        public bool FiltrarMesFecha
+        {
+            get { return _filtrarMesFecha; }
+
+            set
+            {
+                if (_filtrarMesFecha != value)
+                {
+                    _filtrarMesFecha = value;
+                    Notificador("FiltrarMesFecha");
+                }
+            }
+        }
+
+        public bool FiltrarCalculoTotalMes
+        {
+            get { return _filtrarCalculoTotalMes; }
+
+            set
+            {
+                if (_filtrarCalculoTotalMes != value)
+                {
+                    _filtrarCalculoTotalMes = value;
+                    Notificador("FiltrarCalculoTotalMes");
+                    if (_filtrarCalculoTotalMes == true)
+                    {
+                        EstadoVisible = "Visible";
+                        EstadoVisiblecbxDniFiltro = "Hidden";
+                    }
+                    else
+                    {
+                        EstadoVisible = "Hidden";
+                        EstadoVisiblecbxDniFiltro = "Visible";
+                    }
+                }
+            }
+        }
+
 
         #endregion
 
@@ -1037,6 +1183,21 @@ namespace GestorClientes
             #endregion
         }
 
+        private void RestablecerFiltros()
+        {
+            FiltroDniSelecionado = null;
+            FiltrarCalculoTotalMes = false;
+            FiltrarFechaConcreta = false;
+            FiltrarMesFecha = false;
+            FiltroFecha = DateTime.Now;
+        }
+
+        //POR AQUI
+        private void AplicarFiltros()
+        {
+
+        }
+
         #endregion
 
         #region Metodos para propiedades Command de los componentes de la ventana
@@ -1083,6 +1244,16 @@ namespace GestorClientes
         public RelayCommand VolverMod_click
         {
             get { return new RelayCommand(volver => VolverAtrasMod(), volver => true); }
+        }
+
+        public RelayCommand RestablecerFiltros_click
+        {
+            get { return new RelayCommand(restablecerF => RestablecerFiltros(), restablecerF => true); }
+        }
+
+        public RelayCommand AplicarFiltros_click
+        {
+            get { return new RelayCommand(aplicarF => AplicarFiltros(), aplicarF => true); }
         }
 
 
