@@ -1190,12 +1190,27 @@ namespace GestorClientes
             FiltrarFechaConcreta = false;
             FiltrarMesFecha = false;
             FiltroFecha = DateTime.Now;
+            Listado = conversion(_dao.selectReparacion());
         }
 
         //POR AQUI
         private void AplicarFiltros()
         {
+            if (FiltrarFechaConcreta && FiltroDniSelecionado != null)
+                Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroDniSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+            else if(FiltrarFechaConcreta && FiltroDniSelecionado is null)
+                Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
 
+            if (FiltrarMesFecha && FiltroDniSelecionado!=null)
+                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroDniSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+            else if(FiltrarMesFecha && FiltroDniSelecionado is null)
+                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+
+            if (FiltrarCalculoTotalMes)
+            {
+                ResultadoCalculoTotalMes = _dao.selectReparacionFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
+                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+            }
         }
 
         #endregion

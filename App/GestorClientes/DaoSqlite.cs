@@ -504,6 +504,7 @@ namespace GestorClientes
 
         //Consultas de filtro:
         //PROBAR AUN
+        //Con un DNI selecionado
         public List<Reparacion> selectReparacionFiltroFecha(string dnicliRepa, string fecha)
         {           
             List<Reparacion> lReparacion = new List<Reparacion>();            
@@ -536,7 +537,41 @@ namespace GestorClientes
             return lReparacion;
 
         }
+        //Sin DNI selecionado
+        public List<Reparacion> selectReparacionFiltroFecha(string fecha)
+        {
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            string sql = "select numReparacion,dniCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where  fecha='" + fecha + "'";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Reparacion miReparacion = new Reparacion();
+                    miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
+                    miReparacion.DniCliente = lector["dniCliente"].ToString();
+                    miReparacion.MatriCoche = lector["matriCoche"].ToString();
+                    miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    miReparacion.NombreServicio = lector["servicio"].ToString();
+                    miReparacion.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+
+                    lReparacion.Add(miReparacion);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lReparacion;
+
+        }
         //PROBAR AUN
+        //Con DNI selecioando
         public List<Reparacion> selectReparacionFiltroFechaMes(string dnicliRepa, string fecha)
         {
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
@@ -571,14 +606,13 @@ namespace GestorClientes
             return lReparacion;
 
         }
-
-        //PENDIENTE DE MODIFICAR AUN
-        public double selectReparacionFiltroCalculoMes(string dnicliRepa, string fecha)
+        //Sin DNI selecionado
+        public List<Reparacion> selectReparacionFiltroFechaMes(string fecha)
         {
-            //select numReparacion,dniCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            //select strftime('%m','2019-07-10'); Extraemos el mes concreto
+            //select * from reparacion where dniCliente='12365478C' and strftime('%m','2019-07-10')= strftime('%m',fecha);
             List<Reparacion> lReparacion = new List<Reparacion>();
-            //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,dniCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r";
+            string sql = "select numReparacion,dniCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "')";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -604,7 +638,38 @@ namespace GestorClientes
             {
                 throw new Exception(e.Message);
             }
-            return 0;
+            return lReparacion;
+
+        }
+
+        //PENDIENTE DE MODIFICAR AUN
+        public double selectReparacionFiltroCalculoMes(string fecha)
+        {
+            double total = 0;
+            //select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where strftime('%m','2019-07-10')= strftime('%m',fecha));
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            //string sql = "select * from reparacion;";
+            string sql = "select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where strftime('%m','"+fecha+"')= strftime('%m',fecha));";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+
+                    total = double.Parse(lector["total"].ToString());
+                  
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return total;
 
         }
 

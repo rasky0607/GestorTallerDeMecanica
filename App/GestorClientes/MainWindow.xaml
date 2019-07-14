@@ -42,12 +42,6 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem ToolTip="Filtrar últimos repostajes." IsEnabled="{Binding Habilitado}" >
-                <MenuItem.Header>Otros Filtros</MenuItem.Header>
-                <MenuItem Header="Los 10 últimos Repostajes."  ToolTip="Muestra los regístros de los ultimos 10 depostajes guardados."/>
-                <MenuItem Header="Los 30 últimos Repostajes." ToolTip="Muestra los regístros de los ultimos 30 depostajes guardados."/>
-                <MenuItem Name="btnAbrirVentanaBuscarConductor" Header="Buscar respostajes de un conductor concreto." ToolTip="Muestra los regístros de los repostajes relacionado con el nombre de un conductor indicado."/>
-            </MenuItem>
             <MenuItem ToolTip="Muestra una ventana los registros de el indole seleccionado" IsEnabled="{Binding Habilitado}" >
                 <MenuItem.Header>Ver otros registros</MenuItem.Header>
                 <MenuItem Header="Registros de clientes." ToolTip="Muestra los regístro de todos los clientes registrados." Command="{Binding RegistroClientes_click, Mode=OneWay}"/>
@@ -123,10 +117,11 @@
                             <RadioButton Name="rbFiltroMes" Content="Filtrar un mes." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtrar solo por las reparaciones de un determinado mes" IsChecked="{Binding FiltrarMesFecha}"/>
                             <RadioButton Name="rbFiltroCalculoMes"  Content="Calcular total mes." Margin="16,4,0,0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Calcular total ganado con las reparaciones de un mes" IsChecked="{Binding FiltrarCalculoTotalMes}"/>
                             <TextBlock Text="DNI:" Margin="16 16 12 8" FontSize="11" Visibility="{Binding EstadoVisiblecbxDniFiltro}"/>
-                            <ComboBox x:Name="cbxfiltroDni" Background="#FF45A3CF" Margin="18,0,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="118" SelectedItem="{Binding FiltroDniSelecionado}" Visibility="{Binding EstadoVisiblecbxDniFiltro}"/>
+                            <ComboBox x:Name="cbxfiltroDni" Background="#FF45A3CF" Margin="18,0,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="118" SelectedItem="{Binding FiltroDniSelecionado}" Visibility="{Binding EstadoVisiblecbxDniFiltro}" ToolTip="DNI de el cliente por que se desea filtrar."/>
                             <!--Resultado de calculo total mes.-->
                             <Label Name="lbResultado" Content="Resultado: " Margin="12,4,67,0" Visibility="{Binding EstadoVisible}" Height="22" FontSize="10"/>
-                            <TextBlock x:Name="tbcResultado"  Margin="66,-20,0,2" Visibility="{Binding EstadoVisible}" Height="19" FontSize="12" Text="{Binding ResultadoCalculoTotalMes}"/>
+                            <TextBlock x:Name="tbcResultado"  Margin="66,-20,0,2" Visibility="{Binding EstadoVisible}" Height="19" FontSize="12" Text="{Binding ResultadoCalculoTotalMes}" ToolTip="Cantidad total obtenida este mes con las reparaciones realizadas."/>
+                            <TextBlock x:Name="tbcEuro"  Margin="140,-20,0,2" Visibility="{Binding EstadoVisible}" Height="19" FontSize="12" Text="€"/>
 
                             <Separator Style="{StaticResource MaterialDesignLightSeparator}" />
                             <!--Button Aplicar/Quitar filtro-->
