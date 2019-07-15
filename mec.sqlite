@@ -8,7 +8,7 @@ drop table if exists cliente;
 
 
 	create table cliente(
-		idCliente integer UNIQUE not null,		
+		idCliente integer,		
 		nombre text not null,
 		apellidos text default null,
 		tlf integer not null,

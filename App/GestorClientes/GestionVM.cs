@@ -49,7 +49,7 @@ namespace GestorClientes
         string _tablaSelecionada; //tabla selecionada en el combobox de la pestaña añadir
 
         //Datos Añdir Cliente
-        string _dniCliInsert;
+        int _IdCliInsert;
         string _nombreCliInsert;
         string _apellidosCliInsert;
         int _tlfCliInsert;
@@ -62,7 +62,7 @@ namespace GestorClientes
         double _precioInsert;  
 
         //Datos Añadir Reparacion(Convertir Propiedades)
-        string _dniClirepaInsert;//Seleciona un string de un dni de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
+        int _idClirepaInsert;//Seleciona un string de un idCliente de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
         string _matriculaRepaInsert;
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
@@ -80,7 +80,7 @@ namespace GestorClientes
         string _mensajeActualizacion="";
 
         //Datos Modificar Cliente
-        string _dniCliMod;
+        int _idCliMod;//CAMBIADO
         string _nombreCliMod;
         string _apellidosCliMod;
         int _tlfCliMod;
@@ -96,14 +96,14 @@ namespace GestorClientes
         #endregion
             //POR AQUI
         #region Campos Filtros
-        string _filtroDniSelecionado;
+        string _filtroMatriculaSelecionado;
         DateTime _filtroFecha = DateTime.Now;//Luego hay que tratarla pra que sea diferente ala hora de realizar la consulta con formato 'yyyy-MM-dd'
         bool _filtrarFechaConcreta;//Filtra reparaciones de una fecha concreta
         bool _filtrarMesFecha;//Filtra reapraciones de el mes de la fecha selecionada
         bool _filtrarCalculoTotalMes;//Calcula la suma total de los precio de todos los serivicios realizados en todo el mes ischeckd
         double _resultadoCalculoTotalMes;
         string _estadoVisible = "Hidden";//Si _filtrarCalculoTotalMes no es true (osea no esta checkeado) esta propiedad valdra hidden"Es decir ocultara  el lbResultado y tbcResultado de el apartado de filtros"
-        string _estadoVisiblecbxDniFiltro = "Visible"; //Al contrario que  la propiedad _estadoVisible para el componente de resultado del mes.Si _filtrarCalculoTotalMes es falso, entonces _estadoVisiblecbxDniFiltro sera visible,"Es decir el cbxDniFiltros estara visible y su titulo "DNI:" tambien
+        string _estadoVisiblecbxIDFiltro = "Visible"; //Al contrario que  la propiedad _estadoVisible para el componente de resultado del mes.Si _filtrarCalculoTotalMes es falso, entonces _estadoVisiblecbxIDFiltro sera visible,"Es decir el cbxIDFiltros estara visible y su titulo "ID:" tambien
         #endregion
 
 
@@ -210,19 +210,18 @@ namespace GestorClientes
         }
 
         #endregion
-
-        //POR AQUI
+     
         #region Propiedades Filtros
-        public string FiltroDniSelecionado
+        public string FiltroMatriculaSelecionado
         {
-            get { return _filtroDniSelecionado; }
+            get { return _filtroMatriculaSelecionado; }
 
             set
             {
-                if (_filtroDniSelecionado != value)
+                if (_filtroMatriculaSelecionado != value)
                 {
-                    _filtroDniSelecionado = value;
-                    Notificador("FiltroDniSelecionado");
+                    _filtroMatriculaSelecionado = value;
+                    Notificador("FiltroMatriculaSelecionado");
                 }
             }
 
@@ -273,16 +272,16 @@ namespace GestorClientes
 
         }
 
-        public string EstadoVisiblecbxDniFiltro
+        public string EstadoVisiblecbxIDFiltro
         {
-            get { return _estadoVisiblecbxDniFiltro; }
+            get { return _estadoVisiblecbxIDFiltro; }
 
             set
             {
-                if (_estadoVisiblecbxDniFiltro != value)
+                if (_estadoVisiblecbxIDFiltro != value)
                 {
-                    _estadoVisiblecbxDniFiltro = value;
-                    Notificador("EstadoVisiblecbxDniFiltro");
+                    _estadoVisiblecbxIDFiltro = value;
+                    Notificador("EstadoVisiblecbxIDFiltro");
                 }
             }
 
@@ -331,12 +330,12 @@ namespace GestorClientes
                     if (_filtrarCalculoTotalMes == true)
                     {
                         EstadoVisible = "Visible";
-                        EstadoVisiblecbxDniFiltro = "Hidden";
+                        EstadoVisiblecbxIDFiltro = "Hidden";
                     }
                     else
                     {
                         EstadoVisible = "Hidden";
-                        EstadoVisiblecbxDniFiltro = "Visible";
+                        EstadoVisiblecbxIDFiltro = "Visible";
                     }
                 }
             }
@@ -421,15 +420,15 @@ namespace GestorClientes
 
      
         #region Campos Cliente
-        public string DniCliInsert
+        public int IdCliInsert//CAMBIADO
         {
-            get { return _dniCliInsert; }
+            get { return _IdCliInsert; }
             set
             {
-                if (_dniCliInsert != value)
+                if (_IdCliInsert != value)
                 {
-                    _dniCliInsert = value;
-                    Notificador("DniCliInsert");
+                    _IdCliInsert = value;
+                    Notificador("IdCliInsert");
                 }
             }
         }
@@ -544,15 +543,15 @@ namespace GestorClientes
 
         #region Campos Reparacion
 
-        public string DniClirepaInsert
+        public int IdClirepaInsert
         {
-            get { return _dniClirepaInsert; }
+            get { return _idClirepaInsert; }
             set
             {
-                if (_dniClirepaInsert != value)
+                if (_idClirepaInsert != value)
                 {
-                    _dniClirepaInsert = value;
-                    Notificador("DniClirepaInsert");
+                    _idClirepaInsert = value;
+                    Notificador("IdClirepaInsert");
                 }
             }
         }
@@ -694,7 +693,7 @@ namespace GestorClientes
                             case "cliente":
                                 Cliente c = new Cliente();
                                 c = (Cliente)_selecionRegistroAModificar;
-                                DniCliMod = c.Dni;
+                                IdCliMod = c.IdCliente;
                                 NombreCliMod = c.Nombre;
                                 ApellidosCliMod = c.Apellidos;
                                 TlfCliMod = c.Tlf;
@@ -742,15 +741,15 @@ namespace GestorClientes
         //Propiedades de los componentes de la pestaña modificaciones
 
         #region Campos Cliente
-        public string DniCliMod
+        public int IdCliMod//CAMBIADO
         {
-            get { return _dniCliMod; }
+            get { return _idCliMod; }
             set
             {
-                if (_dniCliMod != value)
+                if (_idCliMod != value)
                 {
-                    _dniCliMod = value;
-                    Notificador("DniCliMod");
+                    _idCliMod = value;
+                    Notificador("IdCliMod");
                 }
             }
         }
@@ -984,7 +983,7 @@ namespace GestorClientes
                     switch (TablaSelecionada)
                     {
                         case "cliente":
-                            if (_dao.InsertCliente(DniCliInsert, NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
+                            if (_dao.InsertCliente(NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
                             {
                                 //MensajeInsercion = "Insercion realizada correctamente";
                                 EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
@@ -1012,14 +1011,14 @@ namespace GestorClientes
                             break;
                         case "reparacion":                          
                             CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);
-                            /*Necesario para comprobar el numero de reparacion en el partado de los datos, ya que la comprobacion de CbxDniClienteInsert_SelectionChanged de la clase MainWindow solo afecta ala parte grafica,
+                            /*Necesario para comprobar el numero de reparacion en el partado de los datos, ya que la comprobacion de CbxIdClienteInsert_SelectionChanged de la clase MainWindow solo afecta ala parte grafica,
                             ya que el cambio no consigue activar  una alteracion de el dato de la propiead,de esta forma queda asegurada*/
-                            NumRepaInsert = _dao.selectNumRepara(DniClirepaInsert, MatriculaRepaInsert, FechaRepaInser.ToString("yyyy-MM-dd"));
+                            NumRepaInsert = _dao.selectNumRepara(IdClirepaInsert, MatriculaRepaInsert, FechaRepaInser.ToString("yyyy-MM-dd"));
                             if (NumRepaInsert >= 1)
                                 NumRepaInsert++;
                             else
                                 NumRepaInsert = 1;
-                            if (_dao.InsertReparacion(NumRepaInsert, DniClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser.ToString("yyyy-MM-dd")))
+                            if (_dao.InsertReparacion(NumRepaInsert, IdClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser.ToString("yyyy-MM-dd")))
                             {
                                 //MensajeInsercion = "Insercion realizada correctamente";
                                 EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
@@ -1053,7 +1052,7 @@ namespace GestorClientes
                         case "cliente":
                             Cliente c = new Cliente();
                             c = (Cliente)SelecionRegistroAModificar;
-                            if (_dao.UpdateCliente(c.IdCliente, DniCliMod, NombreCliMod, ApellidosCliMod, TlfCliMod, MatriculaMod, MarcaMod, ModeloMod))
+                            if (_dao.UpdateCliente(c.IdCliente, NombreCliMod, ApellidosCliMod, TlfCliMod, MatriculaMod, MarcaMod, ModeloMod))
                             {
                                 EsCorrectoMod = 0;//es correcto  la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
                                 //Mensaje = "Actualizacion realizada con exito";
@@ -1063,7 +1062,7 @@ namespace GestorClientes
                                 Listado = conversion(_dao.selectCliente());
                                 EsCorrectoMod = -1;
                                 //Limpieza por si vuelve clicar en el mismo registro para m odificar justo despues de haberlo hecho antes:
-                                DniCliMod = string.Empty;
+                                IdCliMod = 0;
                                 NombreCliMod = string.Empty;
                                 ApellidosCliMod = string.Empty;
                                 TlfCliMod= 0;
@@ -1137,7 +1136,7 @@ namespace GestorClientes
             #region Limpieza de propiedades
             //Cliente
             MensajeInsercion = string.Empty;
-            DniCliInsert = string.Empty;
+            IdCliInsert = 0;
             NombreCliInsert = string.Empty;
             ApellidosCliInsert = string.Empty;
             MatriculaInsert = string.Empty;
@@ -1150,7 +1149,7 @@ namespace GestorClientes
             PrecioInsert = 0;
 
             //Reparacion
-            DniClirepaInsert = string.Empty;
+            IdClirepaInsert = 0;
             MatriculaRepaInsert = string.Empty;
             ServicioRepa = string.Empty;
             FechaRepaInser = DateTime.Now;
@@ -1169,7 +1168,7 @@ namespace GestorClientes
             #region Limpieza de propiedades
             //Cliente
             MensajeActualizacion = string.Empty;
-            DniCliMod = string.Empty;
+            IdCliMod = 0;
             NombreCliMod = string.Empty;
             ApellidosCliMod = string.Empty;
             MatriculaMod = string.Empty;
@@ -1190,7 +1189,7 @@ namespace GestorClientes
 
         private void RestablecerFiltros()
         {
-            FiltroDniSelecionado = null;
+            FiltroMatriculaSelecionado = null;
             FiltrarCalculoTotalMes = false;
             FiltrarFechaConcreta = false;
             FiltrarMesFecha = false;
@@ -1202,14 +1201,14 @@ namespace GestorClientes
         //POR AQUI
         private void AplicarFiltros()
         {
-            if (FiltrarFechaConcreta && FiltroDniSelecionado != null)
-                Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroDniSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
-            else if(FiltrarFechaConcreta && FiltroDniSelecionado is null)
+            if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null)
+                Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+            else if(FiltrarFechaConcreta && FiltroMatriculaSelecionado is null)
                 Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
 
-            if (FiltrarMesFecha && FiltroDniSelecionado!=null)
-                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroDniSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
-            else if(FiltrarMesFecha && FiltroDniSelecionado is null)
+            if (FiltrarMesFecha && FiltroMatriculaSelecionado != null)
+                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+            else if(FiltrarMesFecha && FiltroMatriculaSelecionado is null)
                 Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
 
             if (FiltrarCalculoTotalMes)
@@ -1374,7 +1373,7 @@ namespace GestorClientes
 1-> controlar que la propiedad _tlfInsert en su textbox correspondiente
 no pueda añadirse otra cosa que no sean numeros.
 2-> Intentar que al actualizar un registro la pestaba tbModificaciones devuelva el foco a tbListado
-3-> Comprobar detalles  de insercion o modificacion como que en la tabla cliente que ni el dni ni la matricula esten vacios
+3-> Comprobar detalles  de insercion o modificacion como que en la tabla cliente que ni el idCliente ni la matricula esten vacios
 y especificarlo en caso de fallo,el numero d tlf solo puede ser un campo  numerico.
 En la tabla servicios a la hora de insertar la descripcion no puede tener numeros ni el precio letras.
 4-> filtros.
@@ -1394,8 +1393,8 @@ En la tabla servicios a la hora de insertar la descripcion no puede tener numero
 
 
 //Extras:
-1-Control de DniClientes solo puede tener una letra y debe ser el ultimo caracter "controlar en codigo o en un trigger de la BD"
-2-Controlar  insercion de fechas pasadas
+1-Numero de tlf , este campo solo admite numeros de una determinada longitud
+2-Campo precio solo admite numeros 
 
 
 

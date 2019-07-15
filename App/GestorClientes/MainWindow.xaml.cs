@@ -67,7 +67,7 @@ namespace GestorClientes
                     {
                         gestion._dao.Conectar();
                         cbxServicioInsert.ItemsSource = gestion._dao.selectServicioDescripcion();
-                        cbxDniClienteRepaInsert.ItemsSource = gestion._dao.selectClienteDni();
+                        cbxIDClienteRepaInsert.ItemsSource = gestion._dao.selectClienteIdCliente();
                         gestion._dao.Desconectar();
                     }
                     //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
@@ -78,37 +78,38 @@ namespace GestorClientes
                 gridClienteInsert.Visibility = Visibility.Hidden;
                 gridServicioInsert.Visibility = Visibility.Hidden;
                 gridReparacionInsert.Visibility = Visibility.Hidden;
-                cbxDniClienteRepaInsert.ItemsSource = null;
+                cbxIDClienteRepaInsert.ItemsSource = null;
                 cbxMatriculaRepaInsert.ItemsSource = null;
                 cbxServicioInsert.ItemsSource = null;
             }
         }
 
-        //Dado un Dni de un cliente selecionado, rellena el cbxMatriculaInsert con la coleccion de matriculas disponibles para ese cliente
-        //Y  Para preaprar el numReparacion de forma automatica dada una fecha un dniCliente y una matricula en caso de que cambie el DniCliente selecionado
-        private void CbxDniClienteInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //Dado un idCliente de un cliente selecionado, rellena el cbxMatriculaInsert con la coleccion de matriculas disponibles para ese cliente
+        //Y  Para preaprar el numReparacion de forma automatica dada una fecha un idCliente y una matricula en caso de que cambie el idCliente selecionado
+        private void CbxIdClienteInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             GestionVM gestion = new GestionVM();
             if (!gestion._dao.EstadoConexion())
             {
-                if (cbxDniClienteRepaInsert.SelectedItem != null)
+                if (cbxIDClienteRepaInsert.SelectedItem != null)
                 {
                     gestion._dao.Conectar();
-                    cbxMatriculaRepaInsert.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteRepaInsert.SelectedItem.ToString());
+                    cbxMatriculaRepaInsert.ItemsSource = gestion._dao.selectClienteMatricula(int.Parse(cbxIDClienteRepaInsert.SelectedItem.ToString()));
+                    tbxNombreClienteReparacion.Text = gestion._dao.selectClienteNombre(int.Parse(cbxIDClienteRepaInsert.SelectedItem.ToString()));
                     gestion._dao.Desconectar();
                 }
             }
 
-            //Para preaprar el numReparacion de forma automatica dada una fecha un dniCliente y una matricula en caso de que cambie el DniCliente selecionado
-            if (dpFecha.SelectedDate != null && cbxDniClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
+            //Para preaprar el numReparacion de forma automatica dada una fecha un idCliente y una matricula en caso de que cambie el idCliente selecionado
+            if (dpFecha.SelectedDate != null && cbxIDClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
             {
                 if (!gestion._dao.EstadoConexion())
                 {
 
                     int numeroDeReparaciones = -1;
                     gestion._dao.Conectar();
-                    //Buscar numero de registros de en reparaciones con esa misma fecha dni y matricula de reparaciones
-                    numeroDeReparaciones = gestion._dao.selectNumRepara(cbxDniClienteRepaInsert.SelectedItem.ToString(), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
+                    //Buscar numero de registros de en reparaciones con esa misma fecha idCliente y matricula de reparaciones
+                    numeroDeReparaciones = gestion._dao.selectNumRepara(int.Parse(cbxIDClienteRepaInsert.SelectedItem.ToString()), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
                     //Si el resultado es 0 o cualquier otro mayor(osea no hay reparaciones en esa fecha para ese cliente y esa matricula o 1 2 etc...) entonces esta sera la numero el resultado +1 p ++ que es lo mismo
                     numeroDeReparaciones++;
 
@@ -144,25 +145,15 @@ namespace GestorClientes
             tbAnadir.IsEnabled = true;
             tbListado.IsEnabled = false;
             tbAnadir.Focus();
+            //Vaciar todos los componentes de la pestaña insertar (de todas las tablas)
+            LimpiezaDeTextoEnCompoentesDeInsercion();
 
         }
         #endregion
 
 
         #region Modificaciones de registros
-        private void CbxDniClienteMod_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            GestionVM gestion = new GestionVM();
-            if (!gestion._dao.EstadoConexion())
-            {
-                if (cbxDniClienteRepaMod.SelectedItem != null)
-                {
-                    gestion._dao.Conectar();
-                    cbxMatriculaRepaMod.ItemsSource = gestion._dao.selectClienteMatricula(cbxDniClienteRepaMod.SelectedItem.ToString());
-                    gestion._dao.Desconectar();
-                }
-            }
-        }
+       
 
         private void BtnEditar_Click(object sender, RoutedEventArgs e)
         {
@@ -176,7 +167,6 @@ namespace GestorClientes
                         tbModificacion.IsEnabled = true;
                         tbModificacion.Focus();
                         gridClienteMod.Visibility = Visibility.Visible;
-                        gridReparacionMod.Visibility = Visibility.Hidden;
                         gridServicioMod.Visibility = Visibility.Hidden;
                         break;
 
@@ -185,7 +175,6 @@ namespace GestorClientes
                         tbModificacion.IsEnabled = true;
                         tbModificacion.Focus();
                         gridClienteMod.Visibility = Visibility.Hidden;
-                        gridReparacionMod.Visibility = Visibility.Hidden;
                         gridServicioMod.Visibility = Visibility.Visible;
                         break;
 
@@ -260,7 +249,7 @@ namespace GestorClientes
                                 {
                                     Cliente c = new Cliente();
                                     c = (Cliente)dtgDatos.SelectedItems[i];
-                                    if (gestion._dao.DeleteCliente(c.Dni, c.Matricula))
+                                    if (gestion._dao.DeleteCliente(c.IdCliente, c.Matricula))
                                         regisCliborradoconExito++;
                                 }
                                 if (regisCliborradoconExito == dtgDatos.SelectedItems.Count)
@@ -307,7 +296,7 @@ namespace GestorClientes
                                 {
                                     Reparacion r = new Reparacion();
                                     r = (Reparacion)dtgDatos.SelectedItems[i];
-                                    if (gestion._dao.DeleteReparacion(r.NumReparacion, r.DniCliente, r.MatriCoche, r.Fecha))
+                                    if (gestion._dao.DeleteReparacion(r.NumReparacion, r.IdCliente, r.MatriCoche, r.Fecha))
                                         regisRepaborradoconExito++;
                                 }
                                 if (regisRepaborradoconExito == dtgDatos.SelectedItems.Count)
@@ -344,15 +333,15 @@ namespace GestorClientes
         //Para preparar el numReparacion de la insercion de reparaciones en caso de que cambie la fecha selecionada
         private void DpFecha_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dpFecha.SelectedDate != null && cbxDniClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
+            if (dpFecha.SelectedDate != null && cbxIDClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
             {
                 GestionVM gestion = new GestionVM();
                 if (!gestion._dao.EstadoConexion())
                 {
                     int numeroDeReparaciones = -1;
                     gestion._dao.Conectar();
-                    //Buscar numero de registros de en reparaciones con esa misma fecha dni y matricula de reparaciones
-                    numeroDeReparaciones = gestion._dao.selectNumRepara(cbxDniClienteRepaInsert.SelectedItem.ToString(), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
+                    //Buscar numero de registros de en reparaciones con esa misma fecha idCliente y matricula de reparaciones
+                    numeroDeReparaciones = gestion._dao.selectNumRepara(int.Parse(cbxIDClienteRepaInsert.SelectedItem.ToString()), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
                     //Si el resultado es 0 o cualquier otro mayor(osea no hay reparaciones en esa fecha para ese cliente y esa matricula o 1 2 etc...) entonces esta sera la numero el resultado +1 p ++ que es lo mismo
                     numeroDeReparaciones++;
 
@@ -364,7 +353,7 @@ namespace GestorClientes
         //Para preparar el numReparacion de la insercion de reparaciones en caso de que cambie la matricula selecionada
         private void CbxMatriculaRepaInsert_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dpFecha.SelectedDate != null && cbxDniClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
+            if (dpFecha.SelectedDate != null && cbxIDClienteRepaInsert.SelectedItem != null && cbxMatriculaRepaInsert.SelectedItem != null)
             {
                 GestionVM gestion = new GestionVM();
                 if (!gestion._dao.EstadoConexion())
@@ -372,8 +361,8 @@ namespace GestorClientes
 
                     int numeroDeReparaciones = -1;
                     gestion._dao.Conectar();
-                    //Buscar numero de registros de en reparaciones con esa misma fecha dni y matricula de reparaciones
-                    numeroDeReparaciones = gestion._dao.selectNumRepara(cbxDniClienteRepaInsert.SelectedItem.ToString(), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
+                    //Buscar numero de registros de en reparaciones con esa misma fecha idCliente y matricula de reparaciones
+                    numeroDeReparaciones = gestion._dao.selectNumRepara(int.Parse(cbxIDClienteRepaInsert.SelectedItem.ToString()), cbxMatriculaRepaInsert.SelectedItem.ToString(), dpFecha.SelectedDate.ToString());
                     //Si el resultado es 0 o cualquier otro mayor(osea no hay reparaciones en esa fecha para ese cliente y esa matricula o 1 2 etc...) entonces esta sera la numero el resultado +1 p ++ que es lo mismo
                     numeroDeReparaciones++;
 
@@ -428,7 +417,7 @@ namespace GestorClientes
                 if (!gestion._dao.EstadoConexion())
                 {
                     gestion._dao.Conectar();
-                    cbxfiltroDni.ItemsSource = gestion._dao.selectClienteDni();
+                    cbxfiltroMatriculaCoche.ItemsSource = gestion._dao.selectMatriculasCocheClientes();
                     gestion._dao.Desconectar();
                 }
             }
@@ -438,5 +427,29 @@ namespace GestorClientes
         {
             Process.Start("https://github.com/rasky0607/");
         }
+
+
+        private void LimpiezaDeTextoEnCompoentesDeInsercion()
+        {
+            //Cliente
+            tbxnombre.Text = string.Empty;
+            tbxapellidos.Text = string.Empty;
+            tbxtlf.Text = string.Empty;
+            tbxMatricula.Text = string.Empty;
+            tbxModelo.Text = string.Empty;
+            tbxMarca.Text = string.Empty;
+            //Servicio
+            tbxDescripcion.Text = string.Empty;
+            tbxPrecio.Text = string.Empty;
+            //Reparacion
+            cbxIDClienteRepaInsert.SelectedItem = 0;
+            cbxMatriculaRepaInsert.SelectedItem = null;
+            cbxServicioInsert.SelectedItem = null;
+            dpFecha.SelectedDate = DateTime.Now;
+            tbxNumReparacion.Text = "1";
+            tbxNombreClienteReparacion.Text = string.Empty;
+
+        }
+
     }
 }

@@ -10,7 +10,6 @@ namespace GestorClientes
     {
         //Campos
         private int _idCliente;
-        private string _dni;
         private string _nombre;
         private string _apellidos;
         private int _tlf;
@@ -23,7 +22,6 @@ namespace GestorClientes
 
         //Propiedades
         public int IdCliente { get => _idCliente; set => _idCliente = value; }
-        public string Dni { get => _dni; set => _dni = value; }
         public string Nombre { get => _nombre; set => _nombre = value; }
         public string Apellidos { get => _apellidos; set => _apellidos = value; }
         public int Tlf { get => _tlf; set => _tlf = value; }
