@@ -9,6 +9,8 @@ using System.Data.SQLite;
 using System.Collections;
 
 
+
+
 namespace GestorClientes
 {
     class DaoSqlite
@@ -342,7 +344,7 @@ namespace GestorClientes
                     #endregion
                     //Insercion
                     string sql;
-                    sql = "INSERT INTO cliente (idCliente,dni,nombre,apellidos,tlf,matricula,marca,modelo) values ("+idCliente+",'" + dni + "','" + nombre + "','" + apellidos + "'," + tlf + ",'" + matricula + "','" + marca + "','" + modelo + "');";
+                    sql = "INSERT INTO cliente (idCliente,dni,nombre,apellidos,tlf,matricula,marca,modelo) values ("+idCliente+",'" + dni + "','" + nombre.ToUpper() + "','" + apellidos.ToUpper() + "'," + tlf + ",'" + matricula.ToUpper() + "','" + marca.ToUpper() + "','" + modelo.ToUpper() + "');";
                     SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                     cmd.ExecuteNonQuery();
                 }
@@ -362,7 +364,7 @@ namespace GestorClientes
                 if (descripcion is null || descripcion== " " || precio <0)
                     throw new Exception();
                 string sql;
-                sql = "INSERT INTO servicio (descripcion,precio) values ('" + descripcion + "'," + precio + ")";
+                sql = "INSERT INTO servicio (descripcion,precio) values ('" + descripcion.ToUpper() + "'," + precio + ")";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }
@@ -405,7 +407,7 @@ namespace GestorClientes
                     //update cliente set nombre='Fran',apellidos='Lanzat' where idCliente=1;
                     //Actualizacion
                     string sql;
-                    sql = "update cliente set dni='"+dni+"',nombre='"+nombre+"',apellidos='"+apellidos+"',tlf="+tlf+",matricula='"+matricula+"',marca='"+marca+"',modelo='"+modelo+"' where idCliente="+idCliente+"";
+                    sql = "update cliente set dni='"+dni+"',nombre='"+nombre.ToUpper() + "',apellidos='"+apellidos.ToUpper() + "',tlf="+tlf+",matricula='"+matricula.ToUpper() + "',marca='"+marca.ToUpper() + "',modelo='"+modelo.ToUpper() + "' where idCliente="+idCliente+"";
                     SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                     cmd.ExecuteNonQuery();
                 }
@@ -429,7 +431,7 @@ namespace GestorClientes
                   
                     //Actualizacion
                     string sql;
-                   sql = "update servicio set descripcion='"+descripcion+"',precio="+precio+" where codigo="+codiServicio+"";
+                   sql = "update servicio set descripcion='"+descripcion.ToUpper() + "',precio="+precio+" where codigo="+codiServicio+"";
                     SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                     cmd.ExecuteNonQuery();
                 }

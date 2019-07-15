@@ -8,6 +8,11 @@ using System.ComponentModel;
 using System.Windows;
 using System.Data.SQLite;
 using System.Threading;
+//PFD y Factuas
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text.html;
+using iTextSharp.text.html.simpleparser;
 
 namespace GestorClientes
 {
@@ -1051,7 +1056,7 @@ namespace GestorClientes
                             if (_dao.UpdateCliente(c.IdCliente, DniCliMod, NombreCliMod, ApellidosCliMod, TlfCliMod, MatriculaMod, MarcaMod, ModeloMod))
                             {
                                 EsCorrectoMod = 0;//es correcto  la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
-                                Mensaje = "Actualizacion realizada con exito";
+                                //Mensaje = "Actualizacion realizada con exito";
                                 //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
                                 Thread h1 = new Thread(new ThreadStart(MensajeInformacionModCorrec));
                                 h1.Start();
@@ -1075,7 +1080,7 @@ namespace GestorClientes
                             if (_dao.UpdateServicio(s.Codigo,DescripcionMod,PrecioMod))
                             {
                                 EsCorrectoMod = 0;//es correcta la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
-                                MensajeActualizacion = "Actualizacion realizada con exito";
+                               // MensajeActualizacion = "Actualizacion realizada con exito";
                                 //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
                                 Thread h1 = new Thread(new ThreadStart(MensajeInformacionModCorrec));
                                 h1.Start();

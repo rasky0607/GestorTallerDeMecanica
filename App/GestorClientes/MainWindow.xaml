@@ -29,14 +29,14 @@
                     <GradientStop Color="#FF45A3CF" Offset="1"/>
                 </LinearGradientBrush>
             </Menu.Background>
-            <MenuItem ToolTip="Exportar documentos." IsEnabled="{Binding Habilitado}">
+            <MenuItem ToolTip="Exportar documentos." IsEnabled="{Binding Habilitado}" Visibility="Collapsed">
                 <MenuItem.Header>Archivo</MenuItem.Header>
-                <MenuItem Header="Exportar listado a formato PDF.">
+                <MenuItem Header="Exportar listado a formato PDF." IsEnabled="False">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="FilePdf" Height="16" Width="19" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Exportar listado a formato CSV.">
+                <MenuItem Header="Exportar listado a formato CSV." IsEnabled="False">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="FileCsv" Height="16" Width="19" />
                     </MenuItem.Icon>
@@ -85,13 +85,6 @@
                             <GradientStop Color="#FFCFECDB" Offset="1"/>
                         </LinearGradientBrush>
                     </Grid.Background>
-                    <Image HorizontalAlignment="Right" Margin="0,0,10,10" Width="174" Stretch="Fill" Height="98" VerticalAlignment="Bottom" Grid.Column="1"/>
-                    <!--Barra de carga oculta mientras no se de a conectar o algun filtrar-->
-                    <ProgressBar Name="progressBar"  Visibility="Hidden"
-                     Style="{StaticResource MaterialDesignCircularProgressBar}"
-                     Value="0"
-                    IsIndeterminate="True" Height="31" Margin="61,0,404,10" Width="28" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Foreground="#FF45A3CF" Grid.Column="1" />
-
 
                     <!--Boton conectar/Desconectar-->
                     <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}"/>
@@ -159,6 +152,10 @@
                         </StackPanel>
                     </materialDesign:PopupBox>
                     <Label Name="lbmensaje" HorizontalAlignment="Left" Margin="219,0,0,25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419" Content="{Binding Mensaje}"/>
+
+                    <Button x:Name="btnFactura" Background="#FF45A3CF"  ToolTip="Extraer factura"  Margin="0,323,15,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" IsEnabled="False">
+                        <materialDesign:PackIcon Kind="FilePdf" Height="20" Width="20" />
+                    </Button>
 
                 </Grid>
 
@@ -294,9 +291,9 @@
 
             </TabItem>
 
-
-
         </TabControl>
+
+        <!--Pendiente Kind="FilePdf"-->
 
     </Grid>
 </Window>

@@ -74,3 +74,5 @@ E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\Syste
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GeneratedInternalTypeHelper.g.cs
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\AcercaDe.g.cs
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\AcercaDe.baml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\itextsharp.dll
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\itextsharp.xml
