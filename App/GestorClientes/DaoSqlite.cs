@@ -679,7 +679,7 @@ namespace GestorClientes
             //select numReparacion,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='2218CL' and strftime('%m',fecha)=strftime('%m','2019-06-01');
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and strftime('%m',fecha)=strftime('%m','" + fecha + "')";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matriculaCoche+"' and strftime('%m',fecha)=strftime('%m','"+fecha+"');";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matriculaCoche+ "' and strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "')";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -717,7 +717,7 @@ namespace GestorClientes
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
             //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "')";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -821,12 +821,13 @@ namespace GestorClientes
 
         }
 
+        //PROBAR
         public List<Reparacion> selectReparacionUnIdCliUnaMatriculaEnMes(string matricula, int idCliente,string fecha)
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  strftime('%m',fecha)=strftime('%m','" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "')";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -857,12 +858,13 @@ namespace GestorClientes
 
         }
 
+        //PROBAR
         public List<Reparacion> selectReparacionUnIdCliUnaMatriculaEnFecha(string matricula, int idCliente, string fecha)
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "'";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -901,7 +903,7 @@ namespace GestorClientes
             //select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where strftime('%m','2019-07-10')= strftime('%m',fecha));
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select sum((select precio from servicio where codigo=r.codServicio))as total from reparacion r where strftime('%m','"+fecha+"')= strftime('%m',fecha);";
+            string sql = "select sum((select precio from servicio where codigo=r.codServicio))as total from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "')";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;

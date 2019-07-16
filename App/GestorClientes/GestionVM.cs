@@ -1281,7 +1281,7 @@ namespace GestorClientes
 
             //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
             if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
-                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
 
             if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
                 Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));

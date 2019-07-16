@@ -8,15 +8,14 @@ drop table if exists cliente;
 
 
 	create table cliente(
-		idCliente integer UNIQUE not null,					
-		dni text,
+		idCliente integer UNIQUE not null,		
 		nombre text not null,
 		apellidos text default null,
 		tlf integer not null,
 		matricula text,
 		marca text default null,
 		modelo text default null,
-		primary key(dni,matricula)
+		primary key(idCliente,matricula)
 		);
 	create table servicio(
 		codigo integer primary key AUTOINCREMENT,
@@ -26,18 +25,18 @@ drop table if exists cliente;
 
 	create table reparacion(
 		numReparacion integer,
-		dniCliente text,
+		idCliente integer,
 		matriCoche text,
 		codServicio integer,
 		fecha text,
-		primary key(numReparacion,dniCliente,matriCoche,fecha),
-		foreign key (dniCliente,matriCoche) references cliente (dni,matricula) on update cascade on delete restrict,
+		primary key(numReparacion,idCliente,matriCoche,fecha),
+		foreign key (idCliente,matriCoche) references cliente (idCliente,matricula) on update cascade on delete restrict,
 		foreign key (codServicio) references servicio (codigo) on update cascade on delete restrict
 		);
 
-		insert into cliente values(1,'12345678A','Francisco','Lanzat','638023928','2218CL','Nissan','SERENA');
-		insert into cliente values(2,'87654321B','Pablo','Lopez','634023227','1700JPG','OPEL','Corsa');
-		insert into cliente values(3,'12365478C','Oscar','Castro','628025178','2019OPL','Suzuki','MIERDER');
+		insert into cliente values(1,'Francisco','Lanzat','638023928','2218CL','Nissan','SERENA');
+		insert into cliente values(2,'Pablo','Lopez','634023227','1700JPG','OPEL','Corsa');
+		insert into cliente values(3,'Oscar','Castro','628025178','2019OPL','Suzuki','MIERDER');
 
 		insert into servicio values(1,'Mano de obra',15);
 		insert into servicio values(2,'aceite',20);
@@ -46,7 +45,7 @@ drop table if exists cliente;
 		insert into servicio values(5,'Pastillas de freno',30);
 		insert into servicio values(6,'Liquido de freno',25);
 
-		insert into reparacion values(1,'12345678A','2218CL',4,'2019-06-01');
-		insert into reparacion values(2,'12345678A','2218CL',3,'2019-06-01');
-		insert into reparacion values(1,'87654321B','1700JPG',5,'2019-02-21');
-		insert into reparacion values(1,'12365478C','2019OPL',6,'2019-03-19');
+		insert into reparacion values(1,1,'2218CL',4,'2019-06-01');
+		insert into reparacion values(2,1,'2218CL',3,'2019-06-01');
+		insert into reparacion values(1,2,'1700JPG',5,'2019-02-21');
+		insert into reparacion values(1,3,'2019OPL',6,'2019-03-19');
