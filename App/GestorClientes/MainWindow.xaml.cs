@@ -216,13 +216,17 @@ namespace GestorClientes
             {
                 if (dtgDatos.Columns.Count >= 4)//Cuando el numero total de columnas del datagris es mayor o igual que 4
                 {
-                    if (dtgDatos.Columns[3].Header is "CodServicio")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
+                    if (dtgDatos.Columns[4].Header is "CodServicio")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
                     {
-                        dtgDatos.Columns[3].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
+                        dtgDatos.Columns[4].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
                     }
                     if (dtgDatos.Columns[0].Header is "IdCliente")
                     {
                         dtgDatos.Columns[0].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna IdCliente cuando esta aparece(en este caso solo ocurre cuando listamos la tabla clientes)                                 
+                    }
+                    if (dtgDatos.Columns[1].Header is "IdCliente")
+                    {
+                        dtgDatos.Columns[1].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna IdCliente cuando esta aparece(en este caso solo ocurre cuando listamos la tabla clientes)                                 
                     }
                 }
             }
@@ -451,5 +455,6 @@ namespace GestorClientes
 
         }
 
+      
     }
 }

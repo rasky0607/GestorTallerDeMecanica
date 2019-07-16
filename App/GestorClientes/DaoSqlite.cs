@@ -86,7 +86,7 @@ namespace GestorClientes
             return lClientes;
 
         }
-        //CAMBIADO
+
         public List<string> selectClienteIdCliente()
         {
             List<string> lClientes = new List<string>();
@@ -112,7 +112,6 @@ namespace GestorClientes
 
         }
         
-        //CAMBIADO
         public List<string> selectClienteMatricula(int idCliente)
         {
             List<string> listMatricula = new List<string>();
@@ -166,13 +165,13 @@ namespace GestorClientes
 
         }
 
-        //CAMBIADO
+       
         public List<Reparacion> selectReparacion()
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -185,6 +184,7 @@ namespace GestorClientes
                     Reparacion miReparacion = new Reparacion();
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -539,6 +539,7 @@ namespace GestorClientes
         //Consultas de filtro:
         //------------------------//
 
+            //Preparacion Filtros
         public List<string> selectMatriculasCocheClientes()
         {
             List<string> listMatricula = new List<string>();
@@ -566,13 +567,43 @@ namespace GestorClientes
 
         }
 
+        //Dada una matricula, IdCliente de clientes relacionada con ella
+        public List<int> selectIdClienteClientes(string matricula)
+        {
+            List<int> listIdCliente = new List<int>();
+            string sql = "select idCliente from cliente where matricula='"+matricula+"'";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Cliente cli = new Cliente();
+                    cli.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    listIdCliente.Add(cli.IdCliente);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return listIdCliente;
+
+        }
+
+        //----------//
+
 
         //Con un idCliente selecionado
         //CAMBIADO
         public List<Reparacion> selectReparacionFiltroFecha(string matriculaCoche, string fecha)
         {           
             List<Reparacion> lReparacion = new List<Reparacion>();            
-            string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and fecha='"+fecha+"'";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and fecha='"+fecha+"'";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -585,6 +616,7 @@ namespace GestorClientes
                     Reparacion miReparacion = new Reparacion();
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -607,7 +639,7 @@ namespace GestorClientes
         public List<Reparacion> selectReparacionFiltroFecha(string fecha)
         {
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where  fecha='" + fecha + "'";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where  fecha='" + fecha + "'";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -620,6 +652,7 @@ namespace GestorClientes
                     Reparacion miReparacion = new Reparacion();
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -643,8 +676,10 @@ namespace GestorClientes
         {
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
             //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
+            //select numReparacion,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='2218CL' and strftime('%m',fecha)=strftime('%m','2019-06-01');
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and strftime('%m',fecha)=strftime('%m','" + fecha + "')";
+            //string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and strftime('%m',fecha)=strftime('%m','" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matriculaCoche+"' and strftime('%m',fecha)=strftime('%m','"+fecha+"');";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -657,6 +692,7 @@ namespace GestorClientes
                     Reparacion miReparacion = new Reparacion();
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -681,7 +717,7 @@ namespace GestorClientes
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
             //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "')";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -694,6 +730,7 @@ namespace GestorClientes
                     Reparacion miReparacion = new Reparacion();
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -710,6 +747,153 @@ namespace GestorClientes
             return lReparacion;
 
         }
+
+        public List<Reparacion> selectReparacion(string matricula)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            //string sql = "select * from reparacion;";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matricula+"'";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Reparacion miReparacion = new Reparacion();
+                    miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
+                    miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.MatriCoche = lector["matriCoche"].ToString();
+                    miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    miReparacion.NombreServicio = lector["servicio"].ToString();
+                    miReparacion.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+
+                    lReparacion.Add(miReparacion);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lReparacion;
+
+        }
+
+        //PROBAR
+        public List<Reparacion> selectReparacionUnIdCliUnaMatricula(string matricula, int idCliente)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            //string sql = "select * from reparacion;";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente="+idCliente+" and matriCoche='"+matricula+"'";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Reparacion miReparacion = new Reparacion();
+                    miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
+                    miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.MatriCoche = lector["matriCoche"].ToString();
+                    miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    miReparacion.NombreServicio = lector["servicio"].ToString();
+                    miReparacion.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+
+                    lReparacion.Add(miReparacion);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lReparacion;
+
+        }
+
+        public List<Reparacion> selectReparacionUnIdCliUnaMatriculaEnMes(string matricula, int idCliente,string fecha)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  strftime('%m',fecha)=strftime('%m','" + fecha + "')";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Reparacion miReparacion = new Reparacion();
+                    miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
+                    miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.MatriCoche = lector["matriCoche"].ToString();
+                    miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    miReparacion.NombreServicio = lector["servicio"].ToString();
+                    miReparacion.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+
+                    lReparacion.Add(miReparacion);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lReparacion;
+
+        }
+
+        public List<Reparacion> selectReparacionUnIdCliUnaMatriculaEnFecha(string matricula, int idCliente, string fecha)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "')";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Reparacion miReparacion = new Reparacion();
+                    miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
+                    miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.MatriCoche = lector["matriCoche"].ToString();
+                    miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    miReparacion.NombreServicio = lector["servicio"].ToString();
+                    miReparacion.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+
+                    lReparacion.Add(miReparacion);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lReparacion;
+
+        }
+
+        //------------//
 
         public double selectReparacionFiltroCalculoMes(string fecha)
         {
@@ -738,6 +922,7 @@ namespace GestorClientes
             return total;
 
         }
+
 
 
     }

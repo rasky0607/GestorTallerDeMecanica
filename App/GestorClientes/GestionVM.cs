@@ -104,6 +104,10 @@ namespace GestorClientes
         double _resultadoCalculoTotalMes;
         string _estadoVisible = "Hidden";//Si _filtrarCalculoTotalMes no es true (osea no esta checkeado) esta propiedad valdra hidden"Es decir ocultara  el lbResultado y tbcResultado de el apartado de filtros"
         string _estadoVisiblecbxIDFiltro = "Visible"; //Al contrario que  la propiedad _estadoVisible para el componente de resultado del mes.Si _filtrarCalculoTotalMes es falso, entonces _estadoVisiblecbxIDFiltro sera visible,"Es decir el cbxIDFiltros estara visible y su titulo "ID:" tambien
+        List<int> _filtroListIdCliente;//Coleccion de IdCliente que llenaran el itemSource de el filtro ID de Cliente
+        string _filtroIDClienteSelecionado;
+        int _filtroSelectIndexIdCliente;//Si la lista<int> de la propieda _filtroListIdCliente contine solo un elemento count =1 entonces esta propiedad FiltroSelectIndexIdCliente cambiara el selecteIndex de el despleagable de IdCliente de los filtros a 0, para marcar automaticamente el unico valor disponible
+        string _filtroNombreCliente;
         #endregion
 
 
@@ -222,6 +226,77 @@ namespace GestorClientes
                 {
                     _filtroMatriculaSelecionado = value;
                     Notificador("FiltroMatriculaSelecionado");
+                    FiltroListIdCliente = _dao.selectIdClienteClientes(_filtroMatriculaSelecionado);
+                }
+            }
+
+        }
+
+        //Esta se llena cuando la selecion de filtro matricula cambia 
+        public List<int> FiltroListIdCliente
+        {
+            get { return _filtroListIdCliente; }
+
+            set
+            {
+                if (_filtroListIdCliente != value)
+                {
+                    _filtroListIdCliente = value;
+                    Notificador("FiltroListIdCliente");
+                    if (FiltroListIdCliente.Count == 1)
+                        FiltroSelectIndexIdCliente = 0;
+                    else
+                        FiltroSelectIndexIdCliente = -1;
+                   
+                }
+            }
+
+        }
+
+        public string FiltroIDClienteSelecionado
+        {
+            get { return _filtroIDClienteSelecionado; }
+
+            set
+            {
+                if (_filtroIDClienteSelecionado != value)
+                {
+                    _filtroIDClienteSelecionado = value;
+                    Notificador("FiltroIDClienteSelecionado");
+                    if (_filtroIDClienteSelecionado != null)
+                        FiltroNombreCliente = _dao.selectClienteNombre(int.Parse(_filtroIDClienteSelecionado));
+                    else
+                        FiltroNombreCliente = string.Empty;
+                }
+            }
+
+        }
+
+        public string FiltroNombreCliente
+        {
+            get { return _filtroNombreCliente; }
+
+            set
+            {
+                if (_filtroNombreCliente != value)
+                {
+                    _filtroNombreCliente = value;
+                    Notificador("FiltroNombreCliente");
+                }
+            }
+
+        }
+
+        public int FiltroSelectIndexIdCliente
+        {
+            get { return _filtroSelectIndexIdCliente; }
+
+            set
+            {
+                if (_filtroSelectIndexIdCliente != value)
+                {
+                    _filtroSelectIndexIdCliente = value;
+                    Notificador("FiltroSelectIndexIdCliente");
                 }
             }
 
@@ -1201,21 +1276,48 @@ namespace GestorClientes
         //POR AQUI
         private void AplicarFiltros()
         {
-            if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null)
+            if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null &&  FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
                 Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
-            else if(FiltrarFechaConcreta && FiltroMatriculaSelecionado is null)
+
+            //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
+            if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+
+            if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
                 Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
 
-            if (FiltrarMesFecha && FiltroMatriculaSelecionado != null)
+            if (FiltrarMesFecha && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y una matricula pero no un idCliente
                 Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
-            else if(FiltrarMesFecha && FiltroMatriculaSelecionado is null)
+
+            if (FiltrarMesFecha && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y no una matricula ni un IdCliente
                 Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
 
+            //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
+            if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+
+            //Si no ha selecionado ninguna radiobuttom pero si una matricula y no un idCliente
+            if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)
+                Listado = conversion(_dao.selectReparacion(FiltroMatriculaSelecionado));
+
+            //CONSULTAS HA REALIZAR
+            //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
+            if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado,int.Parse(FiltroIDClienteSelecionado)));
+
+         
+
+           
+            //_________________//
+
+            //Si ha selecionado radiobuttom 'FiltrarCalculoTotalMes'
             if (FiltrarCalculoTotalMes)
             {
                 ResultadoCalculoTotalMes = _dao.selectReparacionFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
                 Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
             }
+
+
         }
 
         #endregion

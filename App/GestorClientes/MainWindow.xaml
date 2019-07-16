@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GestorClientes"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Gestor de clientes" Height="520" Width="870" Closed="Window_Closed" Icon="img/logo.PNG">
+        Title="Gestor de clientes" Height="575" Width="892" Closed="Window_Closed" Icon="img/logo.PNG">
     <Grid Name="gdBase">
         <Grid.DataContext>
             <local:GestionVM/>
@@ -95,7 +95,7 @@
                     </DataGrid>
 
                     <!--Filtros-->
-                    <materialDesign:Card Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" Padding="8" Grid.Column="1" Margin="0,10,10,0" Height="295" HorizontalAlignment="Right" Width="169">
+                    <materialDesign:Card Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" Padding="8" Grid.Column="1" Margin="0,10,10,0" Height="352" HorizontalAlignment="Right" Width="169">
                         <materialDesign:Card.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#FF45A3CF" Offset="0"/>
@@ -103,22 +103,26 @@
                             </LinearGradientBrush>
                         </materialDesign:Card.Background>
                         <StackPanel Name="spFiltros" IsEnabled="{Binding ActivarFiltros}" IsEnabledChanged="StackPanel_IsEnabledChanged">
-                            <TextBlock Text="Filtros:" Margin="16 16 12 8" FontSize="16"/>
-                            <DatePicker Name="dtpFiltroCalendario" Margin="16 4 16 0" Foreground="#FF040404" SelectedDate="{Binding FiltroFecha}"/>
+                            <TextBlock Text="Filtros:" Margin="16 0 12 8" FontSize="16"/>
+                            <DatePicker Name="dtpFiltroCalendario" Margin="16 0 16 0" Foreground="#FF040404" SelectedDate="{Binding FiltroFecha}"/>
                             <!--Tipo de filtro-->
                             <RadioButton Name="rbFiltroFecha" Content="Filtrar fecha." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtra reparaciones de una fecha concreta" IsChecked="{Binding FiltrarFechaConcreta}"/>
                             <RadioButton Name="rbFiltroMes" Content="Filtrar un mes." Margin="16 4 16 0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Filtrar solo por las reparaciones de un determinado mes" IsChecked="{Binding FiltrarMesFecha}"/>
                             <RadioButton Name="rbFiltroCalculoMes"  Content="Calcular total mes." Margin="16,4,0,0" Style="{DynamicResource MaterialDesignUserForegroundRadioButton}" ToolTip="Calcular total ganado con las reparaciones de un mes" IsChecked="{Binding FiltrarCalculoTotalMes}"/>
-                            <TextBlock Text="Matricula:" Margin="16 16 12 8" FontSize="11" Visibility="{Binding EstadoVisiblecbxIDFiltro}"/>
-                            <ComboBox x:Name="cbxfiltroMatriculaCoche" Background="#FF45A3CF" Margin="18,0,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="118" SelectedItem="{Binding FiltroMatriculaSelecionado}" Visibility="{Binding EstadoVisiblecbxIDFiltro}" ToolTip="ID de el cliente por que se desea filtrar."/>
+                            <TextBlock Text="Matricula:" Margin="16 5 12 8" FontSize="11" Visibility="{Binding EstadoVisiblecbxIDFiltro}"/>
+                            <ComboBox x:Name="cbxfiltroMatriculaCoche" Background="#FF45A3CF" Margin="18,0,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="118" SelectedItem="{Binding FiltroMatriculaSelecionado}" Visibility="{Binding EstadoVisiblecbxIDFiltro}" ToolTip="Matricula del vehiculo por el que se desea filtrar."/>
+                            <TextBlock Text="ID de Cliente:" Margin="16 5 12 8" FontSize="11" Visibility="{Binding EstadoVisiblecbxIDFiltro}"/>
+                            <ComboBox x:Name="cbxfiltroIDCliente" Background="#FF45A3CF" Margin="18,-1,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="118" SelectedItem="{Binding FiltroIDClienteSelecionado}" Visibility="{Binding EstadoVisiblecbxIDFiltro}" ToolTip="ID de el cliente por que se desea filtrar." ItemsSource="{Binding FiltroListIdCliente}" SelectedIndex="{Binding FiltroSelectIndexIdCliente}"/>
+                            <TextBlock Text="Nombre de Cliente:" Margin="16 5 12 8" FontSize="11" Visibility="{Binding EstadoVisiblecbxIDFiltro}"/>
+                            <TextBox x:Name="tbxNombreCliente" Background="#FF45A3CF" Margin="18,0,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="118" Visibility="{Binding EstadoVisiblecbxIDFiltro}" ToolTip="Nombre correspondiente al ID de Cliente selecionado." IsEnabled="False" Text="{Binding FiltroNombreCliente}"/>
                             <!--Resultado de calculo total mes.-->
-                            <Label Name="lbResultado" Content="Resultado: " Margin="12,4,67,0" Visibility="{Binding EstadoVisible}" Height="22" FontSize="10"/>
-                            <TextBlock x:Name="tbcResultado"  Margin="66,-20,0,2" Visibility="{Binding EstadoVisible}" Height="19" FontSize="12" Text="{Binding ResultadoCalculoTotalMes}" ToolTip="Cantidad total obtenida este mes con las reparaciones realizadas."/>
-                            <TextBlock x:Name="tbcEuro"  Margin="140,-20,0,2" Visibility="{Binding EstadoVisible}" Height="19" FontSize="12" Text="€"/>
+                            <Label Name="lbResultado" Content="Resultado: " Margin="12,-22,67,0" Visibility="{Binding EstadoVisible}" Height="26" FontSize="12"/>
+                            <TextBlock x:Name="tbcResultado"  Margin="78,-25,0,2" Visibility="{Binding EstadoVisible}" Height="20" FontSize="14" Text="{Binding ResultadoCalculoTotalMes}" ToolTip="Cantidad total obtenida este mes con las reparaciones realizadas."/>
+                            <TextBlock x:Name="tbcEuro"  Margin="140,-25,0,2" Visibility="{Binding EstadoVisible}" Height="19" FontSize="12" Text="€"/>
 
-                            <Separator Style="{StaticResource MaterialDesignLightSeparator}" />
+                            <!--<Separator Style="{StaticResource MaterialDesignLightSeparator}"  Margin="8 0 8 8"/>-->
                             <!--Button Aplicar/Quitar filtro-->
-                            <StackPanel  Margin="8 0 8 8" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <StackPanel  Margin="8 10 8 8" Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button x:Name="btnQuitarFiltro" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolForegroundButton}" ToolTip="Eliminar filtros" Width="30" Padding="2 0 0 0" materialDesign:RippleAssist.IsCentered="True" Command="{Binding RestablecerFiltros_click}">
                                     <materialDesign:PackIcon Kind="CloseOutline" Height="22" Width="30" />
                                 </Button>
@@ -132,7 +136,7 @@
                     <Label Content="lbMensajes" HorizontalAlignment="Left" Margin="188,372,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 
                     <!--Botones de Modificar Eliminar Insertar-->
-                    <materialDesign:PopupBox PlacementMode="BottomAndAlignCentres" Foreground="#FF45A3CF" ToolTipService.Placement="Left" ToolTip="Acciones"  Grid.Column="1" Margin="0,312,121,0" Width="58" Background="AliceBlue" HorizontalAlignment="Right" Height="44" VerticalAlignment="Top" IsEnabled="{Binding Habilitado}" >
+                    <materialDesign:PopupBox PlacementMode="BottomAndAlignCentres" Foreground="#FF45A3CF" ToolTipService.Placement="Left" ToolTip="Acciones"  Grid.Column="1" Margin="0,371,126,0" Width="58" Background="AliceBlue" HorizontalAlignment="Right" Height="44" VerticalAlignment="Top" IsEnabled="{Binding Habilitado}" >
                         <StackPanel>
                             <StackPanel.Background>
                                 <LinearGradientBrush>
@@ -153,7 +157,7 @@
                     </materialDesign:PopupBox>
                     <Label Name="lbmensaje" HorizontalAlignment="Left" Margin="219,0,0,25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419" Content="{Binding Mensaje}"/>
 
-                    <Button x:Name="btnFactura" Background="#FF45A3CF"  ToolTip="Extraer factura"  Margin="0,323,15,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" IsEnabled="False">
+                    <Button x:Name="btnFactura" Background="#FF45A3CF"  ToolTip="Extraer factura"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" IsEnabled="False">
                         <materialDesign:PackIcon Kind="FilePdf" Height="20" Width="20" />
                     </Button>
 
