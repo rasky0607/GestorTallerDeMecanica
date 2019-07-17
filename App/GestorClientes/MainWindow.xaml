@@ -157,7 +157,8 @@
                     </materialDesign:PopupBox>
                     <Label Name="lbmensaje" HorizontalAlignment="Left" Margin="219,0,0,25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419" Content="{Binding Mensaje}"/>
 
-                    <Button x:Name="btnFactura" Background="#FF45A3CF"  ToolTip="Extraer factura"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" IsEnabled="False">
+                    <Button x:Name="btnFactura" Background="#FF45A3CF"  ToolTip="Extraer factura"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" IsEnabled="{Binding ActivarBtnExtraerFacturas}" Command="{Binding CreacionDeFactura_click}" >
+                        <!--IsEnabled="{Binding ActivarBtnExtraerFacturas}"-->
                         <materialDesign:PackIcon Kind="FilePdf" Height="20" Width="20" />
                     </Button>
 

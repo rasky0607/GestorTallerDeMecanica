@@ -13,12 +13,14 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
+using System.IO;
 
 namespace GestorClientes
 {
     class GestionVM: INotifyPropertyChanged
     {
-    
+        static string ruta = @"./prueba1.pdf";
+        static string rutaImg = @"../../img/cartel.png";
         #region Variables
         string colorRojo = "#FFD66E6E";
         string colorAzul = "#FF45A3CF";
@@ -108,6 +110,7 @@ namespace GestorClientes
         string _filtroIDClienteSelecionado;
         int _filtroSelectIndexIdCliente;//Si la lista<int> de la propieda _filtroListIdCliente contine solo un elemento count =1 entonces esta propiedad FiltroSelectIndexIdCliente cambiara el selecteIndex de el despleagable de IdCliente de los filtros a 0, para marcar automaticamente el unico valor disponible
         string _filtroNombreCliente;
+        bool _activarBtnExtraerFacturas=false;//Activa o desactiva el boton de extraer  facturas, el cual solo se activara cuando los filtros marcados sean tanto filtro por mes como la matricula y el id del cliente
         #endregion
 
 
@@ -264,9 +267,14 @@ namespace GestorClientes
                     _filtroIDClienteSelecionado = value;
                     Notificador("FiltroIDClienteSelecionado");
                     if (_filtroIDClienteSelecionado != null)
-                        FiltroNombreCliente = _dao.selectClienteNombre(int.Parse(_filtroIDClienteSelecionado));
+                    {
+                        FiltroNombreCliente = _dao.selectClienteNombre(int.Parse(_filtroIDClienteSelecionado));                      
+                    }
                     else
+                    {
                         FiltroNombreCliente = string.Empty;
+                        ActivarBtnExtraerFacturas = false;
+                    }
                 }
             }
 
@@ -416,6 +424,20 @@ namespace GestorClientes
             }
         }
 
+        public bool ActivarBtnExtraerFacturas
+        {
+            get { return _activarBtnExtraerFacturas; }
+
+            set
+            {
+                if (_activarBtnExtraerFacturas != value)
+                {
+                    _activarBtnExtraerFacturas = value;
+                    Notificador("ActivarBtnExtraerFacturas");
+                  
+                }
+            }
+        }
 
         #endregion
 
@@ -1271,9 +1293,10 @@ namespace GestorClientes
             FiltroFecha = DateTime.Now;
             ResultadoCalculoTotalMes = 0;
             Listado = conversion(_dao.selectReparacion());
+            ActivarBtnExtraerFacturas = false;
         }
 
-        //POR AQUI
+        
         private void AplicarFiltros()
         {
             if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null &&  FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
@@ -1294,13 +1317,21 @@ namespace GestorClientes
 
             //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
             if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+            {
                 Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+
+                //Activacion de facturas
+                if (Listado.Count != 0 && Listado !=null)//Si se encontro algo se activa el boton si no, no
+                    ActivarBtnExtraerFacturas = true;
+                else
+                    ActivarBtnExtraerFacturas = false;
+              
+            }
 
             //Si no ha selecionado ninguna radiobuttom pero si una matricula y no un idCliente
             if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)
                 Listado = conversion(_dao.selectReparacion(FiltroMatriculaSelecionado));
 
-            //CONSULTAS HA REALIZAR
             //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
             if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
                 Listado = conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado,int.Parse(FiltroIDClienteSelecionado)));
@@ -1316,8 +1347,51 @@ namespace GestorClientes
                 ResultadoCalculoTotalMes = _dao.selectReparacionFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
                 Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
             }
+        }
+        // POR AQUI
+        private void CreacionDeFactura(string ruta)
+        {
+            
+            //Preparacion de documento
+            iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
+            PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
+            documento.Open();
+            //Preparacion de imagen
+            iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
+            imagen.BorderWidth = 100;
+            imagen.Alignment = Element.ALIGN_CENTER;
+            float porcentaje = 0.0f;
+            porcentaje = 250 / imagen.Width;
+            imagen.ScalePercent(porcentaje * 100);
+            //Añadir imagen lista
+            documento.Add(imagen);
 
-
+            //Lineas de el documento
+            Paragraph titulo = new Paragraph();
+            titulo.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
+            titulo.Add("Factura:");
+            documento.Add(titulo);
+            Paragraph lineaCabecera = new Paragraph();
+            lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+            Reparacion repar = (Reparacion)Listado[0];
+            lineaCabecera.Add("Nombre: " + repar.NombreCliRepa + "\t\t Matricula de vehiculo:" + repar.MatriCoche);
+            
+            lineaCabecera.Add("\nServicio: " + " Precio:");
+            
+            documento.Add(lineaCabecera);
+          
+            foreach (object item in Listado)
+            {
+                Paragraph linea = new Paragraph();
+                linea.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                Reparacion r = (Reparacion)item;
+                linea.Add(r.NombreServicio + 10);//PENDIENTE POR SACAR EL PRECIO DE EL SERVICIO Y LOS APELLIDOS DE EL CLIENTE
+                documento.Add(linea);
+            }
+            /*documento.Add(new Paragraph("Hola Mundo!!"));
+            documento.Add(new Paragraph("Parrafo 1"));
+            documento.Add(new Paragraph("Parrafo 2"));*/
+            documento.Close();
         }
 
         #endregion
@@ -1376,6 +1450,11 @@ namespace GestorClientes
         public RelayCommand AplicarFiltros_click
         {
             get { return new RelayCommand(aplicarF => AplicarFiltros(), aplicarF => true); }
+        }
+
+        public RelayCommand CreacionDeFactura_click
+        {
+            get { return new RelayCommand(factura => CreacionDeFactura(ruta), factura => true); }
         }
 
 

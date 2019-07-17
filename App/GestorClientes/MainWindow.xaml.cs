@@ -24,9 +24,7 @@ namespace GestorClientes
     {
         public MainWindow()
         {
-            InitializeComponent();
-          
-
+            InitializeComponent();         
         }
         #region Añadir registros
         //Mostrar los distintos grid con los distintos campos segun en que tabla se quiere realizar la insercion
