@@ -14,12 +14,13 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
 using System.IO;
+using System.Windows.Forms;
 
 namespace GestorClientes
 {
     class GestionVM: INotifyPropertyChanged
     {
-        static string ruta = @"./prueba1.pdf";
+       
         static string rutaImg = @"../../img/cartel.png";
         #region Variables
         string colorRojo = "#FFD66E6E";
@@ -396,6 +397,7 @@ namespace GestorClientes
                 {
                     _filtrarMesFecha = value;
                     Notificador("FiltrarMesFecha");
+                    ActivarBtnExtraerFacturas = false;//Desactivar boton de emitir factura en cuanto marca esta obcion de filtrado de los 3 raiobutton posibles
                 }
             }
         }
@@ -420,6 +422,7 @@ namespace GestorClientes
                         EstadoVisible = "Hidden";
                         EstadoVisiblecbxIDFiltro = "Visible";
                     }
+                    ActivarBtnExtraerFacturas = false;//Desactivar boton de emitir factura en cuanto marca esta obcion de filtrado de los 3 raiobutton posibles
                 }
             }
         }
@@ -1304,7 +1307,15 @@ namespace GestorClientes
 
             //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
             if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+            {
                 Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                //Activacion de facturas
+                if (Listado.Count != 0 && Listado != null)//Si se encontro algo se activa el boton si no, no
+                    ActivarBtnExtraerFacturas = true;
+                else
+                    ActivarBtnExtraerFacturas = false;
+            }
+
 
             if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
                 Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
@@ -1318,13 +1329,7 @@ namespace GestorClientes
             //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
             if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
             {
-                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
-
-                //Activacion de facturas
-                if (Listado.Count != 0 && Listado !=null)//Si se encontro algo se activa el boton si no, no
-                    ActivarBtnExtraerFacturas = true;
-                else
-                    ActivarBtnExtraerFacturas = false;
+                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));             
               
             }
 
@@ -1334,11 +1339,7 @@ namespace GestorClientes
 
             //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
             if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
-                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado,int.Parse(FiltroIDClienteSelecionado)));
-
-         
-
-           
+                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado,int.Parse(FiltroIDClienteSelecionado)));                   
             //_________________//
 
             //Si ha selecionado radiobuttom 'FiltrarCalculoTotalMes'
@@ -1349,49 +1350,94 @@ namespace GestorClientes
             }
         }
         // POR AQUI
-        private void CreacionDeFactura(string ruta)
+        private void CreacionDeFactura()
         {
-            
-            //Preparacion de documento
-            iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
-            PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
-            documento.Open();
-            //Preparacion de imagen
-            iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
-            imagen.BorderWidth = 100;
-            imagen.Alignment = Element.ALIGN_CENTER;
-            float porcentaje = 0.0f;
-            porcentaje = 250 / imagen.Width;
-            imagen.ScalePercent(porcentaje * 100);
-            //Añadir imagen lista
-            documento.Add(imagen);
-
-            //Lineas de el documento
-            Paragraph titulo = new Paragraph();
-            titulo.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
-            titulo.Add("Factura:");
-            documento.Add(titulo);
-            Paragraph lineaCabecera = new Paragraph();
-            lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
-            Reparacion repar = (Reparacion)Listado[0];
-            lineaCabecera.Add("Nombre: " + repar.NombreCliRepa + "\t\t Matricula de vehiculo:" + repar.MatriCoche);
-            
-            lineaCabecera.Add("\nServicio: " + " Precio:");
-            
-            documento.Add(lineaCabecera);
-          
-            foreach (object item in Listado)
+            string ruta = AbrirDialogo();
+            if (ruta != string.Empty && ruta != null)
             {
-                Paragraph linea = new Paragraph();
-                linea.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
-                Reparacion r = (Reparacion)item;
-                linea.Add(r.NombreServicio + 10);//PENDIENTE POR SACAR EL PRECIO DE EL SERVICIO Y LOS APELLIDOS DE EL CLIENTE
-                documento.Add(linea);
+                //Preparacion de documento
+                iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
+                PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(AbrirDialogo(), FileMode.Create));
+                documento.Open();
+                //Preparacion de imagen
+                iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
+                imagen.BorderWidth = 100;
+                imagen.Alignment = Element.ALIGN_CENTER;
+                float porcentaje = 0.0f;
+                porcentaje = 250 / imagen.Width;
+                imagen.ScalePercent(porcentaje * 100);
+                //Añadir imagen lista
+                documento.Add(imagen);
+
+                #region Contenido texto de el pdf
+                //Lineas de el documento
+                Paragraph titulo = new Paragraph();
+                titulo.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
+                titulo.Add("Factura:");
+                documento.Add(titulo);
+                Paragraph lineaCabecera = new Paragraph();
+                lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                Reparacion repar = (Reparacion)Listado[0];
+                string apellidos = string.Empty;
+                apellidos = _dao.selectClienteApellidos(repar.IdCliente);
+                lineaCabecera.Add("\nNombre: " + repar.NombreCliRepa + "\nApellidos: " + apellidos + "\nMatricula: " + repar.MatriCoche + "\nFecha:" + repar.Fecha);
+                documento.Add(lineaCabecera);
+
+                //Salto de parrafo entre datos y tabla
+                Paragraph saltoParrafo = new Paragraph(" ");
+                documento.Add(saltoParrafo);
+
+                //Creamos la tabla
+                PdfPTable tabla = new PdfPTable(2);
+                tabla.WidthPercentage = 100;
+
+                Paragraph cabecera1 = new Paragraph();
+                cabecera1.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                cabecera1.Add("Servicio");
+                Paragraph cabecera2 = new Paragraph();
+                cabecera2.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                cabecera2.Add("Precio");
+                //Cabeceras de tabla
+                tabla.AddCell(cabecera1);
+                tabla.AddCell(cabecera2);
+                List<double> listPreciosAsumar = new List<double>();//Precio de todos los servicios,para posteriormente ser sumaros y añadir el total de el coste de todos ellos a la tabla
+
+                //Datos para la tabla (servicio realizado) y (precio de este)
+                foreach (object item in Listado)
+                {
+                    Paragraph celdColum1 = new Paragraph();
+                    celdColum1.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                    double precio = 0;
+                    Reparacion r = (Reparacion)item;
+                    celdColum1.Add(r.NombreServicio);
+                    tabla.AddCell(celdColum1);
+                    precio = _dao.selectServicioPrecio(r.NombreServicio);
+                    Paragraph celdColum2 = new Paragraph();
+                    celdColum2.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                    celdColum2.Add(precio.ToString() + "€");
+                    tabla.AddCell(celdColum2);
+                    listPreciosAsumar.Add(precio);
+                }
+
+                //Sumatorio de precios
+                double precioTotal = 0;
+                foreach (var valor in listPreciosAsumar)
+                {
+                    precioTotal += valor;
+                }
+                //Añadimos linea de precio total con un estilo concreto.
+                Paragraph lineaPrecioTotal = new Paragraph();
+                lineaPrecioTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                lineaPrecioTotal.Add("Total: " + precioTotal.ToString() + "€");
+                tabla.AddCell("");
+                //tabla.HasRowspan(tabla.getLastCompletedRowIndex());
+                tabla.AddCell(lineaPrecioTotal);
+
+
+                documento.Add(tabla);
+                documento.Close();
+                #endregion
             }
-            /*documento.Add(new Paragraph("Hola Mundo!!"));
-            documento.Add(new Paragraph("Parrafo 1"));
-            documento.Add(new Paragraph("Parrafo 2"));*/
-            documento.Close();
         }
 
         #endregion
@@ -1454,7 +1500,7 @@ namespace GestorClientes
 
         public RelayCommand CreacionDeFactura_click
         {
-            get { return new RelayCommand(factura => CreacionDeFactura(ruta), factura => true); }
+            get { return new RelayCommand(factura => CreacionDeFactura(), factura => true); }
         }
 
 
@@ -1542,27 +1588,52 @@ namespace GestorClientes
 
         }
         #endregion
-      
+        //ventana de dialogo donde se escogera la ruta
+       public  string AbrirDialogo()
+        {
+            string rutaProvisional = string.Empty;
+            string nombreFactura = string.Empty;
+            string ruta = string.Empty;
+            FolderBrowserDialog dialogoDirectorio = new FolderBrowserDialog();
+            DialogResult resultado;
+            try
+            {
+                dialogoDirectorio.ShowNewFolderButton = true;
+                resultado = dialogoDirectorio.ShowDialog();
+                rutaProvisional = dialogoDirectorio.SelectedPath;
+               // path = dialogoDirectorio.SelectedPath;
+               // rutaParaSubdirectorio = path;
+                dialogoDirectorio.Dispose();
+                //Preparacion de nombre de el fichero(sera la palabra Factura y la fecha toda seguida sin guiones)
+                Reparacion repar = (Reparacion)Listado[0];
+                string[] formandoFehchaCorrelativa = repar.Fecha.Split('/');
+                nombreFactura=@"\FacturaDe";
+                foreach (string item in formandoFehchaCorrelativa)
+                {
+                    nombreFactura += item;
+                }
+                ruta = @rutaProvisional + nombreFactura+".pdf";
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           // return path;
+            return ruta;
+        }// Refactorizado Listo
     }
 }
 /*
 //ERRORES:
-1-
+
 
  //Tareas pendientes:
  ---Actualmente en curso---
-1-> controlar que la propiedad _tlfInsert en su textbox correspondiente
-no pueda añadirse otra cosa que no sean numeros.
-2-> Intentar que al actualizar un registro la pestaba tbModificaciones devuelva el foco a tbListado
-3-> Comprobar detalles  de insercion o modificacion como que en la tabla cliente que ni el idCliente ni la matricula esten vacios
-y especificarlo en caso de fallo,el numero d tlf solo puede ser un campo  numerico.
-En la tabla servicios a la hora de insertar la descripcion no puede tener numeros ni el precio letras.
-4-> filtros.
-5-> intentar que los mensajes se muestren solo durante unos segundos y luego cambie(Hilos??)
+ 1-Pendite control de errores al hora de generar la factura, como fichero ya existente o fichero abierto.
+
 
 --En cola---
- -Filtros
- -Generar Factura()
  -Copia de seguridad BD automatica
 
 //Tareas Finalizadas:
@@ -1571,6 +1642,8 @@ En la tabla servicios a la hora de insertar la descripcion no puede tener numero
  -Modificaciones.
  -Eliminacion.
  -Ver otros registros
+ -Filtros
+ -Generar facturas en pdf;
 
 
 //Extras:

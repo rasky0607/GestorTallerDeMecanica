@@ -164,8 +164,7 @@ namespace GestorClientes
             return nombre;
 
         }
-
-       
+     
         public List<Reparacion> selectReparacion()
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
@@ -283,7 +282,6 @@ namespace GestorClientes
 
         }
 
-        //CAMBIADO
         public int selectNumRepara(int idCliRepara,string matriculaRepa, string fecha)
         {
             int nreparaciones = -1;
@@ -337,7 +335,6 @@ namespace GestorClientes
 
         }
 
-        //CAMBIADO
         public bool InsertCliente(string nombre,string apellidos, int tlf,string matricula, string marca, string modelo)
         {
             try
@@ -388,7 +385,7 @@ namespace GestorClientes
         {
             try
             {
-                if (descripcion is null || descripcion== " " || precio <0)
+                if (descripcion is null || descripcion== " ")
                     throw new Exception();
                 string sql;
                 sql = "INSERT INTO servicio (descripcion,precio) values ('" + descripcion.ToUpper() + "'," + precio + ")";
@@ -403,7 +400,6 @@ namespace GestorClientes
 
         }
 
-        //CAMBIADO
         public bool InsertReparacion(int idReparacion, int idCliente,string matriculaCoche, int codServicio,string fecha)
         {
             try
@@ -424,7 +420,6 @@ namespace GestorClientes
 
         }
 
-        //CAMBIADO
         public bool UpdateCliente(int idCliente, string nombre, string apellidos, int tlf, string matricula, string marca, string modelo)
         {
             try
@@ -479,7 +474,6 @@ namespace GestorClientes
 
         //Eliminar
         //--------------//
-        //CAMBIADO
         public bool DeleteCliente(int idCliente,string matricula)
         {
             //delete from cliente where idCliente=1 and matricula='2218CL';
@@ -516,7 +510,6 @@ namespace GestorClientes
             return true;
         }
 
-        //CAMBIADO
         public bool DeleteReparacion(int numReparacion, int idCliente, string matriculaCoche, string fecha)
         {
             //delete from cliente where idCliente=1 and matricula='2218CL';
@@ -599,7 +592,6 @@ namespace GestorClientes
 
 
         //Con un idCliente selecionado
-        //CAMBIADO
         public List<Reparacion> selectReparacionFiltroFecha(string matriculaCoche, string fecha)
         {           
             List<Reparacion> lReparacion = new List<Reparacion>();            
@@ -635,7 +627,6 @@ namespace GestorClientes
         }
 
         //Sin idCliente selecionado
-        //CAMBIADO
         public List<Reparacion> selectReparacionFiltroFecha(string fecha)
         {
             List<Reparacion> lReparacion = new List<Reparacion>();
@@ -671,7 +662,6 @@ namespace GestorClientes
         }
 
         //Con idCliente selecioando
-        //CAMBIADO
         public List<Reparacion> selectReparacionFiltroFechaMes(string matriculaCoche, string fecha)
         {
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
@@ -711,7 +701,6 @@ namespace GestorClientes
         }
 
         //Sin idCliente selecionado
-        //CAMBIADO
         public List<Reparacion> selectReparacionFiltroFechaMes(string fecha)
         {
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
@@ -784,7 +773,6 @@ namespace GestorClientes
 
         }
 
-        //PROBAR
         public List<Reparacion> selectReparacionUnIdCliUnaMatricula(string matricula, int idCliente)
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
@@ -821,7 +809,6 @@ namespace GestorClientes
 
         }
 
-        //PROBAR
         public List<Reparacion> selectReparacionUnIdCliUnaMatriculaEnMes(string matricula, int idCliente,string fecha)
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
@@ -858,7 +845,7 @@ namespace GestorClientes
 
         }
 
-        //PROBAR
+
         public List<Reparacion> selectReparacionUnIdCliUnaMatriculaEnFecha(string matricula, int idCliente, string fecha)
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
@@ -895,7 +882,7 @@ namespace GestorClientes
 
         }
 
-        //------------//
+     
 
         public double selectReparacionFiltroCalculoMes(string fecha)
         {
@@ -925,7 +912,59 @@ namespace GestorClientes
 
         }
 
+        //Facturacion
+        //-----------------//
+        public double selectServicioPrecio(string descripcion)
+        {
+            Servicio miservicio = new Servicio();
+            string sql = "select precio from servicio where descripcion='" + descripcion + "';";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    miservicio.Precio = int.Parse(lector["precio"].ToString());
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return miservicio.Precio;
+
+        }
+
+        public string selectClienteApellidos(int idCliente)
+        {
+            string apellidos = string.Empty;
+            string sql = "select apellidos from cliente where idCliente='" + idCliente + "';";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    apellidos = lector["apellidos"].ToString();
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return apellidos;
+
+        }
+
+        //-------------------//
 
     }
 
