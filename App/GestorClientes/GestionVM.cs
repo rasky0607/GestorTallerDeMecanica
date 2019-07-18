@@ -1349,94 +1349,104 @@ namespace GestorClientes
                 Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
             }
         }
-        // POR AQUI
+
         private void CreacionDeFactura()
         {
             string ruta = AbrirDialogo();
             if (ruta != string.Empty && ruta != null)
             {
-                //Preparacion de documento
-                iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
-                PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(AbrirDialogo(), FileMode.Create));
-                documento.Open();
-                //Preparacion de imagen
-                iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
-                imagen.BorderWidth = 100;
-                imagen.Alignment = Element.ALIGN_CENTER;
-                float porcentaje = 0.0f;
-                porcentaje = 250 / imagen.Width;
-                imagen.ScalePercent(porcentaje * 100);
-                //Añadir imagen lista
-                documento.Add(imagen);
-
-                #region Contenido texto de el pdf
-                //Lineas de el documento
-                Paragraph titulo = new Paragraph();
-                titulo.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
-                titulo.Add("Factura:");
-                documento.Add(titulo);
-                Paragraph lineaCabecera = new Paragraph();
-                lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
-                Reparacion repar = (Reparacion)Listado[0];
-                string apellidos = string.Empty;
-                apellidos = _dao.selectClienteApellidos(repar.IdCliente);
-                lineaCabecera.Add("\nNombre: " + repar.NombreCliRepa + "\nApellidos: " + apellidos + "\nMatricula: " + repar.MatriCoche + "\nFecha:" + repar.Fecha);
-                documento.Add(lineaCabecera);
-
-                //Salto de parrafo entre datos y tabla
-                Paragraph saltoParrafo = new Paragraph(" ");
-                documento.Add(saltoParrafo);
-
-                //Creamos la tabla
-                PdfPTable tabla = new PdfPTable(2);
-                tabla.WidthPercentage = 100;
-
-                Paragraph cabecera1 = new Paragraph();
-                cabecera1.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
-                cabecera1.Add("Servicio");
-                Paragraph cabecera2 = new Paragraph();
-                cabecera2.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
-                cabecera2.Add("Precio");
-                //Cabeceras de tabla
-                tabla.AddCell(cabecera1);
-                tabla.AddCell(cabecera2);
-                List<double> listPreciosAsumar = new List<double>();//Precio de todos los servicios,para posteriormente ser sumaros y añadir el total de el coste de todos ellos a la tabla
-
-                //Datos para la tabla (servicio realizado) y (precio de este)
-                foreach (object item in Listado)
+                try
                 {
-                    Paragraph celdColum1 = new Paragraph();
-                    celdColum1.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
-                    double precio = 0;
-                    Reparacion r = (Reparacion)item;
-                    celdColum1.Add(r.NombreServicio);
-                    tabla.AddCell(celdColum1);
-                    precio = _dao.selectServicioPrecio(r.NombreServicio);
-                    Paragraph celdColum2 = new Paragraph();
-                    celdColum2.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
-                    celdColum2.Add(precio.ToString() + "€");
-                    tabla.AddCell(celdColum2);
-                    listPreciosAsumar.Add(precio);
+                    //Preparacion de documento
+                    iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
+
+                    PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
+                    documento.Open();
+                    //Preparacion de imagen
+                    iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
+                    imagen.BorderWidth = 100;
+                    imagen.Alignment = Element.ALIGN_CENTER;
+                    float porcentaje = 0.0f;
+                    porcentaje = 250 / imagen.Width;
+                    imagen.ScalePercent(porcentaje * 100);
+                    //Añadir imagen lista
+                    documento.Add(imagen);
+
+                    #region Contenido texto de el pdf
+
+                    //Lineas de el documento
+                    Paragraph titulo = new Paragraph();
+                    titulo.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
+                    titulo.Add("Factura:");
+                    documento.Add(titulo);
+                    Paragraph lineaCabecera = new Paragraph();
+                    lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                    Reparacion repar = (Reparacion)Listado[0];
+                    string apellidos = string.Empty;
+                    apellidos = _dao.selectClienteApellidos(repar.IdCliente);
+                    lineaCabecera.Add("\nNombre: " + repar.NombreCliRepa + "\nApellidos: " + apellidos + "\nMatricula: " + repar.MatriCoche + "\nFecha:" + repar.Fecha);
+                    documento.Add(lineaCabecera);
+
+                    //Salto de parrafo entre datos y tabla
+                    Paragraph saltoParrafo = new Paragraph(" ");
+                    documento.Add(saltoParrafo);
+
+                    //Creamos la tabla
+                    PdfPTable tabla = new PdfPTable(2);
+                    tabla.WidthPercentage = 100;
+
+                    Paragraph cabecera1 = new Paragraph();
+                    cabecera1.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                    cabecera1.Add("Servicio");
+                    Paragraph cabecera2 = new Paragraph();
+                    cabecera2.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                    cabecera2.Add("Precio");
+                    //Cabeceras de tabla
+                    tabla.AddCell(cabecera1);
+                    tabla.AddCell(cabecera2);
+                    List<double> listPreciosAsumar = new List<double>();//Precio de todos los servicios,para posteriormente ser sumaros y añadir el total de el coste de todos ellos a la tabla
+
+                    //Datos para la tabla (servicio realizado) y (precio de este)
+                    foreach (object item in Listado)
+                    {
+                        Paragraph celdColum1 = new Paragraph();
+                        celdColum1.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                        double precio = 0;
+                        Reparacion r = (Reparacion)item;
+                        celdColum1.Add(r.NombreServicio);
+                        tabla.AddCell(celdColum1);
+                        precio = _dao.selectServicioPrecio(r.NombreServicio);
+                        Paragraph celdColum2 = new Paragraph();
+                        celdColum2.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                        celdColum2.Add(precio.ToString() + "€");
+                        tabla.AddCell(celdColum2);
+                        listPreciosAsumar.Add(precio);
+                    }
+
+                    //Sumatorio de precios
+                    double precioTotal = 0;
+                    foreach (var valor in listPreciosAsumar)
+                    {
+                        precioTotal += valor;
+                    }
+                    //Añadimos linea de precio total con un estilo concreto.
+                    Paragraph lineaPrecioTotal = new Paragraph();
+                    lineaPrecioTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                    lineaPrecioTotal.Add("Total: " + precioTotal.ToString() + "€");
+                    tabla.AddCell("");
+                    //tabla.HasRowspan(tabla.getLastCompletedRowIndex());
+                    tabla.AddCell(lineaPrecioTotal);
+
+
+                    documento.Add(tabla);
+                    documento.Close();
+                    #endregion
+
+                    System.Windows.MessageBox.Show("Factura del :"+repar.Fecha+"\nNombre: " + repar.NombreCliRepa + " " + apellidos + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
                 }
-
-                //Sumatorio de precios
-                double precioTotal = 0;
-                foreach (var valor in listPreciosAsumar)
-                {
-                    precioTotal += valor;
+                catch {
+                    System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
                 }
-                //Añadimos linea de precio total con un estilo concreto.
-                Paragraph lineaPrecioTotal = new Paragraph();
-                lineaPrecioTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
-                lineaPrecioTotal.Add("Total: " + precioTotal.ToString() + "€");
-                tabla.AddCell("");
-                //tabla.HasRowspan(tabla.getLastCompletedRowIndex());
-                tabla.AddCell(lineaPrecioTotal);
-
-
-                documento.Add(tabla);
-                documento.Close();
-                #endregion
             }
         }
 
@@ -1607,17 +1617,35 @@ namespace GestorClientes
                 //Preparacion de nombre de el fichero(sera la palabra Factura y la fecha toda seguida sin guiones)
                 Reparacion repar = (Reparacion)Listado[0];
                 string[] formandoFehchaCorrelativa = repar.Fecha.Split('/');
-                nombreFactura=@"\FacturaDe";
+                nombreFactura=@"\FacturaDe"+repar.IdCliente+"_";
                 foreach (string item in formandoFehchaCorrelativa)
                 {
                     nombreFactura += item;
                 }
-                ruta = @rutaProvisional + nombreFactura+".pdf";
+                ruta = @rutaProvisional + nombreFactura;
+
+            
+                if (File.Exists(string.Concat(ruta + ".pdf")))
+                {
+                    string rutaProvisional2 = ruta;
+                    int contador = 0;
+                    while (File.Exists(string.Concat(rutaProvisional2 + ".pdf")))
+                    {
+                        rutaProvisional2 = ruta;//Para que siempre parte de laruta orginal y si cambia el nombre del fichero sea solo añadiendo(1) o (2) etc.. pero no que no sea nombredelfichero.pfd(1)(2)(3) solo nombredelfichero.pfd(1) o nombredelfichero.pfd(2)etcc..
+                        contador++;
+                        rutaProvisional2 += "(" + contador + ")";
+
+                    };
+                    ruta = rutaProvisional2+ ".pdf";
+                }
+                else
+                    ruta = ruta + ".pdf";
+
             }
             catch (Exception)
             {
 
-                throw;
+                System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
             }
            // return path;
             return ruta;
