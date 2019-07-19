@@ -9,5 +9,5 @@ Gestor de clientes en un taller de mecanica en el cual podra verse:
 <br/>
 4-Inserción de nuevos registros.
 <br/>
-5-Emisión de una factura en un fichero externo para su posterior impresion si es necesaria.
+5-Emisión de una factura en un fichero PDF externo para su posterior impresion si es necesaria.
 
