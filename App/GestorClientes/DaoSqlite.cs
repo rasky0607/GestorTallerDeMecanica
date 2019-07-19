@@ -944,7 +944,7 @@ namespace GestorClientes
                 lector = sqlYconec.ExecuteReader();
                 while (lector.Read())
                 {
-                    miservicio.Precio = int.Parse(lector["precio"].ToString());
+                    miservicio.Precio = double.Parse(lector["precio"].ToString());
                 }
                 lector.Close();
             }
