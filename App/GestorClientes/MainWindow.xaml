@@ -199,7 +199,7 @@
                         <Label x:Name="lbDescripcion" Content="Descripción:" Margin="0,25,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
                         <TextBox x:Name="tbxDescripcion" Margin="79,15,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="207" Height="36" VerticalAlignment="Top" Text="{Binding DescripcionInsert}"/>
                         <Label x:Name="lbPrecio" Content="Precio:" Margin="10,0,0,39" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
-                        <TextBox x:Name="tbxPrecio" Margin="79,0,0,39" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="65" Height="25" VerticalAlignment="Bottom" Text="{Binding PrecioInsert}"/>
+                        <TextBox x:Name="tbxPrecio" Margin="79,0,0,39" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="65" Height="25" VerticalAlignment="Bottom" Text="{Binding PrecioInsert}" ToolTip="Recuerda los numeros decimales deben indicarse con un punto NO con una coma."/>
                     </Grid>
 
                     <!--Datos De Reparacion a insertar-->
@@ -263,7 +263,7 @@
                         <Label x:Name="lbDescripcionMod" Content="Descripción:" Margin="0,25,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
                         <TextBox x:Name="tbxDescripcionMod" Margin="79,15,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="207" Height="36" VerticalAlignment="Top" Text="{Binding DescripcionMod}" />
                         <Label x:Name="lbPrecioMod" Content="Precio:" Margin="10,0,0,39" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
-                        <TextBox x:Name="tbxPrecioMod" Margin="79,0,0,39" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="65" Height="25" VerticalAlignment="Bottom" Text="{Binding PrecioMod}"/>
+                        <TextBox x:Name="tbxPrecioMod" Margin="79,0,0,39" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="65" Height="25" VerticalAlignment="Bottom" Text="{Binding PrecioMod}" ToolTip="Recuerda los numeros decimales deben indicarse con un punto NO con una coma."/>
                     </Grid>
 
 

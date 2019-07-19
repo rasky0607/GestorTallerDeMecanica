@@ -207,6 +207,7 @@ namespace GestorClientes
         }
 
         #endregion
+
         #region Apartado general estetico de columnas de el datagrid
         private void DtgDatos_LoadingRow(object sender, DataGridRowEventArgs e)
         {
@@ -217,15 +218,7 @@ namespace GestorClientes
                     if (dtgDatos.Columns[4].Header is "CodServicio")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
                     {
                         dtgDatos.Columns[4].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
-                    }
-                    if (dtgDatos.Columns[0].Header is "IdCliente")
-                    {
-                        dtgDatos.Columns[0].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna IdCliente cuando esta aparece(en este caso solo ocurre cuando listamos la tabla clientes)                                 
-                    }
-                    if (dtgDatos.Columns[1].Header is "IdCliente")
-                    {
-                        dtgDatos.Columns[1].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna IdCliente cuando esta aparece(en este caso solo ocurre cuando listamos la tabla clientes)                                 
-                    }
+                    }                   
                 }
             }
         }

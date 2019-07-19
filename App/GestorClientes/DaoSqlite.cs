@@ -385,10 +385,19 @@ namespace GestorClientes
         {
             try
             {
+                //Estas lineas estan para modificar la culturalizacion de forma que indicamos el separador de numperos decimales es el . y no la, para que ala hora de la insercion no de fallos al insertar numbreservicio, 20,05 si no que inserte 20.05
+                System.Globalization.CultureInfo c = new System.Globalization.CultureInfo("es-ES");
+                c.NumberFormat.NumberDecimalSeparator = ".";
+                c.NumberFormat.CurrencyDecimalSeparator = ".";
+                c.NumberFormat.PercentDecimalSeparator = ".";
+                c.NumberFormat.CurrencyDecimalSeparator = ".";
+                System.Threading.Thread.CurrentThread.CurrentCulture = c;
+                //----------//
+              
                 if (descripcion is null || descripcion== " ")
                     throw new Exception();
                 string sql;
-                sql = "INSERT INTO servicio (descripcion,precio) values ('" + descripcion.ToUpper() + "'," + precio + ")";
+                sql = "INSERT INTO servicio (descripcion,precio) values ('" + descripcion.ToUpper() + "'," +precio + ")";
                 SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
             }
@@ -443,11 +452,19 @@ namespace GestorClientes
             return true;
 
         }
-
+        //cambiado
         public bool UpdateServicio(int codiServicio,string descripcion, double precio)
         {
             try
             {
+                //Estas lineas estan para modificar la culturalizacion de forma que indicamos el separador de numperos decimales es el . y no la, para que ala hora de la insercion no de fallos al insertar numbreservicio, 20,05 si no que inserte 20.05
+                System.Globalization.CultureInfo c = new System.Globalization.CultureInfo("es-ES");
+                c.NumberFormat.NumberDecimalSeparator = ".";
+                c.NumberFormat.CurrencyDecimalSeparator = ".";
+                c.NumberFormat.PercentDecimalSeparator = ".";
+                c.NumberFormat.CurrencyDecimalSeparator = ".";
+                System.Threading.Thread.CurrentThread.CurrentCulture = c;
+                //----------//
                 if (descripcion == " " || descripcion is null)
                     throw new Exception("El campo descripcion no puede estar vacio!");
                 else
