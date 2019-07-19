@@ -350,21 +350,52 @@ namespace GestorClientes
                     SQLiteCommand cmd1 = new SQLiteCommand(sql1, conexion);
                     int idCliente=0;
                     SQLiteDataReader lector = null;
-                  
+
+                    #region Comprobacion de que hay al menos algun id dado de alta
+                    //Comprobacion de si hay algun cliente para que la funcion max no devuelva un resultado vacio
+                    int numeroClientes = -1;
+                   string sqlcount = "select count(*)as numeroClientes from cliente";
+                    SQLiteCommand cmdcount = new SQLiteCommand(sqlcount, conexion);
                     try
                     {
-                        lector = cmd1.ExecuteReader();
+                        lector = cmdcount.ExecuteReader();
                         while (lector.Read())
                         {
-                           idCliente = int.Parse(lector["maximoid"].ToString());
+
+                            numeroClientes = int.Parse(lector["numeroClientes"].ToString());
+
                         }
-                        lector.Close();
-                        idCliente ++;
+                        lector.Close();                       
                     }
                     catch (Exception e)
                     {
                         throw new Exception(e.Message);
                     }
+                    #endregion
+
+                    //Si es  count o numeroClientes es  mayor que 0, hace esto si no no
+                    if (numeroClientes > 0)
+                    {
+                        try
+                        {
+                            lector = cmd1.ExecuteReader();
+                            while (lector.Read())
+                            {
+
+                                idCliente = int.Parse(lector["maximoid"].ToString());
+
+                            }
+                            lector.Close();
+                            idCliente++;
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception(e.Message);
+                        }
+                    }
+                    else
+                        idCliente = 1;
+
                     #endregion
                     //Insercion
                     string sql;
