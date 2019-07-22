@@ -474,6 +474,19 @@ namespace GestorClientes
 
         }
 
+        //Ocultar o mostrar el mensaje que indica que tabla se esta listando en cada momento en la pestaña o tab listado.
+        private void TbListado_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (lbTablaListada != null)
+            {
+                if (tbListado.IsEnabled == true)
+                    lbTablaListada.Visibility = Visibility.Visible;
+                else
+                    lbTablaListada.Visibility = Visibility.Hidden;
+            }
+
+        }
+
         //EN PROCESO COPIA DE SEGURIDAD
         //-------------------------
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -487,5 +500,6 @@ namespace GestorClientes
                 gestion._dao.Desconectar();
             }
         }
+
     }
 }

@@ -37,8 +37,7 @@ namespace GestorClientes
         bool _estadoConexion = false;//true abierta, false cerrada
         string _colorConexion= "#FF45A3CF";
         bool _activarFiltros = false;//Activa la ventana de filtros cuandola tabla listada sea reparaciones
-        string _tablaMostraEnListado = string.Empty;
-        string _tablaMostraEnListadoVisible = "Hidden";
+        string _tablaMostraEnListado = string.Empty;       
         #endregion
 
         #region Campos pestaña listar
@@ -99,7 +98,7 @@ namespace GestorClientes
         //No hay Modificacion para reparaciones
 
         #endregion
-            //POR AQUI
+         
         #region Campos Filtros
         string _filtroMatriculaSelecionado;
         DateTime _filtroFecha = DateTime.Now;//Luego hay que tratarla pra que sea diferente ala hora de realizar la consulta con formato 'yyyy-MM-dd'
@@ -159,11 +158,7 @@ namespace GestorClientes
                 if (_estadoConexion != value)
                 {
                     _estadoConexion = value;
-                    Notificador("EstadoConexion");
-                    if (value == true)//Para ocultar o no el label superior que dice que tabla se lista en cada momento
-                        TablaMostraEnListadoVisible = "Visible";
-                    else
-                        TablaMostraEnListadoVisible = "Hidden";
+                    Notificador("EstadoConexion");                   
                 }
             }
         }
@@ -253,25 +248,6 @@ namespace GestorClientes
             }
 
         }
-
-        public string TablaMostraEnListadoVisible
-        {
-            get { return _tablaMostraEnListadoVisible; }
-
-            set
-            {
-                if (_tablaMostraEnListadoVisible != value)
-                {                  
-                    _tablaMostraEnListadoVisible = value;                    
-                    Notificador("TablaMostraEnListadoVisible");
-
-                }
-            }
-
-        }
-
-
-
 
         #endregion
 

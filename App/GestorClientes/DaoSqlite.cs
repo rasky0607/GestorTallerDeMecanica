@@ -787,7 +787,7 @@ namespace GestorClientes
 
         }
 
-        //Selecionando solo matricula y sin fecha marcada //POR AQUI
+        //Selecionando solo matricula y sin fecha marcada 
         public List<Reparacion> selectReparacion(string matricula)
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;

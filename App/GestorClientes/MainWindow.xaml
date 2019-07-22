@@ -73,7 +73,7 @@
             </TabControl.Background>
 
             <!--Tab o pensataña Listado-->
-            <TabItem Header="Listado" ToolTip="Listado de registros." Name="tbListado" TabIndex="1" Margin="-2,-2,-16,0" IsEnabled="{Binding Habilitado}">
+            <TabItem Header="Listado" ToolTip="Listado de registros." Name="tbListado" TabIndex="1" Margin="-2,-2,-16,0" IsEnabled="{Binding Habilitado}" IsEnabledChanged="TbListado_IsEnabledChanged">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="310*"/>
@@ -284,7 +284,7 @@
             </TabItem>
 
         </TabControl>
-        <Label Name="lbTablaListada" HorizontalAlignment="Left" Margin="429,19,0,0" Grid.Row="1" VerticalAlignment="Top" Content="{Binding TablaMostraEnListado}" FontWeight="Bold" FontStyle="Italic" ToolTip="Registro que actualmente se estan mostrando en el listado." Background="#FFFBF8F8" Visibility="{Binding TablaMostraEnListadoVisible}"/>
+        <Label Name="lbTablaListada" HorizontalAlignment="Left" Margin="429,19,0,0" Grid.Row="1" VerticalAlignment="Top" Content="{Binding TablaMostraEnListado}" FontWeight="Bold" FontStyle="Italic" ToolTip="Registro que actualmente se estan mostrando en el listado." Background="#FFFBF8F8" Visibility="Hidden" />
 
         <!--Pendiente Kind="FilePdf"-->
 
