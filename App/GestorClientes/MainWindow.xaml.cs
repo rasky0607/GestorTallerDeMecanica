@@ -446,6 +446,18 @@ namespace GestorClientes
 
         }
 
-
+        //EN PROCESO COPIA DE SEGURIDAD
+        //-------------------------
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            GestionVM gestion = new GestionVM();
+            if (!gestion._dao.EstadoConexion())
+            {
+                gestion._dao.Conectar();
+                if (gestion._dao.CopiaSeguridad())
+                    MessageBox.Show("Terminado!!!");
+                gestion._dao.Desconectar();
+            }
+        }
     }
 }

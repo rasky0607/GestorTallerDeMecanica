@@ -1014,6 +1014,47 @@ namespace GestorClientes
 
         //-------------------//
 
+
+        //Copia de seguridad .output backupTaller.sqlite
+        //POR AQUI ->EN PROCESO COPIA DE SEGURIDAD
+        public bool CopiaSeguridad()
+        {
+            try
+            {
+                //Estas lineas estan para modificar la culturalizacion de forma que indicamos el separador de numperos decimales es el . y no la, para que ala hora de la insercion no de fallos al insertar numbreservicio, 20,05 si no que inserte 20.05
+                System.Globalization.CultureInfo c = new System.Globalization.CultureInfo("es-ES");
+                c.NumberFormat.NumberDecimalSeparator = ".";
+                c.NumberFormat.CurrencyDecimalSeparator = ".";
+                c.NumberFormat.PercentDecimalSeparator = ".";
+                c.NumberFormat.CurrencyDecimalSeparator = ".";
+                
+                System.Threading.Thread.CurrentThread.CurrentCulture = c;
+                //----------//
+
+                string sql;
+                sql = ".output prueba2.sqlite";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conexion);
+                cmd.ExecuteReader();
+  
+
+                string sql2;
+                sql2 = "dump";
+                SQLiteCommand cmd2 = new SQLiteCommand(sql2, conexion);
+                cmd2.ExecuteReader();
+
+                string sql3;
+                sql3 = "output";
+                SQLiteCommand cmd3 = new SQLiteCommand(sql3, conexion);
+                cmd3.ExecuteReader();
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+
+        }
+
     }
 
 }
