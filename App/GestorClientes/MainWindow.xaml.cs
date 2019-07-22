@@ -213,12 +213,40 @@ namespace GestorClientes
         {
             if (this.dtgDatos.Columns != null)
             {
+                #region Ocultar colulmnas
                 if (dtgDatos.Columns.Count >= 4)//Cuando el numero total de columnas del datagris es mayor o igual que 4
                 {
+                    //En reparacion
                     if (dtgDatos.Columns[4].Header is "CodServicio")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
                     {
                         dtgDatos.Columns[4].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
-                    }                   
+                    }
+                    if (dtgDatos.Columns[0].Header is "NumReparacion")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
+                    {
+                        dtgDatos.Columns[0].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
+                    }
+                    //-----------//
+                    #endregion
+
+                    #region Cambiar nombre de columnas
+                    //Cambio de nombres esteticos en reparacion
+                    if (dtgDatos.Columns[2].Header is "NombreCliRepa")
+                    {
+                        dtgDatos.Columns[2].Header = "Nombre Cliente";
+                    }
+
+                    if (dtgDatos.Columns[3].Header is "MatriCoche")
+                    {
+                        dtgDatos.Columns[3].Header = "Matricula coche";
+                    }
+
+                    if (dtgDatos.Columns[5].Header is "NombreServicio")
+                    {
+                        dtgDatos.Columns[5].Header = "Servicio";
+                    }
+                    //-----------//
+                    #endregion
+
                 }
             }
         }

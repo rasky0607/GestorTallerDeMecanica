@@ -167,10 +167,11 @@ namespace GestorClientes
      
         public List<Reparacion> selectReparacion()
         {
-            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r order by fecha and order by idCliente;
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r order by fecha,idCliente;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -577,10 +578,9 @@ namespace GestorClientes
             return true;
         }
 
-        //Consultas de filtro:
+        //Preparacion Filtros
         //------------------------//
 
-            //Preparacion Filtros
         public List<string> selectMatriculasCocheClientes()
         {
             List<string> listMatricula = new List<string>();
@@ -638,12 +638,14 @@ namespace GestorClientes
 
         //----------//
 
+        //Consultas de filtro:
+        //------------------------//
 
-        //Con un idCliente selecionado
+        //Con un idCliente selecionado 
         public List<Reparacion> selectReparacionFiltroFecha(string matriculaCoche, string fecha)
         {           
             List<Reparacion> lReparacion = new List<Reparacion>();            
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and fecha='"+fecha+"'";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and fecha='"+fecha+ "' order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -674,11 +676,11 @@ namespace GestorClientes
 
         }
 
-        //Sin idCliente selecionado
+        //Sin idCliente selecionado ni matricula
         public List<Reparacion> selectReparacionFiltroFecha(string fecha)
         {
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where  fecha='" + fecha + "'";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where  fecha='" + fecha + "' order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -709,7 +711,7 @@ namespace GestorClientes
 
         }
 
-        //Con idCliente selecioando
+        //sin idCliente selecioando pero si con matricula para un mes 
         public List<Reparacion> selectReparacionFiltroFechaMes(string matriculaCoche, string fecha)
         {
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
@@ -717,7 +719,7 @@ namespace GestorClientes
             //select numReparacion,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='2218CL' and strftime('%m',fecha)=strftime('%m','2019-06-01');
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and strftime('%m',fecha)=strftime('%m','" + fecha + "')";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matriculaCoche+ "' and strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matriculaCoche+ "' and strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "') order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -748,13 +750,13 @@ namespace GestorClientes
 
         }
 
-        //Sin idCliente selecionado
+        //Sin idCliente selecionado ni matricula para un mes
         public List<Reparacion> selectReparacionFiltroFechaMes(string fecha)
         {
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
             //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "') order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -785,12 +787,13 @@ namespace GestorClientes
 
         }
 
+        //Selecionando solo matricula y sin fecha marcada //POR AQUI
         public List<Reparacion> selectReparacion(string matricula)
         {
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matricula+"'";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='"+matricula+ "' order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -826,7 +829,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente="+idCliente+" and matriCoche='"+matricula+"'";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente="+idCliente+" and matriCoche='"+matricula+ "' order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -862,7 +865,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "')";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  strftime('%m',fecha)=strftime('%m','" + fecha + "') and  strftime('%Y',fecha)=strftime('%Y','" + fecha + "') order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -899,7 +902,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "'";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "' order by idCliente,fecha desc";
             SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
 
             SQLiteDataReader lector = null;
@@ -928,9 +931,7 @@ namespace GestorClientes
             }
             return lReparacion;
 
-        }
-
-     
+        }    
 
         public double selectReparacionFiltroCalculoMes(string fecha)
         {
@@ -959,6 +960,8 @@ namespace GestorClientes
             return total;
 
         }
+
+        //------------------------//
 
         //Facturacion
         //-----------------//

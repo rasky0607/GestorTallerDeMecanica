@@ -37,6 +37,8 @@ namespace GestorClientes
         bool _estadoConexion = false;//true abierta, false cerrada
         string _colorConexion= "#FF45A3CF";
         bool _activarFiltros = false;//Activa la ventana de filtros cuandola tabla listada sea reparaciones
+        string _tablaMostraEnListado = string.Empty;
+        string _tablaMostraEnListadoVisible = "Hidden";
         #endregion
 
         #region Campos pestaña listar
@@ -157,7 +159,11 @@ namespace GestorClientes
                 if (_estadoConexion != value)
                 {
                     _estadoConexion = value;
-                    Notificador("EstadoConexion");                   
+                    Notificador("EstadoConexion");
+                    if (value == true)//Para ocultar o no el label superior que dice que tabla se lista en cada momento
+                        TablaMostraEnListadoVisible = "Visible";
+                    else
+                        TablaMostraEnListadoVisible = "Hidden";
                 }
             }
         }
@@ -170,7 +176,7 @@ namespace GestorClientes
             {
                 if (EstadoConexion)
                 {
-                    _conectadoDesconectado = "Desconectar";//Si el estado dela conecxion es verdad es decir  hay conexion, el boton muestra la palabra desconectar
+                    _conectadoDesconectado = "Desconectar";//Si el estado de la conecxion es verdad es decir  hay conexion, el boton muestra la palabra desconectar
                     Notificador("ConectadoDesconectado");
                     Habilitado = true;
                 
@@ -180,6 +186,8 @@ namespace GestorClientes
                     Notificador("ConectadoDesconectado");
                     Habilitado = false;
                     
+
+
                 }
             }
         }
@@ -217,8 +225,56 @@ namespace GestorClientes
             }
         }
 
+        //Indica al usuario que tabla se esta viendo en el apartado listado
+        public string TablaMostraEnListado
+        {
+            get { return _tablaMostraEnListado; }
+
+            set
+            {
+                if (_tablaMostraEnListado != value)
+                {                   
+                    switch (value)
+                    {
+                        case "cliente":
+                            value = "Clientes";
+                            break;
+                        case "servicio":
+                            value = "Servicios";
+                            break;
+                        case "reparacion":
+                            value = "Reparaciones";
+                            break;
+                    }
+                    _tablaMostraEnListado = value;                  
+                    Notificador("TablaMostraEnListado");
+                    
+                }
+            }
+
+        }
+
+        public string TablaMostraEnListadoVisible
+        {
+            get { return _tablaMostraEnListadoVisible; }
+
+            set
+            {
+                if (_tablaMostraEnListadoVisible != value)
+                {                  
+                    _tablaMostraEnListadoVisible = value;                    
+                    Notificador("TablaMostraEnListadoVisible");
+
+                }
+            }
+
+        }
+
+
+
+
         #endregion
-     
+
         #region Propiedades Filtros
         public string FiltroMatriculaSelecionado
         {
@@ -771,6 +827,8 @@ namespace GestorClientes
                         ActivarFiltros = true;
                     else
                         ActivarFiltros = false;
+
+                    TablaMostraEnListado = value;
                 }
                
             }

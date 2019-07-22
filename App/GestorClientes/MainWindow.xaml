@@ -284,6 +284,7 @@
             </TabItem>
 
         </TabControl>
+        <Label Name="lbTablaListada" HorizontalAlignment="Left" Margin="429,19,0,0" Grid.Row="1" VerticalAlignment="Top" Content="{Binding TablaMostraEnListado}" FontWeight="Bold" FontStyle="Italic" ToolTip="Registro que actualmente se estan mostrando en el listado." Background="#FFFBF8F8" Visibility="{Binding TablaMostraEnListadoVisible}"/>
 
         <!--Pendiente Kind="FilePdf"-->
 
