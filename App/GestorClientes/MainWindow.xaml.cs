@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
 
 namespace GestorClientes
 {
@@ -401,8 +402,30 @@ namespace GestorClientes
         {
             try
             {
+                //Desconecxion
                 GestionVM g = (GestionVM)gdBase.DataContext;
                 g._dao.Desconectar();
+                #region Copias de seguridad
+                //Copia de Seguridad 1
+                if (!File.Exists("./CopiasDeSeguridad/copiaBDTaller"))//Si no existe
+                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller");
+                else if (File.Exists("./CopiasDeSeguridad/copiaBDTaller") && !File.Exists("./CopiasDeSeguridad/copiaBDTaller"))//SI existe el original pero no el 1
+                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller1");
+                else if (File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller1") > File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller"))
+                {
+                    File.Delete("./CopiasDeSeguridad/copiaBDTaller");
+                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller");
+
+                }
+                else if (File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller1") < File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller"))
+                {
+                    File.Delete("./CopiasDeSeguridad/copiaBDTaller1");
+                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller1");
+                }
+
+                //Copia de seguridad 2(copiando uno a uno los registros y añadiendolos a un fichero .sqlite con las palabras reservadas de el motor para realizar las inserciones
+                #endregion
+
             }
             catch
             {
@@ -487,19 +510,7 @@ namespace GestorClientes
 
         }
 
-        //EN PROCESO COPIA DE SEGURIDAD
-        //-------------------------
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            GestionVM gestion = new GestionVM();
-            if (!gestion._dao.EstadoConexion())
-            {
-                gestion._dao.Conectar();
-                if (gestion._dao.CopiaSeguridad())
-                    MessageBox.Show("Terminado!!!");
-                gestion._dao.Desconectar();
-            }
-        }
+       
 
     }
 }

@@ -1632,6 +1632,7 @@ namespace GestorClientes
 
         }
         #endregion
+
         //ventana de dialogo donde se escogera la ruta
        public  string AbrirDialogo()
         {
