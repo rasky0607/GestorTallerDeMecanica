@@ -245,12 +245,14 @@ namespace GestorClientes
                     {
                         dtgDatos.Columns[5].Header = "Servicio";
                     }
+
                     //-----------//
                     #endregion
 
                 }
             }
         }
+  
 
         #endregion
 
@@ -510,7 +512,9 @@ namespace GestorClientes
 
         }
 
-       
-
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }

@@ -16,6 +16,8 @@ using iTextSharp.text.html.simpleparser;
 using System.IO;
 using System.Windows.Forms;
 
+
+
 namespace GestorClientes
 {
     class GestionVM: INotifyPropertyChanged
@@ -113,6 +115,11 @@ namespace GestorClientes
         int _filtroSelectIndexIdCliente;//Si la lista<int> de la propieda _filtroListIdCliente contine solo un elemento count =1 entonces esta propiedad FiltroSelectIndexIdCliente cambiara el selecteIndex de el despleagable de IdCliente de los filtros a 0, para marcar automaticamente el unico valor disponible
         string _filtroNombreCliente;
         bool _activarBtnExtraerFacturas=false;//Activa o desactiva el boton de extraer  facturas, el cual solo se activara cuando los filtros marcados sean tanto filtro por mes como la matricula y el id del cliente
+        #endregion
+
+        #region Campos Factura
+        string _colorFilaFactura;
+
         #endregion
 
 
@@ -239,6 +246,21 @@ namespace GestorClientes
                             break;
                         case "reparacion":
                             value = "Reparaciones";
+                            break;
+                        case "factura":
+                            value = "Facturas";
+                            Notificador("ColorFilaFactura");
+
+                            Factura mifactura = new Factura();
+                            for (int i = 0; i < Listado.Count; i++)
+                            {
+                                mifactura = (Factura)Listado[i];
+                                if (mifactura.NumeroFacturaAnulada != 0)
+                                    ColorFilaFactura = colorRojo;
+                                else                                 
+                                  ColorFilaFactura = colorAzul;
+                            }
+
                             break;
                     }
                     _tablaMostraEnListado = value;                  
@@ -760,6 +782,24 @@ namespace GestorClientes
 
         #endregion
 
+        #region Propiedades Factura
+        public string ColorFilaFactura
+        {
+            get { return _colorFilaFactura; }
+
+            set
+            {              
+               if (_colorFilaFactura != value)
+              {
+                 _colorFilaFactura = value;
+                 Notificador("ColorFilaFactura");
+               }               
+            }
+
+        }
+
+        #endregion
+
         #region Propiedades pestaña Modificar
 
         public int EsCorrectoMod
@@ -1106,6 +1146,27 @@ namespace GestorClientes
                 }
             }
         }
+
+        private void ListadoFacturas()
+        {
+            if (EstadoConexion)
+            {
+                try
+                {
+                    Listado = conversion(_dao.selectFacturas());
+                    //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
+                    TablaAcltualListada = "factura";
+                    if (Listado.Count == 0)
+                        Mensaje = "No hay registros de facturas actualmente.";
+                    /*else
+                        Mensaje = "";*/
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
         //----Fin Listado de registros---
 
         private void InsertarRegistro()
@@ -1332,8 +1393,7 @@ namespace GestorClientes
             Listado = conversion(_dao.selectReparacion());
             ActivarBtnExtraerFacturas = false;
         }
-
-        
+      
         private void AplicarFiltros()
         {
             if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null &&  FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
@@ -1391,6 +1451,7 @@ namespace GestorClientes
             {
                 try
                 {
+                    #region Preparacion del documento
                     //Preparacion de documento
                     iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
 
@@ -1405,6 +1466,7 @@ namespace GestorClientes
                     imagen.ScalePercent(porcentaje * 100);
                     //Añadir imagen lista
                     documento.Add(imagen);
+                    #endregion
 
                     #region Contenido texto de el pdf
 
@@ -1471,9 +1533,9 @@ namespace GestorClientes
                     //tabla.HasRowspan(tabla.getLastCompletedRowIndex());
                     tabla.AddCell(lineaPrecioTotal);
 
-
                     documento.Add(tabla);
                     documento.Close();
+                    
                     #endregion
 
                     System.Windows.MessageBox.Show("Factura del :"+repar.Fecha+"\nNombre: " + repar.NombreCliRepa + " " + apellidos + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
@@ -1482,6 +1544,23 @@ namespace GestorClientes
                     System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
                 }
             }
+        }
+
+
+        private void logFactura(string nombreCliente,string apellidoCliente, string matriculaCoche, string fechaReparacion)
+        {
+            string[] datosFactura = new string[1];
+
+            File.WriteAllLines("./logFacturas.txt",datosFactura);
+           
+
+            //Leemos si hay algo en el fichero
+
+            //Aumentamos el numero de factura despues de leer el que hay en el fichero
+           /* int contador = 0;
+            contador++;
+            File.CreateText(".\numeroFactura.txt");
+            File.WriteAllText(".\numeroFactura.txt", contador.ToString());*/
         }
 
         #endregion
@@ -1505,6 +1584,11 @@ namespace GestorClientes
         public RelayCommand RegistroReparaciones_click
         {
             get { return new RelayCommand(listadoRep => ListadoReparacion(), ListadoRep => true); }           
+        }
+
+        public RelayCommand RegistroFacturas_click
+        {
+            get { return new RelayCommand(listadoFac => ListadoFacturas(), ListadoFac => true); }
         }
 
         public RelayCommand InsertarRegistro_click
@@ -1548,6 +1632,8 @@ namespace GestorClientes
         }
 
 
+
+       
         //----Fin Listado de registros---
         #endregion
 
@@ -1584,6 +1670,16 @@ namespace GestorClientes
             foreach (Reparacion miReparacion in lreparacio)
             {
                 listobjetos.Add(miReparacion);
+            }
+            return listobjetos;
+        }
+
+        public List<object> conversion(List<Factura> lfactura)
+        {
+            List<object> listobjetos = new List<object>();
+            foreach (Factura fac in lfactura)
+            {
+                listobjetos.Add(fac);
             }
             return listobjetos;
         }
@@ -1694,6 +1790,9 @@ namespace GestorClientes
  //Tareas pendientes:
  ---Actualmente en curso---
  1-Pendite control de errores al hora de generar la factura, como fichero ya existente o fichero abierto.
+ 2- creada nueva tabla facturas la cual en base a  esta se genrara la factura en pdf
+a tra ves de el filtro  de reparaciones por mes, crear un boton que genere todas las facturas disponibles
+
 
 
 --En cola---

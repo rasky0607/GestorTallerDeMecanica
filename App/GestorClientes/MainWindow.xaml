@@ -47,6 +47,7 @@
                 <MenuItem Header="Registros de clientes." ToolTip="Muestra los regístro de todos los clientes registrados." Command="{Binding RegistroClientes_click, Mode=OneWay}"/>
                 <MenuItem Header="Registro de servicios." ToolTip="Muestra los regístro de todos los servicios dados de alta." Command="{Binding RegistroServicios_click, Mode=OneWay}"/>
                 <MenuItem Header="Registro de reparaciones." ToolTip="Muestra los regístro de todos las reparaciónes realizadas" Command="{Binding RegistroReparaciones_click, Mode=OneWay}"/>
+                <MenuItem Header="Registro de facturas." ToolTip="Muestra los regístro de todos las reparaciónes realizadas" Command="{Binding RegistroFacturas_click}" />
             </MenuItem>
             <MenuItem>
                 <MenuItem.Header>Ayuda</MenuItem.Header>
@@ -90,7 +91,7 @@
                     <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}"/>
 
                     <!--DataGrid para los datos de la BD-->
-                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow" >
+                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow" RowBackground="{Binding ColorFilaFactura}" >
 
                     </DataGrid>
 

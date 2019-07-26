@@ -963,6 +963,43 @@ namespace GestorClientes
 
         //------------------------//
 
+        //------Tabla Factura-------//
+
+        public List<Factura> selectFacturas()
+        {
+            List<Factura> lFactura = new List<Factura>();
+            Factura mifactura = new Factura();
+            string sql = "select numeroFactura,linea,idCliente,matriCoche,codServicio,fecha,numeroFacturaAnulada from factura";
+            SQLiteCommand sqlYconec = new SQLiteCommand(sql, conexion);
+            SQLiteDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.Matricula = lector["fecha"].ToString();
+                    mifactura.NumeroFacturaAnulada = int.Parse(lector["numeroFacturaAnulada"].ToString());
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        //------------------------//
+
         //Facturacion
         //-----------------//
         public double selectServicioPrecio(string descripcion)
@@ -1014,6 +1051,7 @@ namespace GestorClientes
             return apellidos;
 
         }
+
 
         //-------------------//
 
