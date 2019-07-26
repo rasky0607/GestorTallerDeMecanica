@@ -9,7 +9,7 @@ drop table if exists cliente;
 
 
 	create table cliente(
-		idCliente integer UNIQUE not null,		
+		idCliente integer AUTO_INCREMENT not null,		
 		nombre varchar(250) not null,
 		apellidos text default null,
 		tlf integer not null,

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//Añadido
+//Añadido sqlite
 using System.Data;
 using System.Data.SQLite;
 using System.Collections;
+
 
 
 namespace GestorClientes
@@ -17,6 +18,7 @@ namespace GestorClientes
 
         public bool Conectar()
         {
+            
             string db = @".\taller";
             string cadenaConecxion = string.Format("Data Source=" + db + ";Version=3;FailIfMissing=true;foreign keys=true;");//PRobando foreign keys=true;
             try

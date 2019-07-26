@@ -27,7 +27,8 @@ namespace GestorClientes
         #region Variables
         string colorRojo = "#FFD66E6E";
         string colorAzul = "#FF45A3CF";
-        public DaoSqlite _dao = new DaoSqlite();
+        //public DaoSqlite _dao = new DaoSqlite();
+        public DaoSql _dao = new DaoSql();
         #endregion
 
         #region campos
