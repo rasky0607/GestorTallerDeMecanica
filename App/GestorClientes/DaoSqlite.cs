@@ -985,8 +985,8 @@ namespace GestorClientes
                     mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
                     mifactura.Matricula = lector["matriCoche"].ToString();
                     mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
-                    mifactura.Matricula = lector["fecha"].ToString();
-                    mifactura.NumeroFacturaAnulada = int.Parse(lector["numeroFacturaAnulada"].ToString());
+                    mifactura.Fecha =  DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
 
                     lFactura.Add(mifactura);
                 }

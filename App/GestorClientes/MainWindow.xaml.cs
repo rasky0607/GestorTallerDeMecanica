@@ -218,9 +218,9 @@ namespace GestorClientes
                 if (dtgDatos.Columns.Count >= 4)//Cuando el numero total de columnas del datagris es mayor o igual que 4
                 {
                     //En reparacion
-                    if (dtgDatos.Columns[4].Header is "CodServicio")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
+                    if (dtgDatos.Columns[5].Header is "CodServicio")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
                     {
-                        dtgDatos.Columns[4].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
+                        dtgDatos.Columns[5].Visibility = Visibility.Collapsed;//Plegamos o escondemos la columna CodServicio cuando esta aparece(en este caso solo ocurre cuando listamos la tabla reparacion)
                     }
                     if (dtgDatos.Columns[0].Header is "NumReparacion")//cuando el nombre de la cabecera de esa columna coincide con CodServicio
                     {
@@ -236,14 +236,19 @@ namespace GestorClientes
                         dtgDatos.Columns[2].Header = "Nombre Cliente";
                     }
 
-                    if (dtgDatos.Columns[3].Header is "MatriCoche")
+                    if (dtgDatos.Columns[3].Header is "ApellidosCliRepa")
                     {
-                        dtgDatos.Columns[3].Header = "Matricula coche";
+                        dtgDatos.Columns[3].Header = "Apellidos";
                     }
 
-                    if (dtgDatos.Columns[5].Header is "NombreServicio")
+                    if (dtgDatos.Columns[4].Header is "MatriCoche")
                     {
-                        dtgDatos.Columns[5].Header = "Servicio";
+                        dtgDatos.Columns[4].Header = "Matricula coche";
+                    }
+
+                    if (dtgDatos.Columns[6].Header is "NombreServicio")
+                    {
+                        dtgDatos.Columns[6].Header = "Servicio";
                     }
 
                     //-----------//

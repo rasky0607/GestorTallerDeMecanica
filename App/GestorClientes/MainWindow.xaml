@@ -91,8 +91,21 @@
                     <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}"/>
 
                     <!--DataGrid para los datos de la BD-->
-                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow" RowBackground="{Binding ColorFilaFactura}" >
-
+                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow">
+                       <!--Apartado de estilos  sin codigo en c# que da color a las filas cuando se lista las facturas segun si pone ANULADA(rojo) o VIGENTE(verde)-->
+                        <DataGrid.RowStyle>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EstadoFactura}" Value="ANULADA">
+                                        <Setter Property="Background" Value="#FFEA9797"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding EstadoFactura}" Value="VIGENTE">
+                                        <Setter Property="Background" Value="#FF8BF0B4"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <!--FIN Apartado de estilos  sin codigo en c# que da color a las filas cuando se lista las facturas segun si pone ANULADA(rojo) o VIGENTE(verde)-->
                     </DataGrid>
 
                     <!--Filtros-->
@@ -158,10 +171,11 @@
                     </materialDesign:PopupBox>
                     <Label Name="lbmensaje" HorizontalAlignment="Left" Margin="219,0,0,25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419" Content="{Binding Mensaje}"/>
 
-                    <Button x:Name="btnFactura" Background="#FF45A3CF"  ToolTip="Extraer factura"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" IsEnabled="{Binding ActivarBtnExtraerFacturas}" Command="{Binding CreacionDeFactura_click}" >
+                    <Button x:Name="btnExtraerFacturaAPdf" Background="#FF45A3CF"  ToolTip="Extraer factura en pdf"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Command="{Binding CreacionDeFactura_click}" Visibility="{Binding VisibleBtnExtraerFacturasPdf}" >
                         <!--IsEnabled="{Binding ActivarBtnExtraerFacturas}"-->
                         <materialDesign:PackIcon Kind="FilePdf" Height="20" Width="20" />
                     </Button>
+                   
 
                 </Grid>
 

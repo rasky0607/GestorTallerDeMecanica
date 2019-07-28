@@ -169,7 +169,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r order by fecha,idCliente;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -183,6 +183,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa= lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -590,7 +591,7 @@ namespace GestorClientes
         public List<Reparacion> selectReparacionFiltroFecha(string matriculaCoche, string fecha)
         {
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and fecha='" + fecha + "' order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and fecha='" + fecha + "' order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -604,6 +605,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -625,7 +627,7 @@ namespace GestorClientes
         public List<Reparacion> selectReparacionFiltroFecha(string fecha)
         {
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where  fecha='" + fecha + "' order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where  fecha='" + fecha + "' order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -639,6 +641,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -664,7 +667,7 @@ namespace GestorClientes
             //select numReparacion,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='2218CL' and strftime('%m',fecha)=strftime('%m','2019-06-01');
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and month(fecha)=month('" + fecha + "')";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -678,6 +681,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -701,7 +705,7 @@ namespace GestorClientes
             //select strftime('%m','2019-07-10'); Extraemos el mes concreto
             //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
             List<Reparacion> lReparacion = new List<Reparacion>();
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -715,6 +719,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -738,7 +743,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matricula + "' order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matricula + "' order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -752,6 +757,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -774,7 +780,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -788,6 +794,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -810,7 +817,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -824,6 +831,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -847,7 +855,7 @@ namespace GestorClientes
             //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
-            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "' order by idCliente,fecha desc";
+            string sql = "select numReparacion,idCliente,(select nombre from cliente where idCliente=r.idCliente)as nombre,(select apellidos from cliente where idCliente=r.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "' order by idCliente,fecha desc";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -861,6 +869,7 @@ namespace GestorClientes
                     miReparacion.NumReparacion = int.Parse(lector["numReparacion"].ToString());
                     miReparacion.IdCliente = int.Parse(lector["idCliente"].ToString());
                     miReparacion.NombreCliRepa = lector["nombre"].ToString();
+                    miReparacion.ApellidosCliRepa = lector["apellidos"].ToString();
                     miReparacion.MatriCoche = lector["matriCoche"].ToString();
                     miReparacion.CodServicio = int.Parse(lector["codServicio"].ToString());
                     miReparacion.NombreServicio = lector["servicio"].ToString();
@@ -913,8 +922,8 @@ namespace GestorClientes
         public List<Factura> selectFacturas()
         {
             List<Factura> lFactura = new List<Factura>();
-            Factura mifactura = new Factura();
-            string sql = "select numeroFactura,linea,idCliente,matriCoche,codServicio,fecha,numeroFacturaAnulada from factura";
+            
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f order by numeroFactura,Fecha,idCliente desc;";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
             MySqlDataReader lector = null;
 
@@ -923,13 +932,18 @@ namespace GestorClientes
                 lector = sqlYconec.ExecuteReader();
                 while (lector.Read())
                 {
+                    Factura mifactura = new Factura();
                     mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
                     mifactura.Linea = int.Parse(lector["linea"].ToString());
                     mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente= lector["apellidos"].ToString();
                     mifactura.Matricula = lector["matriCoche"].ToString();
                     mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
-                    mifactura.Matricula = lector["fecha"].ToString();
-                    mifactura.NumeroFacturaAnulada = int.Parse(lector["numeroFacturaAnulada"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
 
                     lFactura.Add(mifactura);
                 }
@@ -943,10 +957,364 @@ namespace GestorClientes
 
         }
 
+        //Filtros para facturas
+        public List<Factura> selectFacturaFiltroFecha(string matriculaCoche, string fecha)
+        {
+            //select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,numeroFacturaAnulada from factura f order by numeroFactura,Fecha,idCliente desc;
+            List<Factura> lFactura = new List<Factura>();
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where matriCoche='" + matriculaCoche + "' and fecha='" + fecha + "' order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        //Sin idCliente selecionado ni matricula
+        public List<Factura> selectFacturaFiltroFecha(string fecha)
+        {
+            List<Factura> lFactura = new List<Factura>();
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where  fecha='" + fecha + "' order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        //sin idCliente selecioando pero si con matricula para un mes 
+        public List<Factura> selectFacturaFiltroFechaMes(string matriculaCoche, string fecha)
+        {
+            //select strftime('%m','2019-07-10'); Extraemos el mes concreto
+            //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
+            //select numReparacion,(select nombre from cliente where idCliente=r.idCliente)as nombre,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='2218CL' and strftime('%m',fecha)=strftime('%m','2019-06-01');
+            List<Factura> lFactura = new List<Factura>();
+            //string sql = "select numReparacion,idCliente,matriCoche,codServicio,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r where matriCoche='" + matriculaCoche + "' and month(fecha)=month('" + fecha + "')";
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where matriCoche='" + matriculaCoche + "' and month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        //Sin idCliente selecionado ni matricula para un mes
+        public List<Factura> selectFacturaFiltroFechaMes(string fecha)
+        {
+            //select strftime('%m','2019-07-10'); Extraemos el mes concreto
+            //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
+            List<Factura> lFactura = new List<Factura>();
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "')  order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        //Selecionando solo matricula y sin fecha marcada 
+        public List<Factura> selectFactura(string matricula)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Factura> lFactura = new List<Factura>();
+            //string sql = "select * from reparacion;";
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where matriCoche='" + matricula + "' order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        public List<Factura> selectFacturaUnIdCliUnaMatricula(string matricula, int idCliente)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Factura> lFactura = new List<Factura>();
+            //string sql = "select * from reparacion;";
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where idCliente=" + idCliente + " and matriCoche='" + matricula + "' order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        public List<Factura> selectFacturaUnIdCliUnaMatriculaEnMes(string matricula, int idCliente, string fecha)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Factura> lFactura = new List<Factura>();
+            //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and  month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+
+        public List<Factura> selectFacturaUnIdCliUnaMatriculaEnFecha(string matricula, int idCliente, string fecha)
+        {
+            //select numReparacion,idCliente,matriCoche,(select descripcion from servicio where codigo=r.codServicio)as servicio,fecha from reparacion r;
+            List<Factura> lFactura = new List<Factura>();
+            //string sql = "select * from reparacion;";  strftime('%m',fecha)=strftime('%m','" + fecha + "')"
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where idCliente=" + idCliente + " and matriCoche='" + matricula + "' and fecha='" + fecha + "' order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura= lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+        }
+
+        //PENDIENTE
+        public double selectFacturaFiltroCalculoMes(string fecha)
+        {
+            double total = 0;
+            //select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where month('2019-07-10')= month(fecha));
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            //string sql = "select * from reparacion;";
+            string sql = "select sum((select precio from servicio where codigo=r.codServicio))as total from reparacion r where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "')";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    double.TryParse(lector["total"].ToString(), out total);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return total;
+
+        }
+
         //------------------------//
 
         //Facturacion
         //-----------------//
+
+        //Puede que termine siendo redundante al tener la tabla factura
         public double selectServicioPrecio(string descripcion)
         {
             Servicio miservicio = new Servicio();
@@ -996,7 +1364,9 @@ namespace GestorClientes
             return apellidos;
 
         }
+        //-//
 
+ 
 
         //-------------------//
 

@@ -14,10 +14,15 @@ namespace GestorClientes
         //Estos dos campos son para pura estetica del listado,no son propios de la tabla Factura;
         string _nombreCliente;
         string _apellidosCliente;
+        //-----------//
         string _matricula;
         int codServicio;
+        //Estos dos campos son para pura estetica del listado,no son propios de la tabla Factura;
+        string _nombreServicio;
+        //----------//
         string fecha;
-        int _numeroFacturaAnulada;
+        string _estadoFactura;
+        string _numeroFacturaAnulada;//Es de tipo string en lugar de int como _numeroFactura por que este puede ser NULL enla BD pero numerodeFactura no, y al leer un null y guardarlo en un tipo int puede saltar excepcion
       
 
         public int NumeroFactura { get => _numeroFactura; set => _numeroFactura = value; }
@@ -28,7 +33,9 @@ namespace GestorClientes
         public string Matricula { get => _matricula; set => _matricula = value; }
         public int CodServicio { get => codServicio; set => codServicio = value; }
         public string Fecha { get => fecha; set => fecha = value; }
-        public int NumeroFacturaAnulada { get => _numeroFacturaAnulada; set => _numeroFacturaAnulada = value; }
-      
+        public string EstadoFactura { get => _estadoFactura; set => _estadoFactura = value; }
+        public string NumeroFacturaAnulada { get => _numeroFacturaAnulada; set => _numeroFacturaAnulada = value; }
+        public string NombreServicio { get => _nombreServicio; set => _nombreServicio = value; }
+        
     }
 }

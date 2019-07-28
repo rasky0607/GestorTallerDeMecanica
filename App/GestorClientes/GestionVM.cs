@@ -20,9 +20,9 @@ using System.Windows.Forms;
 
 namespace GestorClientes
 {
-    class GestionVM: INotifyPropertyChanged
+    class GestionVM : INotifyPropertyChanged
     {
-       
+
         static string rutaImg = @"../../img/cartel.png";
         #region Variables
         string colorRojo = "#FFD66E6E";
@@ -36,11 +36,11 @@ namespace GestorClientes
         #region campos generales 
         bool _habilitado = false;//Habilita o deshabilita ciertos botones o opciones
         string _mensaje;//Mensaje de informacion     
-        string _conectadoDesconectado="Conectar";//Nombre que daremos al boton de conexion y desconexion segun el estado de dicha conexion
+        string _conectadoDesconectado = "Conectar";//Nombre que daremos al boton de conexion y desconexion segun el estado de dicha conexion
         bool _estadoConexion = false;//true abierta, false cerrada
-        string _colorConexion= "#FF45A3CF";
+        string _colorConexion = "#FF45A3CF";
         bool _activarFiltros = false;//Activa la ventana de filtros cuandola tabla listada sea reparaciones
-        string _tablaMostraEnListado = string.Empty;       
+        string _tablaMostraEnListado = string.Empty;
         #endregion
 
         #region Campos pestaña listar
@@ -66,7 +66,7 @@ namespace GestorClientes
 
         //Datos Añadir Servicio(Convertir Propiedades)
         string _descripcionInsert;
-        double _precioInsert;  
+        double _precioInsert;
 
         //Datos Añadir Reparacion(Convertir Propiedades)
         int _idClirepaInsert;//Seleciona un string de un idCliente de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
@@ -74,7 +74,7 @@ namespace GestorClientes
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
         DateTime _fechaRepaInser = DateTime.Now;
-        int _numRepaInsert=1;
+        int _numRepaInsert = 1;
 
         #endregion
 
@@ -84,7 +84,7 @@ namespace GestorClientes
         bool _habilitarModificaciones = false;//Deshabilitado hasta que se marque un registro y se pinche en el boton modificar
         string _tablaAcltualListada;//Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
         object _selecionRegistroAModificar = null; //Propiedad para el registro selecionado
-        string _mensajeActualizacion="";
+        string _mensajeActualizacion = "";
 
         //Datos Modificar Cliente
         int _idCliMod;//CAMBIADO
@@ -101,7 +101,7 @@ namespace GestorClientes
         //No hay Modificacion para reparaciones
 
         #endregion
-         
+
         #region Campos Filtros
         string _filtroMatriculaSelecionado;
         DateTime _filtroFecha = DateTime.Now;//Luego hay que tratarla pra que sea diferente ala hora de realizar la consulta con formato 'yyyy-MM-dd'
@@ -115,11 +115,12 @@ namespace GestorClientes
         string _filtroIDClienteSelecionado;
         int _filtroSelectIndexIdCliente;//Si la lista<int> de la propieda _filtroListIdCliente contine solo un elemento count =1 entonces esta propiedad FiltroSelectIndexIdCliente cambiara el selecteIndex de el despleagable de IdCliente de los filtros a 0, para marcar automaticamente el unico valor disponible
         string _filtroNombreCliente;
-        bool _activarBtnExtraerFacturas=false;//Activa o desactiva el boton de extraer  facturas, el cual solo se activara cuando los filtros marcados sean tanto filtro por mes como la matricula y el id del cliente
+        //Este campo funcionara tanto si estas en el listado reparaciones y filtro por una fecha e idcliente como  si esta en facturas y filtro del mismo modo
+        string _visibleBtnExtraerFacturasPdf = "Hidden";//Activa o desactiva el boton de extraer  facturas, el cual solo se activara cuando los filtros marcados sean tanto filtro por mes como la matricula y el id del cliente
         #endregion
 
         #region Campos Factura
-        string _colorFilaFactura;
+
 
         #endregion
 
@@ -128,9 +129,11 @@ namespace GestorClientes
         #region Propiedades
 
         #region Propiedades Generales
-        public bool Habilitado {
+        public bool Habilitado
+        {
             get { return _habilitado; }
-            set {
+            set
+            {
                 if (EstadoConexion)
                 {
                     _habilitado = true;
@@ -141,11 +144,12 @@ namespace GestorClientes
                 {
                     _habilitado = false;
                     Notificador("Habilitado");
-   
+
                 }
             }
         }
-        public string Mensaje {
+        public string Mensaje
+        {
             get { return _mensaje; }
 
             set
@@ -157,8 +161,9 @@ namespace GestorClientes
                 }
             }
 
-        }      
-        public bool EstadoConexion {
+        }
+        public bool EstadoConexion
+        {
             get { return _estadoConexion; }
 
             set
@@ -166,7 +171,7 @@ namespace GestorClientes
                 if (_estadoConexion != value)
                 {
                     _estadoConexion = value;
-                    Notificador("EstadoConexion");                   
+                    Notificador("EstadoConexion");
                 }
             }
         }
@@ -182,19 +187,21 @@ namespace GestorClientes
                     _conectadoDesconectado = "Desconectar";//Si el estado de la conecxion es verdad es decir  hay conexion, el boton muestra la palabra desconectar
                     Notificador("ConectadoDesconectado");
                     Habilitado = true;
-                
+
                 }
-                else {
+                else
+                {
                     _conectadoDesconectado = "Conectar";//Si el estado dela conecxion es falso es decir no hay conexion, el boton muestra la palabra conectar
                     Notificador("ConectadoDesconectado");
                     Habilitado = false;
-                    
+
 
 
                 }
             }
         }
-        public string ColorConexion {
+        public string ColorConexion
+        {
             get { return _colorConexion; }
 
             set
@@ -211,7 +218,7 @@ namespace GestorClientes
                     Notificador("EstadoConexion");
                 }
             }
-            
+
         }
 
         public bool ActivarFiltros
@@ -219,12 +226,12 @@ namespace GestorClientes
             get { return _activarFiltros; }
             set
             {
-                if (_activarFiltros !=value)
+                if (_activarFiltros != value)
                 {
                     _activarFiltros = value;
                     Notificador("ActivarFiltros");
                 }
-                
+
             }
         }
 
@@ -236,7 +243,7 @@ namespace GestorClientes
             set
             {
                 if (_tablaMostraEnListado != value)
-                {                   
+                {
                     switch (value)
                     {
                         case "cliente":
@@ -250,23 +257,11 @@ namespace GestorClientes
                             break;
                         case "factura":
                             value = "Facturas";
-                            Notificador("ColorFilaFactura");
-
-                            Factura mifactura = new Factura();
-                            for (int i = 0; i < Listado.Count; i++)
-                            {
-                                mifactura = (Factura)Listado[i];
-                                if (mifactura.NumeroFacturaAnulada != 0)
-                                    ColorFilaFactura = colorRojo;
-                                else                                 
-                                  ColorFilaFactura = colorAzul;
-                            }
-
                             break;
                     }
-                    _tablaMostraEnListado = value;                  
+                    _tablaMostraEnListado = value;
                     Notificador("TablaMostraEnListado");
-                    
+
                 }
             }
 
@@ -306,7 +301,7 @@ namespace GestorClientes
                         FiltroSelectIndexIdCliente = 0;
                     else
                         FiltroSelectIndexIdCliente = -1;
-                   
+
                 }
             }
 
@@ -324,12 +319,12 @@ namespace GestorClientes
                     Notificador("FiltroIDClienteSelecionado");
                     if (_filtroIDClienteSelecionado != null)
                     {
-                        FiltroNombreCliente = _dao.selectClienteNombre(int.Parse(_filtroIDClienteSelecionado));                      
+                        FiltroNombreCliente = _dao.selectClienteNombre(int.Parse(_filtroIDClienteSelecionado));
                     }
                     else
                     {
                         FiltroNombreCliente = string.Empty;
-                        ActivarBtnExtraerFacturas = false;
+                        VisibleBtnExtraerFacturasPdf = "Hidden";
                     }
                 }
             }
@@ -452,7 +447,7 @@ namespace GestorClientes
                 {
                     _filtrarMesFecha = value;
                     Notificador("FiltrarMesFecha");
-                    ActivarBtnExtraerFacturas = false;//Desactivar boton de emitir factura en cuanto marca esta obcion de filtrado de los 3 raiobutton posibles
+                    VisibleBtnExtraerFacturasPdf = "Hidden";//Desactivar boton de emitir factura en cuanto marca esta obcion de filtrado de los 3 raiobutton posibles
                 }
             }
         }
@@ -477,22 +472,22 @@ namespace GestorClientes
                         EstadoVisible = "Hidden";
                         EstadoVisiblecbxIDFiltro = "Visible";
                     }
-                    ActivarBtnExtraerFacturas = false;//Desactivar boton de emitir factura en cuanto marca esta obcion de filtrado de los 3 raiobutton posibles
+                    VisibleBtnExtraerFacturasPdf = "Hidden";//Desactivar boton de emitir factura en cuanto marca esta obcion de filtrado de los 3 raiobutton posibles
                 }
             }
         }
 
-        public bool ActivarBtnExtraerFacturas
+        public string VisibleBtnExtraerFacturasPdf
         {
-            get { return _activarBtnExtraerFacturas; }
+            get { return _visibleBtnExtraerFacturasPdf; }
 
             set
             {
-                if (_activarBtnExtraerFacturas != value)
+                if (_visibleBtnExtraerFacturasPdf != value)
                 {
-                    _activarBtnExtraerFacturas = value;
-                    Notificador("ActivarBtnExtraerFacturas");
-                  
+                    _visibleBtnExtraerFacturasPdf = value;
+                    Notificador("VisibleBtnExtraerFacturasPdf");
+
                 }
             }
         }
@@ -511,13 +506,13 @@ namespace GestorClientes
                     _listado = value;
                     SelecionRegistroAModificar = null;
                     Notificador("Listado");
-                }             
+                }
             }
         }
         #endregion
 
         #region  Propiedades pestaña Añadir
-        
+
         public int EsCorrectoInsert
         {
             get { return _esCorrecto; }
@@ -573,7 +568,7 @@ namespace GestorClientes
             }
         }
 
-     
+
         #region Campos Cliente
         public int IdCliInsert//CAMBIADO
         {
@@ -710,7 +705,7 @@ namespace GestorClientes
                 }
             }
         }
-       
+
 
         public string MatriculaRepaInsert
         {
@@ -761,11 +756,11 @@ namespace GestorClientes
                     _fechaRepaInser = value;
                     Notificador("FechaRepaInser");
                 }
-                
+
             }
         }
 
-  
+
         public int NumRepaInsert
         {
             get { return _numRepaInsert; }
@@ -784,20 +779,7 @@ namespace GestorClientes
         #endregion
 
         #region Propiedades Factura
-        public string ColorFilaFactura
-        {
-            get { return _colorFilaFactura; }
-
-            set
-            {              
-               if (_colorFilaFactura != value)
-              {
-                 _colorFilaFactura = value;
-                 Notificador("ColorFilaFactura");
-               }               
-            }
-
-        }
+        
 
         #endregion
 
@@ -829,30 +811,31 @@ namespace GestorClientes
                 }
             }
         }
-      
+
         public string TablaAcltualListada //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
         {
             get { return _tablaAcltualListada; }
 
             set
             {
-                if (_tablaAcltualListada!=value)
+                if (_tablaAcltualListada != value)
                 {
                     _tablaAcltualListada = value;
                     Notificador("TablaAcltualListada");
-                    if (_tablaAcltualListada == "reparacion")//Si la tabla listada es reparacion activa filtros si no, no
+                    if (_tablaAcltualListada == "reparacion" || _tablaAcltualListada == "factura")//Si la tabla listada es reparacion activa filtros si no, no
                         ActivarFiltros = true;
                     else
                         ActivarFiltros = false;
 
                     TablaMostraEnListado = value;
                 }
-               
+
             }
 
         }
-      
-        public object SelecionRegistroAModificar {
+
+        public object SelecionRegistroAModificar
+        {
             get { return _selecionRegistroAModificar; }
 
             set
@@ -916,7 +899,7 @@ namespace GestorClientes
         //Propiedades de los componentes de la pestaña modificaciones
 
         #region Campos Cliente
-        public int IdCliMod//CAMBIADO
+        public int IdCliMod
         {
             get { return _idCliMod; }
             set
@@ -1006,7 +989,7 @@ namespace GestorClientes
                 }
             }
         }
-   
+
         #endregion
 
         #region Campos Servicios
@@ -1052,7 +1035,7 @@ namespace GestorClientes
                 {
                     EstadoConexion = _dao.Conectar();
                     Listado = conversion(_dao.selectReparacion());
-                   
+
                     ConectadoDesconectado = "Desconectar";//Ya que esta conectado y este boton ademas lo mostraremos en rojo.. y cuando este desconectado, mostraremos la palabra'conectar' con el fondo verde
                     ColorConexion = colorRojo;
                     Listablas = _dao.VerTablas();
@@ -1104,7 +1087,7 @@ namespace GestorClientes
                     throw;
                 }
             }
-        }      
+        }
 
         private void ListadoServicios()
         {
@@ -1175,11 +1158,11 @@ namespace GestorClientes
             if (EstadoConexion)
             {
                 try
-                {                  
+                {
                     switch (TablaSelecionada)
                     {
                         case "cliente":
-                            if (_dao.InsertCliente(NombreCliInsert, ApellidosCliInsert, TlfCliInsert,MatriculaInsert,MarcaInsert,ModeloInsert))
+                            if (_dao.InsertCliente(NombreCliInsert, ApellidosCliInsert, TlfCliInsert, MatriculaInsert, MarcaInsert, ModeloInsert))
                             {
                                 //MensajeInsercion = "Insercion realizada correctamente";
                                 EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
@@ -1189,8 +1172,8 @@ namespace GestorClientes
                                 //Listado = conversion(_dao.selectCliente());
                                 ListadoClientes();
                                 EsCorrectoInsert = -1;//Reiniciamos la propiedad,para que en la siguiente ronda que vaya a añadir produzca de nuevo un cambio en la propiedad y ejecute el metodo de MainWindows TbxInserCorrect_TextChanged
-                            }                          
-                            break;                             
+                            }
+                            break;
                         case "servicio":
                             if (_dao.InsertServicio(DescripcionInsert, PrecioInsert))
                             {
@@ -1205,7 +1188,7 @@ namespace GestorClientes
                                 EsCorrectoInsert = -1;//Reiniciamos la propiedad,para que en la siguiente ronda que vaya a añadir produzca de nuevo un cambio en la propiedad y ejecute el metodo de MainWindows TbxInserCorrect_TextChanged
                             }
                             break;
-                        case "reparacion":                          
+                        case "reparacion":
                             CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);
                             /*Necesario para comprobar el numero de reparacion en el partado de los datos, ya que la comprobacion de CbxIdClienteInsert_SelectionChanged de la clase MainWindow solo afecta ala parte grafica,
                             ya que el cambio no consigue activar  una alteracion de el dato de la propiead,de esta forma queda asegurada*/
@@ -1214,11 +1197,11 @@ namespace GestorClientes
                                 NumRepaInsert++;
                             else
                                 NumRepaInsert = 1;
-                            if (_dao.InsertReparacion(NumRepaInsert, IdClirepaInsert, MatriculaRepaInsert,CodServicioRepa, FechaRepaInser.ToString("yyyy-MM-dd")))
+                            if (_dao.InsertReparacion(NumRepaInsert, IdClirepaInsert, MatriculaRepaInsert, CodServicioRepa, FechaRepaInser.ToString("yyyy-MM-dd")))
                             {
                                 //MensajeInsercion = "Insercion realizada correctamente";
                                 EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
-                                 //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
+                                                     //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
                                 Thread h1 = new Thread(new ThreadStart(MensajeInformacionInsercion));
                                 h1.Start();
                                 // Listado = conversion(_dao.selectReparacion());
@@ -1261,7 +1244,7 @@ namespace GestorClientes
                                 IdCliMod = 0;
                                 NombreCliMod = string.Empty;
                                 ApellidosCliMod = string.Empty;
-                                TlfCliMod= 0;
+                                TlfCliMod = 0;
                                 MatriculaMod = string.Empty;
                                 MarcaMod = string.Empty;
                                 ModeloMod = string.Empty;
@@ -1272,11 +1255,11 @@ namespace GestorClientes
                         case "servicio":
                             Servicio s = new Servicio();
                             s = (Servicio)SelecionRegistroAModificar;
-                            if (_dao.UpdateServicio(s.Codigo,DescripcionMod,PrecioMod))
+                            if (_dao.UpdateServicio(s.Codigo, DescripcionMod, PrecioMod))
                             {
                                 EsCorrectoMod = 0;//es correcta la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
-                               // MensajeActualizacion = "Actualizacion realizada con exito";
-                                //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
+                                                  // MensajeActualizacion = "Actualizacion realizada con exito";
+                                                  //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
                                 Thread h1 = new Thread(new ThreadStart(MensajeInformacionModCorrec));
                                 h1.Start();
                                 Listado = conversion(_dao.selectServicio());
@@ -1296,21 +1279,21 @@ namespace GestorClientes
                 }
             }
         }
-       //Este metodo refresca el listado despues de haber eliminado los registros desde la clase MainWindow en el metodo BtnEliminar_Click
+        //Este metodo refresca el listado despues de haber eliminado los registros desde la clase MainWindow en el metodo BtnEliminar_Click
         private void EliminarRegistro()
         {
             if (EstadoConexion)
             {
                 try
-                {                  
+                {
                     switch (TablaAcltualListada)
                     {
-                        case "cliente":                    
-                                Listado = conversion(_dao.selectCliente());
+                        case "cliente":
+                            Listado = conversion(_dao.selectCliente());
                             break;
                         case "servicio":
-                         
-                                Listado = conversion(_dao.selectServicio());
+
+                            Listado = conversion(_dao.selectServicio());
                             break;
                         case "reparacion":
                             Listado = conversion(_dao.selectReparacion());
@@ -1375,7 +1358,7 @@ namespace GestorClientes
             //Servicio
             DescripcionMod = string.Empty;
             PrecioMod = 0;
-           
+
             //Reparacions(No hay modificaciones de reparaciones)
 
             //Otros
@@ -1391,58 +1374,120 @@ namespace GestorClientes
             FiltrarMesFecha = false;
             FiltroFecha = DateTime.Now;
             ResultadoCalculoTotalMes = 0;
-            Listado = conversion(_dao.selectReparacion());
-            ActivarBtnExtraerFacturas = false;
+            if(TablaAcltualListada is "reparacion")
+                Listado = conversion(_dao.selectReparacion());
+            if(TablaAcltualListada is "factura")
+                Listado = conversion(_dao.selectFacturas());
+            VisibleBtnExtraerFacturasPdf = "Hidden";
         }
-      
+
         private void AplicarFiltros()
         {
-            if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null &&  FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
-                Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
-
-            //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
-            if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+            switch (TablaAcltualListada)
             {
-                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
-                //Activacion de facturas
-                if (Listado.Count != 0 && Listado != null)//Si se encontro algo se activa el boton si no, no
-                    ActivarBtnExtraerFacturas = true;
-                else
-                    ActivarBtnExtraerFacturas = false;
+                #region caso de tabla reparacion
+                case "reparacion":
+                    if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
+                        Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
+                    if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                    {
+                        Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                        //Activacion de facturas
+                        if (Listado.Count != 0 && Listado != null)//Si se encontro algo se activa el boton si no, no
+                            VisibleBtnExtraerFacturasPdf = "Visible";
+                        else
+                            VisibleBtnExtraerFacturasPdf = "Hidden";
+                    }
+
+                    if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
+                        Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    if (FiltrarMesFecha && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y una matricula pero no un idCliente
+                        Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    if (FiltrarMesFecha && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y no una matricula ni un IdCliente
+                        Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
+                    if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                    {
+                        Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    }
+
+                    //Si no ha selecionado ninguna radiobuttom pero si una matricula y no un idCliente
+                    if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)
+                        Listado = conversion(_dao.selectReparacion(FiltroMatriculaSelecionado));
+
+                    //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
+                    if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                        Listado = conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado)));
+                    //_________________//
+
+                    //Si ha selecionado radiobuttom 'FiltrarCalculoTotalMes'
+                    if (FiltrarCalculoTotalMes)
+                    {
+                        ResultadoCalculoTotalMes = _dao.selectReparacionFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
+                        Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+                    }               
+                    break;
+                #endregion
+
+                case "factura":
+                    //Filtros para facturas 
+                    if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
+                        Listado = conversion(_dao.selectFacturaFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
+                    if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                    {
+                        Listado = conversion(_dao.selectFacturaUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                        //Activacion de facturas
+                        if (Listado.Count != 0 && Listado != null )//Si se encontro algo se activa el boton si no, no facturas de esa fecha y de ese cliente
+                            VisibleBtnExtraerFacturasPdf = "Visible";
+                        else
+                            VisibleBtnExtraerFacturasPdf = "Hidden";
+                    }
+
+                    if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
+                        Listado = conversion(_dao.selectFacturaFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    if (FiltrarMesFecha && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y una matricula pero no un idCliente
+                        Listado = conversion(_dao.selectFacturaFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    if (FiltrarMesFecha && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y no una matricula ni un IdCliente
+                        Listado = conversion(_dao.selectFacturaFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
+                    if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                    {
+                        Listado = conversion(_dao.selectFacturaUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+
+                    }
+
+                    //Si no ha selecionado ninguna radiobuttom pero si una matricula y no un idCliente
+                    if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)
+                        Listado = conversion(_dao.selectFactura(FiltroMatriculaSelecionado));
+
+                    //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
+                    if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
+                        Listado = conversion(_dao.selectFacturaUnIdCliUnaMatricula(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado)));
+                    //_________________//
+
+                    //Si ha selecionado radiobuttom 'FiltrarCalculoTotalMes'
+                    if (FiltrarCalculoTotalMes)
+                    {
+                        ResultadoCalculoTotalMes = _dao.selectFacturaFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
+                        Listado = conversion(_dao.selectFacturaFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+                    }
+
+
+                    break;
             }
 
 
-            if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
-                Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
-
-            if (FiltrarMesFecha && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y una matricula pero no un idCliente
-                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
-
-            if (FiltrarMesFecha && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y no una matricula ni un IdCliente
-                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
-
-            //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
-            if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
-            {
-                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));             
-              
-            }
-
-            //Si no ha selecionado ninguna radiobuttom pero si una matricula y no un idCliente
-            if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)
-                Listado = conversion(_dao.selectReparacion(FiltroMatriculaSelecionado));
-
-            //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
-            if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
-                Listado = conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado,int.Parse(FiltroIDClienteSelecionado)));                   
-            //_________________//
-
-            //Si ha selecionado radiobuttom 'FiltrarCalculoTotalMes'
-            if (FiltrarCalculoTotalMes)
-            {
-                ResultadoCalculoTotalMes = _dao.selectReparacionFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
-                Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
-            }
         }
 
         private void CreacionDeFactura()
@@ -1536,32 +1581,24 @@ namespace GestorClientes
 
                     documento.Add(tabla);
                     documento.Close();
-                    
+
                     #endregion
 
-                    System.Windows.MessageBox.Show("Factura del :"+repar.Fecha+"\nNombre: " + repar.NombreCliRepa + " " + apellidos + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
+                    System.Windows.MessageBox.Show("Factura del :" + repar.Fecha + "\nNombre: " + repar.NombreCliRepa + " " + apellidos + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
                 }
-                catch {
+                catch
+                {
                     System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
                 }
             }
         }
 
 
-        private void logFactura(string nombreCliente,string apellidoCliente, string matriculaCoche, string fechaReparacion)
+        private void InsertargFactura(int numeroFactura, int linea, int idCliente, string matricula, int codServicio, string fecha, string numeroFacturaAnulada)
         {
-            string[] datosFactura = new string[1];
 
-            File.WriteAllLines("./logFacturas.txt",datosFactura);
-           
 
-            //Leemos si hay algo en el fichero
 
-            //Aumentamos el numero de factura despues de leer el que hay en el fichero
-           /* int contador = 0;
-            contador++;
-            File.CreateText(".\numeroFactura.txt");
-            File.WriteAllText(".\numeroFactura.txt", contador.ToString());*/
         }
 
         #endregion
@@ -1584,7 +1621,7 @@ namespace GestorClientes
 
         public RelayCommand RegistroReparaciones_click
         {
-            get { return new RelayCommand(listadoRep => ListadoReparacion(), ListadoRep => true); }           
+            get { return new RelayCommand(listadoRep => ListadoReparacion(), ListadoRep => true); }
         }
 
         public RelayCommand RegistroFacturas_click
@@ -1596,7 +1633,7 @@ namespace GestorClientes
         {
             get { return new RelayCommand(insertRegis => InsertarRegistro(), ListadoRep => true); }
         }
-   
+
         public RelayCommand ModificacionRegistro_click
         {
             get { return new RelayCommand(listadoRep => ModificacionRegistro(), ListadoRep => true); }
@@ -1634,7 +1671,7 @@ namespace GestorClientes
 
 
 
-       
+
         //----Fin Listado de registros---
         #endregion
 
@@ -1653,7 +1690,7 @@ namespace GestorClientes
                 listobjetos.Add(cli);
             }
             return listobjetos;
-        }   
+        }
 
         public List<object> conversion(List<Servicio> lservicios)
         {
@@ -1698,15 +1735,15 @@ namespace GestorClientes
 
         #region Metodos llamados por los hilos de ejecucion paralela en los mensajes de insercion y modificacion
         private void MensajeInformacionInsercion()
-        {           
+        {
             Mensaje = "Insercion Correcta";
             Thread.Sleep(3000);
             Mensaje = string.Empty;
-            
+
         }
 
         private void MensajeInformacionModCorrec()
-        {          
+        {
             Mensaje = "Modificacion realizada Correctamente";
             Thread.Sleep(3000);
             Mensaje = string.Empty;
@@ -1731,7 +1768,7 @@ namespace GestorClientes
         #endregion
 
         //ventana de dialogo donde se escogera la ruta
-       public  string AbrirDialogo()
+        public string AbrirDialogo()
         {
             string rutaProvisional = string.Empty;
             string nombreFactura = string.Empty;
@@ -1743,20 +1780,20 @@ namespace GestorClientes
                 dialogoDirectorio.ShowNewFolderButton = true;
                 resultado = dialogoDirectorio.ShowDialog();
                 rutaProvisional = dialogoDirectorio.SelectedPath;
-               // path = dialogoDirectorio.SelectedPath;
-               // rutaParaSubdirectorio = path;
+                // path = dialogoDirectorio.SelectedPath;
+                // rutaParaSubdirectorio = path;
                 dialogoDirectorio.Dispose();
                 //Preparacion de nombre de el fichero(sera la palabra Factura y la fecha toda seguida sin guiones)
                 Reparacion repar = (Reparacion)Listado[0];
                 string[] formandoFehchaCorrelativa = repar.Fecha.Split('/');
-                nombreFactura=@"\FacturaDe"+repar.IdCliente+"_";
+                nombreFactura = @"\FacturaDe" + repar.IdCliente + "_";
                 foreach (string item in formandoFehchaCorrelativa)
                 {
                     nombreFactura += item;
                 }
                 ruta = @rutaProvisional + nombreFactura;
 
-            
+
                 if (File.Exists(string.Concat(ruta + ".pdf")))
                 {
                     string rutaProvisional2 = ruta;
@@ -1768,7 +1805,7 @@ namespace GestorClientes
                         rutaProvisional2 += "(" + contador + ")";
 
                     };
-                    ruta = rutaProvisional2+ ".pdf";
+                    ruta = rutaProvisional2 + ".pdf";
                 }
                 else
                     ruta = ruta + ".pdf";
@@ -1779,7 +1816,7 @@ namespace GestorClientes
 
                 System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
             }
-           // return path;
+            // return path;
             return ruta;
         }// Refactorizado Listo
     }
