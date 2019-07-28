@@ -10,4 +10,6 @@ Gestor de clientes en un taller de mecanica en el cual podra verse:
 4-Inserción de nuevos registros.
 <br/>
 5-Emisión de una factura en un fichero PDF externo para su posterior impresion si es necesaria.
+<br/>
+6-Listado de facturas emitidas y anulación de estas referenciadas por el numero de la factura anulada en dicho listado en la nueva factura en su campo "facturaAnulada".
 
