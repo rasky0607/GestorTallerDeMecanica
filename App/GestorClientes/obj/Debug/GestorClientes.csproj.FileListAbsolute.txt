@@ -76,7 +76,6 @@ E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\Acerc
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\AcercaDe.baml
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\itextsharp.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\itextsharp.xml
-E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\BouncyCastle.Crypto.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\Google.Protobuf.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\MySql.Data.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\Renci.SshNet.dll
