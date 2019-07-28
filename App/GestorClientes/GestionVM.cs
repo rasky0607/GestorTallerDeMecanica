@@ -1593,7 +1593,7 @@ namespace GestorClientes
             }
         }
 
-
+        //PENDIENTE
         private void InsertargFactura(int numeroFactura, int linea, int idCliente, string matricula, int codServicio, string fecha, string numeroFacturaAnulada)
         {
 
@@ -1830,6 +1830,7 @@ namespace GestorClientes
  1-Pendite control de errores al hora de generar la factura, como fichero ya existente o fichero abierto.
  2- creada nueva tabla facturas la cual en base a  esta se genrara la factura en pdf
 a tra ves de el filtro  de reparaciones por mes, crear un boton que genere todas las facturas disponibles
+3-PENDIENTE InsertargFactura a la hora de crear una nueva factura en pdf desde el listado reparaciones y tambien la posibilidad de crear una nueva factura en pdf de un numero de factura selecionada, si esta no esta anulada
 
 
 
