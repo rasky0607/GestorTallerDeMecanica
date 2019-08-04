@@ -15,8 +15,10 @@ using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
 using System.IO;
 using System.Windows.Forms;
-
-
+//Para usar process y arrancar applicaciones ,como cuando creemos un pdf
+using System.Diagnostics;
+using MessageBox = System.Windows.Forms.MessageBox;
+using GestorClientes.Properties;
 
 namespace GestorClientes
 {
@@ -29,6 +31,8 @@ namespace GestorClientes
         string colorAzul = "#FF45A3CF";
         //public DaoSqlite _dao = new DaoSqlite();
         public DaoSql _dao = new DaoSql();
+        List<string> listadoTablasBD = new List<string>(); //Listado de tablas de la BD en la que si se puede insertar manualmente por le usuario (cliente,servicio,reparacion) PERO NO FACTURA de hay que no lo cojamos de el  show tables, como haciamos antes
+        List<Factura> listLineasFacturaSutituta = new List<Factura>();//Listado de datos de la factura sustituta para anular una factura y sustituirla por la nueva con nuevas lineas en ModificacionRegistro
         #endregion
 
         #region campos
@@ -41,6 +45,12 @@ namespace GestorClientes
         string _colorConexion = "#FF45A3CF";
         bool _activarFiltros = false;//Activa la ventana de filtros cuandola tabla listada sea reparaciones
         string _tablaMostraEnListado = string.Empty;
+
+        string _ocultarBtnsActionEdiUpDelete = "Visible";//Oculta el conjunto de botones donde estan los 3 putitos que desplega el boton de editar borrar y crear o insertar
+
+        string _ocultarBtnsAnularFacturaYRecrearFactura = "Hidden";//Oculta el conjunto de botones donde estan los 3 putitos que desplega el boton de editar borrar y crear o insertar
+        
+
         #endregion
 
         #region Campos pestaña listar
@@ -120,6 +130,21 @@ namespace GestorClientes
         #endregion
 
         #region Campos Factura
+
+        //Datos Modificar Añadiendo una nueva que sustituye la anterior Factura 
+        int _numeroFactura;
+        int _numeroFacturaSustituta;
+        int _idClienteFactura;
+        string _matriculaFactura;
+        string _ServicioFactura;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
+        List<string> _listComboboxServicioFactura;//lista de combobox de servicios realizados(itemSource)
+        int _CodServicioFactura;
+        DateTime _fechaFactura = DateTime.Now;
+        int _lienaFactura = 1;
+        List<string> _idclientesComboboxFactura = new List<string>();//lista que recarga el itemsource de el combobox de de idCliente cuando se va anular una factura creando otra.
+        bool _bloquearCbxIdClienteFactura = true;
+        bool _bloquearCbxMatriculaFactura = true;
+        bool _bloquearDataPickerFechaFactura = true;
 
 
         #endregion
@@ -220,7 +245,6 @@ namespace GestorClientes
             }
 
         }
-
         public bool ActivarFiltros
         {
             get { return _activarFiltros; }
@@ -235,6 +259,39 @@ namespace GestorClientes
             }
         }
 
+        public string OcultarBtnsActionEdiUpDelete
+        {
+            get { return _ocultarBtnsActionEdiUpDelete; }
+
+            set
+            {
+                if (_ocultarBtnsActionEdiUpDelete != value)
+                {
+                    _ocultarBtnsActionEdiUpDelete = value;
+                    Notificador("OcultarBtnsActionEdiUpDelete");
+                }
+            }
+
+        }
+
+        public string OcultarBtnsAnularFacturaYRecrearFactura
+        {
+            get { return _ocultarBtnsAnularFacturaYRecrearFactura; }
+
+            set
+            {
+                if (_ocultarBtnsAnularFacturaYRecrearFactura != value)
+                {
+                    _ocultarBtnsAnularFacturaYRecrearFactura = value;
+                    Notificador("OcultarBtnsAnularFacturaYRecrearFactura");
+                }
+            }
+
+        }
+
+      
+
+
         //Indica al usuario que tabla se esta viendo en el apartado listado
         public string TablaMostraEnListado
         {
@@ -248,15 +305,23 @@ namespace GestorClientes
                     {
                         case "cliente":
                             value = "Clientes";
+                            OcultarBtnsAnularFacturaYRecrearFactura = "Hidden";
+                            OcultarBtnsActionEdiUpDelete = "Visible";
                             break;
                         case "servicio":
                             value = "Servicios";
+                            OcultarBtnsAnularFacturaYRecrearFactura = "Hidden";
+                            OcultarBtnsActionEdiUpDelete = "Visible";
                             break;
                         case "reparacion":
                             value = "Reparaciones";
+                            OcultarBtnsAnularFacturaYRecrearFactura = "Hidden";
+                            OcultarBtnsActionEdiUpDelete = "Visible";
                             break;
-                        case "factura":
+                        case "factura":                         
                             value = "Facturas";
+                            OcultarBtnsAnularFacturaYRecrearFactura = "Visible";
+                            OcultarBtnsActionEdiUpDelete = "Hidden";
                             break;
                     }
                     _tablaMostraEnListado = value;
@@ -534,7 +599,7 @@ namespace GestorClientes
             set
             {
                 if (_listablas != value)
-                {
+                {                    
                     _listablas = value;
                     Notificador("Listablas");
                 }
@@ -778,8 +843,195 @@ namespace GestorClientes
 
         #endregion
 
-        #region Propiedades Factura
-        
+        //Solo propiedades para anular o modificar factura, ya que la insercion en esta tabla se realiza cuando el usuario crea el pdf de la factura al filtrar las reparaciones de un cliente en un dia concreto con una matricula concreta
+        #region Propiedades Anular o modificar Factura
+
+        public int NumeroFactura
+        {
+            get { return _numeroFactura; }
+
+            set
+            {
+                if (_numeroFactura != value)
+                {
+                    _numeroFactura = value;
+                    Notificador("NumeroFactura");
+                }
+            }
+
+        }
+        public int NumeroFacturaSustituta
+        {
+            get { return _numeroFacturaSustituta; }
+
+            set
+            {
+                if (_numeroFacturaSustituta != value)
+                {
+                    _numeroFacturaSustituta = value;
+                    Notificador("NumeroFacturaSustituta");
+                }
+            }
+
+        }
+        public int IdClienteFactura
+        {
+            get { return _idClienteFactura; }
+
+            set
+            {
+                if (_idClienteFactura != value)
+                {
+                    _idClienteFactura = value;
+                    Notificador("IdClienteFactura");
+                }
+            }
+
+        }
+        public string MatriculaFactura
+        {
+            get { return _matriculaFactura; }
+
+            set
+            {
+                if (_matriculaFactura != value)
+                {
+                    _matriculaFactura = value;
+                    Notificador("MatriculaFactura");
+                }
+            }
+
+        }
+        public string ServicioFactura
+        {
+            get { return _ServicioFactura; }
+
+            set
+            {
+                if (_ServicioFactura != value)
+                {
+                    _ServicioFactura = value;
+                    Notificador("ServicioFactura");
+                }
+            }
+
+        }
+        public int CodServicioFactura
+        {
+            get { return _CodServicioFactura; }
+
+            set
+            {
+                if (_CodServicioFactura != value)
+                {
+                    _CodServicioFactura = value;
+                    Notificador("CodServicioFactura");
+                }
+            }
+
+        }
+        public DateTime FechaFactura
+        {
+            get { return _fechaFactura; }
+
+            set
+            {
+                if (_fechaFactura != value)
+                {
+                    _fechaFactura = value;
+                    Notificador("FechaFactura");
+                }
+            }
+
+        }
+        public int LineaFactura
+        {
+            get { return _lienaFactura; }
+
+            set
+            {
+                if (_lienaFactura != value)
+                {
+                    _lienaFactura = value;
+                    Notificador("LienaFactura");
+                }
+            }
+
+        }
+
+        //Para recargar el combobox de idCliente cuando se ha insertado una linea de factura y queremos restablecer todos los datos a 0 para la siguiente linea
+        public List<string> IdclientesComboboxFactura
+        {
+            get { return _idclientesComboboxFactura; }
+
+            set
+            {
+                if (_idclientesComboboxFactura != value)
+                {
+                    _idclientesComboboxFactura = value;
+                    Notificador("IdclientesComboboxFactura");                 
+
+                }
+            }
+
+        }
+
+        public List<string> ListComboboxServicioFactura
+        {
+            get { return _listComboboxServicioFactura; }
+
+            set
+            {
+                if (_listComboboxServicioFactura != value)
+                {
+                    _listComboboxServicioFactura = value;
+                    Notificador("ListComboboxServicioFactura");
+
+                }
+            }
+
+        }
+
+        public bool BloquearCbxIdClienteFactura
+        {
+            get { return _bloquearCbxIdClienteFactura; }
+            set
+            {
+                if (_bloquearCbxIdClienteFactura != value)
+                {
+                    _bloquearCbxIdClienteFactura = value;
+                    Notificador("BloquearCbxIdClienteFactura");
+                }
+            }
+        }
+
+        public bool BloquearCbxMatriculaFactura
+        {
+            get { return _bloquearCbxMatriculaFactura; }
+            set
+            {
+                if (_bloquearCbxMatriculaFactura != value)
+                {
+                    _bloquearCbxMatriculaFactura = value;
+                    Notificador("BloquearCbxMatriculaFactura");
+                }
+            }
+        }
+
+        public bool BloquearDataPickerFechaFactura
+        {
+            get { return _bloquearDataPickerFechaFactura; }
+            set
+            {
+                if (_bloquearDataPickerFechaFactura != value)
+                {
+                    _bloquearDataPickerFechaFactura = value;
+                    Notificador("BloquearDataPickerFechaFactura");
+                }
+            }
+        }
+
+
 
         #endregion
 
@@ -866,10 +1118,20 @@ namespace GestorClientes
                                 DescripcionMod = s.Descripcion;
                                 PrecioMod = s.Precio;
                                 break;
-                                /*La preparacion de los datos selecionado de el registro de reaparacion en el datagrid de listado para su modificacion
-                                 * son preparados en la clase MainWindow en el metodo:
-                                 (Clase MainWIndows en BtnEditar_Click)
-                                */
+                            /*La preparacion de los datos selecionado de el registro de reaparacion en el datagrid de listado para su modificacion
+                             * son preparados en la clase MainWindow en el metodo:
+                             (Clase MainWIndows en BtnEditar_Click)
+                            */
+                            case "factura"://Cuando selecionamos una factura para modificarla(Solo dejamo en el apartado de modificacion el numero de factura a anular y el dela sustituta el resto se queda vacio como si de una insercion nueva se tratara) 
+                                Factura f = new Factura();
+                                f = (Factura)_selecionRegistroAModificar;
+                                /*Colocar datos de una factura selecionada en las distintas porpiedades de una factura
+                                Y numero de factura sustituta sera  una consulta de un select max(numeroFactura) el cual sacara el numero mas grande de la tabla facturas al que sumaremos uno,
+                                que sera el numero de la nueva factura*/
+                                NumeroFactura = f.NumeroFactura;
+                                NumeroFacturaSustituta = _dao.selectUltimoNumeroFactura();                               
+                         
+                                break;
 
 
                         }
@@ -1019,6 +1281,7 @@ namespace GestorClientes
             }
         }
         #endregion
+   
 
 
         #endregion
@@ -1034,11 +1297,18 @@ namespace GestorClientes
                 if (ConectadoDesconectado == "Conectar")
                 {
                     EstadoConexion = _dao.Conectar();
-                    Listado = conversion(_dao.selectReparacion());
+                    Listado = Conversion(_dao.selectReparacion());
 
                     ConectadoDesconectado = "Desconectar";//Ya que esta conectado y este boton ademas lo mostraremos en rojo.. y cuando este desconectado, mostraremos la palabra'conectar' con el fondo verde
                     ColorConexion = colorRojo;
-                    Listablas = _dao.VerTablas();
+                    //Listado de tablas de la BD en la que si se puede insertar manualmente por le usuario (cliente,servicio,reparacion) PERO NO FACTURA de hay que no lo cojamos de el  show tables, como haciamos antes
+                    //Listablas = _dao.VerTablas();
+                    listadoTablasBD.Add("cliente");
+                    listadoTablasBD.Add("servicio");
+                    listadoTablasBD.Add("reparacion");
+                    Listablas = listadoTablasBD;
+
+
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "reparacion";
                     ActivarFiltros = true;
@@ -1074,7 +1344,7 @@ namespace GestorClientes
             {
                 try
                 {
-                    Listado = conversion(_dao.selectCliente());
+                    Listado = Conversion(_dao.selectCliente());
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "cliente";
                     if (Listado.Count == 0)
@@ -1095,7 +1365,7 @@ namespace GestorClientes
             {
                 try
                 {
-                    Listado = conversion(_dao.selectServicio());
+                    Listado = Conversion(_dao.selectServicio());
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "servicio";
                     if (Listado.Count == 0)
@@ -1116,7 +1386,7 @@ namespace GestorClientes
             {
                 try
                 {
-                    Listado = conversion(_dao.selectReparacion());
+                    Listado = Conversion(_dao.selectReparacion());
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "reparacion";
                     if (Listado.Count == 0)
@@ -1137,7 +1407,7 @@ namespace GestorClientes
             {
                 try
                 {
-                    Listado = conversion(_dao.selectFacturas());
+                    Listado = Conversion(_dao.selectFacturas());
                     //Por si se quiere modificar un registro de ese listado saber de que tabla vamos a modificar dicho registro
                     TablaAcltualListada = "factura";
                     if (Listado.Count == 0)
@@ -1220,6 +1490,7 @@ namespace GestorClientes
             }
         }
 
+        //PROBAR parte CASE FACTRURA
         private void ModificacionRegistro()
         {
             if (EstadoConexion)
@@ -1238,7 +1509,7 @@ namespace GestorClientes
                                 //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
                                 Thread h1 = new Thread(new ThreadStart(MensajeInformacionModCorrec));
                                 h1.Start();
-                                Listado = conversion(_dao.selectCliente());
+                                Listado = Conversion(_dao.selectCliente());
                                 EsCorrectoMod = -1;
                                 //Limpieza por si vuelve clicar en el mismo registro para m odificar justo despues de haberlo hecho antes:
                                 IdCliMod = 0;
@@ -1250,8 +1521,8 @@ namespace GestorClientes
                                 ModeloMod = string.Empty;
 
                             }
-
                             break;
+
                         case "servicio":
                             Servicio s = new Servicio();
                             s = (Servicio)SelecionRegistroAModificar;
@@ -1262,12 +1533,53 @@ namespace GestorClientes
                                                   //El mensaje informativo se da con un hilo que se ejecuta en paralelo y lo muestra durante 3 segundos en la pestaña listado ya que el foco vovlera a esta
                                 Thread h1 = new Thread(new ThreadStart(MensajeInformacionModCorrec));
                                 h1.Start();
-                                Listado = conversion(_dao.selectServicio());
+                                Listado = Conversion(_dao.selectServicio());
                                 EsCorrectoMod = -1;
-                                //Limpieza por si vuelve clicar en el mismo registro para m odificar justo despues de haberlo hecho antes:
+                                //Limpieza por si vuelve clicar en el mismo registro para modificar justo despues de haberlo hecho antes:
                                 DescripcionMod = string.Empty;
                                 PrecioMod = 0;
                             }
+                            break;
+                          
+                        case "factura":
+                            DialogResult respuesta = MessageBox.Show("Esta seguro de no quere añadir mas lineas a esta nueva factura con el numero: " + NumeroFacturaSustituta + " que sustituira a la factura numero: " + NumeroFactura, "¡¡Atención Ò.Ó!!", MessageBoxButtons.YesNo);
+                            if (respuesta == DialogResult.Yes)
+                            {
+                                //AQUI entonces realizaremos la insercion del listado de lineas de la factura que habremos preparado y almacenado antes en listLineasFacturaAanular
+                                for (int i = 0; i < listLineasFacturaSutituta.Count; i++)
+                                {
+                                    Factura f = new Factura();
+                                    f = listLineasFacturaSutituta[i];
+                                    /*En este paso comprobamos que este en la tabla reparacion los datos de la linea de factura y de actualizar la factura anulada
+                                    a estado ANULADO y que la nueva factura contenta en numeroFacturaAnulada el numero de la factura que se anula*/
+                                    _dao.InsertarFacturaSustitutaPorAnulada(f.NumeroFactura,f.Linea,f.IdCliente,f.Matricula,f.CodServicio,f.Fecha,f.NumeroFacturaAnulada);                                    
+                                }
+
+                                //Volvemos ha activar los combox y datapicker(Solo se bloquearon para asegurarnos que esta factura siempre insertamos el mismo cliente,con el mismo coche de el mismo dia ,con distintos servicios)
+                                BloquearCbxIdClienteFactura = true;
+                                BloquearCbxMatriculaFactura = true;
+                                BloquearDataPickerFechaFactura = true;
+
+                                EsCorrectoMod = 0;//es correcta la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+
+                                //Vaciamos la lista, por si se vuelve a modificar otra, que no se mezclen los registros de facturas que se acumularian en la lista listLineasFacturaSutituta
+                                listLineasFacturaSutituta.Clear();
+                                Listado =Conversion(_dao.selectFacturas());//Actualizamos la lista
+                                EsCorrectoMod = -1;
+                                Thread h1 = new Thread(new ThreadStart(MensajeInAnulacionFacturaCorrecta));
+                                h1.Start();
+                            }
+
+                            //Resumen:
+                            /*1º->En primer lugar se guardaran cada  una de las  lineas de facturas nuevas en una lista.
+                              2º->En segundo lugar se comprobara que la linea insertada no existe ya en la tabla reparacion,
+                             * y se insertara las distintas lineas de la factura en la tabla reparacion , sustituiendo el campo linea de la factura por numero de reparacion
+                             *3º-> En tercer lugar se comprobara que la segunda linea de factura si la hay debe coincidir en (fecha,IdCliente y Matricula Coche con la primera), asi como todas las siguiente si las hay
+                             *4º-> Cada vez que se desee añadir una nueva linea de factura se debera dar aun boton de siguiente linea, el cual vaciara los campos excepto Numero de factura a anular y numero de factura sustituta.
+                             * 5º->cuando se finalice de introducir todas sus lineas se hara click en modificar y se creara el pdf con la factura y delvoremos al usuario al listado de facturas(antes de esto se preguntara al usuario si esta seguro de esto)
+                             * 6º En caso de dar a volver  en lugar de modificar, se recorrera la listat de facturas insertadas durante este proceso y se eliminaran, lo mismo con las inserciones realizadas en reparaciones
+                            */
+                            //List<Factura> listLineasFacturaAanular = new List<Factura>();//Listado de datos de la factura que vamos modificando para anular una factura y sustituirla por otra en ModificacionRegistro VolverAtrasMod
                             break;
                     }
                 }
@@ -1279,6 +1591,698 @@ namespace GestorClientes
                 }
             }
         }
+        //Guardamos lineas de la factura sustituta que va anular a otra en modificaciones
+        private void AnadirLineaFacturaSustituta()
+        {
+            //Añadimos la linea de factura de la pestaña modificaciones al listado de listLineasFacturaAanular
+            try
+            {
+                Factura f = new Factura();
+                f.NumeroFactura = NumeroFacturaSustituta;//Numero de nueva factura que sustitutye a la anulada
+                                                         //f.Linea = LineaFactura;
+                f.IdCliente = IdClienteFactura;
+                f.Matricula = MatriculaFactura;
+                f.NombreServicio = ServicioFactura;
+                f.CodServicio = _dao.selectServicioCodigo(ServicioFactura);
+                f.NombreCliente = _dao.selectClienteNombre(IdClienteFactura);
+                f.Fecha = FechaFactura.ToString("yyyy-MM-dd");
+                f.EstadoFactura = "VIGENTE";
+                f.NumeroFacturaAnulada = NumeroFactura.ToString();//Numero de factura que se va anular
+
+                int cantidad = listLineasFacturaSutituta.Count;//El numero de la cantidad de factura que vamos añadiendo se corresponde con el numero de lineas de la factura
+                if (cantidad == 0)
+                {
+                    f.Linea = 1;
+                    BloquearCbxIdClienteFactura = false;
+                    BloquearCbxMatriculaFactura = false;
+                    BloquearDataPickerFechaFactura = false;
+                }
+                else if (cantidad >= 1)
+                {
+                    f.Linea = cantidad + 1;
+                }
+
+                //Añadimos la nueva factura a la lista que sera la que se recorrera e insertara cuando se confirme los cambios en ModificacionRegistro en el case "factura"
+                listLineasFacturaSutituta.Add(f);
+                //Una vez añadimos una linea de la factura, la siguiente linea añadida sera la 2 asi que aumentamos la propiedad linea en 1
+                //LineaFactura = f.Linea++;
+                //Recargamos el valor por defecto de todos los datos para la siguiente linea de factura que se inserte:
+                IdclientesComboboxFactura = _dao.selectClienteIdCliente();
+                //Renovamos el conbobox de Servicio Realizado para que se marque a 0
+                ListComboboxServicioFactura = _dao.selectServicioDescripcion();
+                //Mensaje de linea insertada
+                Thread h1 = new Thread(new ThreadStart(MensajeInformacionAnulaFactura));
+                h1.Start();
+
+            }
+            catch (Exception e)
+            {
+                Mensaje = "ERROR: "+e.Message;
+            }
+            
+        }
+
+       //PENDIENTE COMPROBAR SI HAY UNA FACTURA CON LOS MISMOS DATOS QUE OTRA PERO CON DISTINTO NUMERO DE FACTURA Y ESTADO VIGENTE
+        //Insertamos linea de factura  totalmente nueva sin que tenga anulaciones o haga referencia  otra factura anulada (Se ejecutara cuando creamos una factura en pdf desde la tabla reparacion)
+        private int InsertarlineaFacturaVirgen()
+        {
+            int minumeroFactura = -1;
+            int numeroFacturaYaexistente = -1;
+
+            //IF que pregunta si esa factura existe ya con  los mismos datos y otro numero de factura y el estado vigente
+
+
+            if (TablaAcltualListada == "reparacion")
+            {
+                //Comprobacion de si ya se creo una factura con estos mismos datos y que este vigente
+                for (int i = 0; i < Listado.Count; i++)
+                {
+                    Reparacion r = new Reparacion();
+                    r = (Reparacion)Listado[i];
+                    if (_dao.SelectExisteEstaFacturaVigente(r.IdCliente, r.MatriCoche, r.Fecha, r.CodServicio))//Si alguno de los resgitros ya  existe como factura, se le pide que anule la factura 
+                    {
+                        minumeroFactura = -2;
+                        numeroFacturaYaexistente=_dao.SelectNumeroFactura(r.IdCliente, r.MatriCoche, r.Fecha);
+                        break;
+                    }
+                }
+                if (minumeroFactura != -2)//si ninguno de los registros con los que se va ha crear la factura, ya existe en la tabla factura
+                {
+                    Reparacion rep = new Reparacion();
+                    rep = (Reparacion)Listado[0];
+
+                    //Inserta una nueva factura limpiamente
+                    minumeroFactura = _dao.selectUltimoNumeroFactura();
+                    for (int i = 0; i < Listado.Count; i++)
+                    {
+                        Reparacion r = new Reparacion();
+                        r = (Reparacion)Listado[i];
+                        //Insertamos una linea de factura
+                        _dao.InsertarFacturaLimpia(minumeroFactura, r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha);
+                    }
+                }
+                else
+                {
+
+                    MessageBox.Show("Ops!.Ya existe una factura creada con eso registros con el numero de factura: "+numeroFacturaYaexistente+"\nSi desea crear un nuevo pdf de estos registros,dirijase a esta factura clicke en ella y luego vaya al boton que indica \"recrear esta factura en PDF.\"\nTambien puede anular esta factura si lo desea y crear una nueva con los registros de reparaciones pertinentes", "(◑ω◐)¡Ops!.");
+                }
+                
+               
+            }
+            return minumeroFactura;
+
+        }
+        
+        private void CreacionDeFactura()
+        {
+            //Añadimos las lineas de la nueva factura a la BD.
+            #region Factura sacada de la tabla reparacion
+            if (TablaAcltualListada == "reparacion")
+            {
+                int numeroFactura = InsertarlineaFacturaVirgen();
+                if (numeroFactura != -2)//si es -2 no se crea la factura, puesto que ya hay una con esos mismos datos enla tabla factura
+                {
+                    string ruta = AbrirDialogo();
+                    if (ruta != string.Empty && ruta != null)
+                    {
+                        try
+                        {
+                            #region Preparacion del documento
+                            //Preparacion de documento
+                            iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
+
+                            PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
+                            documento.Open();
+                            //Preparacion de imagen
+                            iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
+                            imagen.BorderWidth = 100;
+                            imagen.Alignment = Element.ALIGN_CENTER;
+                            float porcentaje = 0.0f;
+                            porcentaje = 250 / imagen.Width;
+                            imagen.ScalePercent(porcentaje * 100);
+
+                            #endregion
+                            //Donde sacaremos mas abajo los datos basicos de la factura como la fecha, nombre de el cliente y matricula del coche
+                            Reparacion repar = (Reparacion)Listado[0];
+
+                            #region Contenido texto de el pdf
+
+                            //Lineas de el documento
+                            Paragraph saltoParrafo = new Paragraph(" ");
+                           /* Paragraph titulo1 = new Paragraph();
+                            titulo1.Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 18, 3, BaseColor.BLACK);
+                            titulo1.Add("Electromecánica Óscar.");
+                            titulo1.Alignment = Element.ALIGN_CENTER;//alineacion de el texto a la derecha
+                            documento.Add(titulo1);*/
+                            documento.Add(saltoParrafo);
+                            //Añadir imagen lista
+                            documento.Add(imagen);
+                            #region Datos Empresa
+
+                            //Datos de la empresa
+                            Paragraph dato1 = new Paragraph();
+                            dato1.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                            dato1.Add("Óscar Castro Pérez.");
+                            dato1.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha                 
+                            documento.Add(dato1);
+
+                            //Datos de la empresa
+                            Paragraph dato2 = new Paragraph();
+                            dato2.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                            dato2.Add("AVDA. EUROPA, N11S");
+                            dato2.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                            documento.Add(dato2);
+
+                            //Datos de la empresa
+                            Paragraph dato3 = new Paragraph();
+                            dato3.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                            dato3.Add("CP: 29004-MÁLAGA");
+                            dato3.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                            documento.Add(dato3);
+
+                            //Datos de la empresa
+                            Paragraph dato4 = new Paragraph();
+                            dato4.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                            dato4.Add("CIF/NIF: 76751966T");
+                            dato4.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                            documento.Add(dato4);
+
+                            //Datos de la empresa
+                            Paragraph dato5 = new Paragraph();
+                            dato5.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                            dato5.Add("Tlf: 952 360 979");
+                            dato5.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                            documento.Add(dato5);
+
+                            //Datos de la empresa
+                            Paragraph dato6 = new Paragraph();
+                            dato6.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                            dato6.Add("Correo: electromecanicaoscar11s@gmail.com");
+                            dato6.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                            documento.Add(dato6);
+                            #endregion
+
+
+                            documento.Add(saltoParrafo);
+
+
+                            //Numero de Factura
+                            Paragraph tituloNFactura = new Paragraph();
+                            tituloNFactura.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            tituloNFactura.Add("Nº Factura" + "\n\n" + numeroFactura.ToString());
+                            tituloNFactura.Alignment = Element.ALIGN_CENTER;
+                            Paragraph titulofechaFactura = new Paragraph();
+                            titulofechaFactura.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            titulofechaFactura.Add("FECHA" + "\n\n" + repar.Fecha);
+                            titulofechaFactura.Alignment = Element.ALIGN_CENTER;
+                            Paragraph tituloIdCliente = new Paragraph();
+                            tituloIdCliente.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            tituloIdCliente.Add("ID CLIENTE" + "\n\n" + repar.IdCliente.ToString());
+                            tituloIdCliente.Alignment = Element.ALIGN_CENTER;
+
+
+                            PdfPTable tabla1 = new PdfPTable(3);
+                            tabla1.WidthPercentage = 50;
+                            tabla1.AddCell(tituloNFactura);
+                            tabla1.AddCell(titulofechaFactura);
+                            tabla1.AddCell(tituloIdCliente);
+                            /*tabla1.AddCell(numeroFactura.ToString());
+                            tabla1.AddCell(repar.Fecha);
+                            tabla1.AddCell(repar.IdCliente.ToString());*/
+                            //tabla1.HorizontalAlignment = 10;
+                            tabla1.HorizontalAlignment = Element.ALIGN_RIGHT;
+                            documento.Add(tabla1);
+                            //documento.Add(titulo2);
+
+                            //Datos Cliente
+                            Paragraph lineaCabecera = new Paragraph();
+                            lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+
+                            string apellidos = string.Empty;
+                            apellidos = _dao.selectClienteApellidos(repar.IdCliente);
+                            lineaCabecera.Add("\nNombre: " + repar.NombreCliRepa + "\nApellidos: " + apellidos + "\nMatricula: " + repar.MatriCoche);//+ "\nFecha:" + repar.Fecha
+                            documento.Add(lineaCabecera);
+
+                            //Salto de parrafo entre datos y tabla                   
+                            documento.Add(saltoParrafo);
+
+                            //Creamos la tabla
+                            PdfPTable tabla = new PdfPTable(2);
+                            tabla.WidthPercentage = 100;
+
+                            Paragraph cabecera1 = new Paragraph();
+                            cabecera1.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                            cabecera1.Add("Servicio");
+                            Paragraph cabecera2 = new Paragraph();
+                            cabecera2.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                            cabecera2.Add("Precio");
+                            //Cabeceras de tabla
+                            tabla.AddCell(cabecera1);
+                            tabla.AddCell(cabecera2);
+                            List<double> listPreciosAsumar = new List<double>();//Precio de todos los servicios,para posteriormente ser sumaros y añadir el total de el coste de todos ellos a la tabla
+
+                            //Datos para la tabla (servicio realizado) y (precio de este)
+                            foreach (object item in Listado)
+                            {
+                                Paragraph celdColum1 = new Paragraph();
+                                celdColum1.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                                double precio = 0;
+                                Reparacion r = (Reparacion)item;
+                                celdColum1.Add(r.NombreServicio);
+                                tabla.AddCell(celdColum1);
+                                precio = _dao.selectServicioPrecio(r.NombreServicio);
+                                Paragraph celdColum2 = new Paragraph();
+                                celdColum2.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                                celdColum2.Add(precio.ToString() + "€");
+                                tabla.AddCell(celdColum2);
+                                listPreciosAsumar.Add(precio);
+                            }
+                            documento.Add(tabla);
+
+                            //Sumatorio de precios
+                            double precioTotal = 0;
+                            foreach (var valor in listPreciosAsumar)
+                            {
+                                precioTotal += valor;
+                            }
+
+                            string IVA = System.Configuration.ConfigurationManager.AppSettings.Get("IVA");//Optenemos el  dato de configuracion con la clabe IVA de el fichero app.config
+
+                            Paragraph tituloImporteBruto = new Paragraph();
+                            tituloImporteBruto.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            tituloImporteBruto.Add("IMPORTE BRUTO");
+
+                            Paragraph tituloBaseImponible = new Paragraph();
+                            tituloBaseImponible.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            tituloBaseImponible.Add("BASE IMPONIBLE");
+
+                            Paragraph tituloIVA = new Paragraph();
+                            tituloIVA.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            tituloIVA.Add(IVA + "%" + "I.V.A.");
+
+                            Paragraph tituloTotal = new Paragraph();
+                            tituloTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            tituloTotal.Add("TOTAL");
+
+                            //Añadimos linea de precio total con un estilo concreto.
+                            Paragraph lineaPrecioTotal = new Paragraph();
+                            lineaPrecioTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            lineaPrecioTotal.Add(precioTotal.ToString() + "€");
+
+                            double precioBrutoYBImponible = 0;
+                            double ivaAplicado = 0;
+                            ivaAplicado = (precioTotal * double.Parse(IVA)) / 100;//Sacamos cuanto es 21% de el iva del precio final
+                            precioBrutoYBImponible = precioTotal - ivaAplicado;//Le quitamos el 21% del iva el precio total para obtener el precio bruto y la Base imponible por que los descuentos lo hacemos directamente sobre  total de la factura, si no iria a parte
+
+                            //Añadimos linea de precio total con un estilo concreto.
+                            Paragraph lineaBrutoYBImponible = new Paragraph();
+                            lineaBrutoYBImponible.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                            lineaBrutoYBImponible.Add(precioBrutoYBImponible.ToString());
+
+
+
+                            PdfPTable tabla3 = new PdfPTable(3);
+                            tabla3.WidthPercentage = 80;
+
+                            tabla3.AddCell(tituloBaseImponible);
+                            tabla3.AddCell(tituloIVA);
+                            tabla3.AddCell(tituloTotal);
+
+                            tabla3.AddCell(precioBrutoYBImponible.ToString());
+                            tabla3.AddCell(ivaAplicado.ToString());
+                            tabla3.AddCell(lineaPrecioTotal);
+
+                            tabla3.HorizontalAlignment = Element.ALIGN_LEFT;
+
+                            documento.Add(saltoParrafo);
+                            documento.Add(saltoParrafo);
+                            documento.Add(tabla3);
+                            documento.Close();
+
+                            #endregion
+
+                            System.Windows.MessageBox.Show("Factura del :" + repar.Fecha + "\nNombre: " + repar.NombreCliRepa + " " + apellidos + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
+
+                        }
+
+                        catch
+                        {
+                            System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
+                        }
+                    }
+                }
+            }
+                #endregion
+
+            #region Factura sacada de la tabla Factura
+                //Apartado recrear factura en PDF desde la tabla facturas(Necesitamos la propiedad selecteItem de el datagrid
+                if (TablaAcltualListada == "factura")
+                {
+
+                Factura fac = new Factura();
+
+                if (SelecionRegistroAModificar != null)
+                {
+                    fac = (Factura)SelecionRegistroAModificar;
+
+
+
+                    if (fac.EstadoFactura == "VIGENTE")
+                    {
+                        string ruta = AbrirDialogo();
+                        if (ruta != string.Empty && ruta != null)
+                        {
+                            try
+                            {
+                                #region Preparacion del documento
+                                //Preparacion de documento
+                                iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
+
+                                PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
+                                documento.Open();
+                                //Preparacion de imagen
+                                iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
+                                imagen.BorderWidth = 100;
+                                imagen.Alignment = Element.ALIGN_CENTER;
+                                float porcentaje = 0.0f;
+                                porcentaje = 250 / imagen.Width;
+                                imagen.ScalePercent(porcentaje * 100);
+
+                                #endregion
+                                //Donde sacaremos mas abajo los datos basicos de la factura como la fecha, nombre de el cliente y matricula del coche
+                                Factura miFactura = (Factura)SelecionRegistroAModificar;
+
+                                #region Contenido texto de el pdf
+
+                                //Lineas de el documento
+                                Paragraph saltoParrafo = new Paragraph(" ");
+                                /* Paragraph titulo1 = new Paragraph();
+                                 titulo1.Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 18, 3, BaseColor.BLACK);
+                                 titulo1.Add("Electromecánica Óscar.");
+                                 titulo1.Alignment = Element.ALIGN_CENTER;//alineacion de el texto a la derecha
+                                 documento.Add(titulo1);*/
+                                documento.Add(saltoParrafo);
+                                //Añadir imagen lista
+                                documento.Add(imagen);
+
+                                #region Datos Empresa
+
+                                //Datos de la empresa
+                                Paragraph dato1 = new Paragraph();
+                                dato1.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                                dato1.Add("Óscar Castro Pérez.");
+                                dato1.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha                 
+                                documento.Add(dato1);
+
+                                //Datos de la empresa
+                                Paragraph dato2 = new Paragraph();
+                                dato2.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                                dato2.Add("AVDA. EUROPA, N11S");
+                                dato2.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                                documento.Add(dato2);
+
+                                //Datos de la empresa
+                                Paragraph dato3 = new Paragraph();
+                                dato3.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                                dato3.Add("CP: 29004-MÁLAGA");
+                                dato3.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                                documento.Add(dato3);
+
+                                //Datos de la empresa
+                                Paragraph dato4 = new Paragraph();
+                                dato4.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                                dato4.Add("CIF/NIF: 76751966T");
+                                dato4.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                                documento.Add(dato4);
+
+                                //Datos de la empresa
+                                Paragraph dato5 = new Paragraph();
+                                dato5.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                                dato5.Add("Tlf: 952 360 979");
+                                dato5.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                                documento.Add(dato5);
+
+                                //Datos de la empresa
+                                Paragraph dato6 = new Paragraph();
+                                dato6.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
+                                dato6.Add("Correo: electromecanicaoscar11s@gmail.com");
+                                dato6.Alignment = Element.ALIGN_JUSTIFIED;//alineacion de el texto a la derecha
+                                documento.Add(dato6);
+                                #endregion
+
+                                documento.Add(saltoParrafo);
+
+
+                                //Numero de Factura
+                                Paragraph tituloNFactura = new Paragraph();
+                                tituloNFactura.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                tituloNFactura.Add("Nº Factura" + "\n\n" + miFactura.NumeroFactura.ToString());
+                                tituloNFactura.Alignment = Element.ALIGN_CENTER;
+                                Paragraph titulofechaFactura = new Paragraph();
+                                titulofechaFactura.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                titulofechaFactura.Add("FECHA" + "\n\n" + miFactura.Fecha);
+                                titulofechaFactura.Alignment = Element.ALIGN_CENTER;
+                                Paragraph tituloIdCliente = new Paragraph();
+                                tituloIdCliente.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                tituloIdCliente.Add("ID CLIENTE" + "\n\n" + miFactura.IdCliente.ToString());
+                                tituloIdCliente.Alignment = Element.ALIGN_CENTER;
+
+
+                                PdfPTable tabla1 = new PdfPTable(3);
+                                tabla1.WidthPercentage = 50;
+                                tabla1.AddCell(tituloNFactura);
+                                tabla1.AddCell(titulofechaFactura);
+                                tabla1.AddCell(tituloIdCliente);
+                                /*tabla1.AddCell(numeroFactura.ToString());
+                                tabla1.AddCell(repar.Fecha);
+                                tabla1.AddCell(repar.IdCliente.ToString());*/
+                                //tabla1.HorizontalAlignment = 10;
+                                tabla1.HorizontalAlignment = Element.ALIGN_RIGHT;
+                                documento.Add(tabla1);
+                                //documento.Add(titulo2);
+
+                                //Datos Cliente
+                                Paragraph lineaCabecera = new Paragraph();
+                                lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+
+                                //string apellidos = string.Empty;
+                                //apellidos = _dao.selectClienteApellidos(miFactura.IdCliente);
+                                lineaCabecera.Add("\nNombre: " + miFactura.NombreCliente + "\nApellidos: " + miFactura.ApellidosCliente + "\nMatricula: " + miFactura.Matricula);//+ "\nFecha:" + repar.Fecha
+                                documento.Add(lineaCabecera);
+
+                                //Salto de parrafo entre datos y tabla                   
+                                documento.Add(saltoParrafo);
+
+                                //Recogemos todas las lineas de esa determinada factura a traves de su numero
+                                List<Factura> listLineasFactura = new List<Factura>();
+                                listLineasFactura = _dao.selectFacturas(miFactura.NumeroFactura);
+
+                                //Creamos la tabla
+                                PdfPTable tabla = new PdfPTable(2);
+                                tabla.WidthPercentage = 100;
+
+                                Paragraph cabecera1 = new Paragraph();
+                                cabecera1.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                                cabecera1.Add("Servicio");
+                                Paragraph cabecera2 = new Paragraph();
+                                cabecera2.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
+                                cabecera2.Add("Precio");
+                                //Cabeceras de tabla
+                                tabla.AddCell(cabecera1);
+                                tabla.AddCell(cabecera2);
+                                List<double> listPreciosAsumar = new List<double>();//Precio de todos los servicios,para posteriormente ser sumaros y añadir el total de el coste de todos ellos a la tabla
+
+                                //Datos para la tabla (servicio realizado) y (precio de este)
+                                foreach (Factura item in listLineasFactura)
+                                {
+                                    Paragraph celdColum1 = new Paragraph();
+                                    celdColum1.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                                    double precio = 0;
+                                    Factura f = item;
+                                    celdColum1.Add(f.NombreServicio);
+                                    tabla.AddCell(celdColum1);
+                                    precio = _dao.selectServicioPrecio(f.NombreServicio);
+                                    Paragraph celdColum2 = new Paragraph();
+                                    celdColum2.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+                                    celdColum2.Add(precio.ToString() + "€");
+                                    tabla.AddCell(celdColum2);
+                                    listPreciosAsumar.Add(precio);
+                                }
+                                documento.Add(tabla);
+
+                                //Sumatorio de precios
+                                double precioTotal = 0;
+                                foreach (var valor in listPreciosAsumar)
+                                {
+                                    precioTotal += valor;
+                                }
+
+                                string IVA = System.Configuration.ConfigurationManager.AppSettings.Get("IVA");//Optenemos el  dato de configuracion con la clabe IVA de el fichero app.config
+
+                                Paragraph tituloImporteBruto = new Paragraph();
+                                tituloImporteBruto.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                tituloImporteBruto.Add("IMPORTE BRUTO");
+
+                                Paragraph tituloBaseImponible = new Paragraph();
+                                tituloBaseImponible.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                tituloBaseImponible.Add("BASE IMPONIBLE");
+
+                                Paragraph tituloIVA = new Paragraph();
+                                tituloIVA.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                tituloIVA.Add(IVA + "%" + "I.V.A.");
+
+                                Paragraph tituloTotal = new Paragraph();
+                                tituloTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                tituloTotal.Add("TOTAL");
+
+                                //Añadimos linea de precio total con un estilo concreto.
+                                Paragraph lineaPrecioTotal = new Paragraph();
+                                lineaPrecioTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                lineaPrecioTotal.Add(precioTotal.ToString() + "€");
+
+                                double precioBrutoYBImponible = 0;
+                                double ivaAplicado = 0;
+                                ivaAplicado = (precioTotal * double.Parse(IVA)) / 100;//Sacamos cuanto es 21% de el iva del precio final
+                                precioBrutoYBImponible = precioTotal - ivaAplicado;//Le quitamos el 21% del iva el precio total para obtener el precio bruto y la Base imponible por que los descuentos lo hacemos directamente sobre  total de la factura, si no iria a parte
+
+                                //Añadimos linea de precio total con un estilo concreto.
+                                Paragraph lineaBrutoYBImponible = new Paragraph();
+                                lineaBrutoYBImponible.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+                                lineaBrutoYBImponible.Add(precioBrutoYBImponible.ToString());
+
+
+
+                                PdfPTable tabla3 = new PdfPTable(3);
+                                tabla3.WidthPercentage = 80;
+
+                                tabla3.AddCell(tituloBaseImponible);
+                                tabla3.AddCell(tituloIVA);
+                                tabla3.AddCell(tituloTotal);
+
+                                tabla3.AddCell(precioBrutoYBImponible.ToString());
+                                tabla3.AddCell(ivaAplicado.ToString());
+                                tabla3.AddCell(lineaPrecioTotal);
+
+                                tabla3.HorizontalAlignment = Element.ALIGN_LEFT;
+
+                                documento.Add(saltoParrafo);
+                                documento.Add(saltoParrafo);
+                                documento.Add(tabla3);
+                                documento.Close();
+
+                                #endregion
+
+                                System.Windows.MessageBox.Show("Factura del :" + miFactura.Fecha + "\nNombre: " + miFactura.NombreCliente + " " + miFactura.ApellidosCliente + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
+
+                            }
+
+                            catch
+                            {
+                                System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Ops!.Lo sentimos,pero no podemos crear el PDF de una factura anulada!.", "(◑ω◐)¡Ops!.");
+                    }
+
+                }
+                else
+                    System.Windows.MessageBox.Show("Ops!.Antes de recrear el pdf de una factura debes selecionar un registro de alguna de ellas.", "(◑ω◐)¡Ops!.");
+
+            }
+                #endregion
+
+            
+        }
+        //ventana de dialogo donde se escogera la ruta
+        public string AbrirDialogo()
+        {
+            string rutaProvisional = string.Empty;
+            string nombreFactura = string.Empty;
+            string ruta = string.Empty;
+            FolderBrowserDialog dialogoDirectorio = new FolderBrowserDialog();
+            DialogResult resultado;
+
+            string[] formandoFehchaCorrelativa = null;
+            DateTime fec = new DateTime();
+
+            if (TablaAcltualListada == "reparacion")
+            {
+                Reparacion repar = (Reparacion)Listado[0];
+                formandoFehchaCorrelativa = repar.Fecha.Split('/');
+                nombreFactura = @"\FacturaDe" + repar.IdCliente + "_";
+                fec = DateTime.Parse(repar.Fecha);
+            }
+            if (TablaAcltualListada == "factura")
+            {
+                Factura miFactura = (Factura)SelecionRegistroAModificar;
+                 formandoFehchaCorrelativa = miFactura.Fecha.Split('/');
+                nombreFactura = @"\FacturaDe" + miFactura.IdCliente + "_";
+                 fec = DateTime.Parse(miFactura.Fecha);
+            }
+
+                #region Formacion de ruta y nombre de fichero
+                try
+                {
+                    dialogoDirectorio.ShowNewFolderButton = true;
+                    resultado = dialogoDirectorio.ShowDialog();
+                    rutaProvisional = dialogoDirectorio.SelectedPath;
+                    // path = dialogoDirectorio.SelectedPath;
+                    // rutaParaSubdirectorio = path;
+                    dialogoDirectorio.Dispose();
+                   
+                    foreach (string item in formandoFehchaCorrelativa)
+                    {
+                        nombreFactura += item;
+                    }
+                    // ruta = @rutaProvisional + nombreFactura;
+
+                    //Preparamos el nombre para el directorio el cual constara de numero de mes y  de año correlativos
+                    
+                    string fecha = fec.Month.ToString();
+                    fecha += "_" + fec.Year.ToString();
+                    //Crear directorio con numero de mes y año para la factura   
+                    if (!Directory.Exists(String.Concat(@rutaProvisional + @"\" + fecha)))//Si no existe el directorio lo crea
+                    {
+                        Directory.CreateDirectory(String.Concat(@rutaProvisional + @"\" + fecha));
+                    }
+                    //Guardamos la ruta hasta el directorio creado
+                    ruta = String.Concat(@rutaProvisional + @"\" + fecha + nombreFactura);
+                    //------//
+
+                    if (File.Exists(string.Concat(ruta + ".pdf")))
+                    {
+                        string rutaProvisional2 = ruta;
+                        int contador = 0;
+                        while (File.Exists(string.Concat(rutaProvisional2 + ".pdf")))
+                        {
+                            rutaProvisional2 = ruta;//Para que siempre parte de laruta orginal y si cambia el nombre del fichero sea solo añadiendo(1) o (2) etc.. pero no que no sea nombredelfichero.pfd(1)(2)(3) solo nombredelfichero.pfd(1) o nombredelfichero.pfd(2)etcc..
+                            contador++;
+                            rutaProvisional2 += "(" + contador + ")";
+
+                        };
+                        ruta = rutaProvisional2 + ".pdf";
+                    }
+                    else
+                        ruta = ruta + ".pdf";
+
+                }
+                catch (Exception)
+                {
+
+                    System.Windows.MessageBox.Show("Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
+                }
+            
+            #endregion
+
+   
+            // return path;
+            return ruta;
+        }// Refactorizado Listo
+
+
         //Este metodo refresca el listado despues de haber eliminado los registros desde la clase MainWindow en el metodo BtnEliminar_Click
         private void EliminarRegistro()
         {
@@ -1289,14 +2293,14 @@ namespace GestorClientes
                     switch (TablaAcltualListada)
                     {
                         case "cliente":
-                            Listado = conversion(_dao.selectCliente());
+                            Listado = Conversion(_dao.selectCliente());
                             break;
                         case "servicio":
 
-                            Listado = conversion(_dao.selectServicio());
+                            Listado = Conversion(_dao.selectServicio());
                             break;
                         case "reparacion":
-                            Listado = conversion(_dao.selectReparacion());
+                            Listado = Conversion(_dao.selectReparacion());
                             break;
                     }
                     Thread h1 = new Thread(new ThreadStart(MensajeInformacionEliminacionCorrecta));
@@ -1330,7 +2334,7 @@ namespace GestorClientes
             //Reparacion
             IdClirepaInsert = 0;
             MatriculaRepaInsert = string.Empty;
-            ServicioRepa = string.Empty;
+            ServicioRepa = string.Empty;//Usado para identificar el servicio en la tabla reparacion y en la tabla factura
             FechaRepaInser = DateTime.Now;
             CodServicioRepa = 0;
             NumRepaInsert = 1;
@@ -1361,6 +2365,10 @@ namespace GestorClientes
 
             //Reparacions(No hay modificaciones de reparaciones)
 
+            //Facturas
+            BloquearCbxIdClienteFactura = true;
+            BloquearCbxMatriculaFactura = true;
+            BloquearDataPickerFechaFactura = true;
             //Otros
             Mensaje = string.Empty;
             #endregion
@@ -1375,9 +2383,9 @@ namespace GestorClientes
             FiltroFecha = DateTime.Now;
             ResultadoCalculoTotalMes = 0;
             if(TablaAcltualListada is "reparacion")
-                Listado = conversion(_dao.selectReparacion());
+                Listado = Conversion(_dao.selectReparacion());
             if(TablaAcltualListada is "factura")
-                Listado = conversion(_dao.selectFacturas());
+                Listado = Conversion(_dao.selectFacturas());
             VisibleBtnExtraerFacturasPdf = "Hidden";
         }
 
@@ -1388,12 +2396,12 @@ namespace GestorClientes
                 #region caso de tabla reparacion
                 case "reparacion":
                     if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
-                        Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectReparacionFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
 
                     //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
                     if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
                     {
-                        Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
                         //Activacion de facturas
                         if (Listado.Count != 0 && Listado != null)//Si se encontro algo se activa el boton si no, no
                             VisibleBtnExtraerFacturasPdf = "Visible";
@@ -1402,35 +2410,35 @@ namespace GestorClientes
                     }
 
                     if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
-                        Listado = conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectReparacionFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
 
                     if (FiltrarMesFecha && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y una matricula pero no un idCliente
-                        Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectReparacionFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
 
                     if (FiltrarMesFecha && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y no una matricula ni un IdCliente
-                        Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
 
                     //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
                     if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
                     {
-                        Listado = conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectReparacionUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
 
                     }
 
                     //Si no ha selecionado ninguna radiobuttom pero si una matricula y no un idCliente
                     if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)
-                        Listado = conversion(_dao.selectReparacion(FiltroMatriculaSelecionado));
+                        Listado = Conversion(_dao.selectReparacion(FiltroMatriculaSelecionado));
 
                     //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
                     if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
-                        Listado = conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado)));
+                        Listado = Conversion(_dao.selectReparacionUnIdCliUnaMatricula(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado)));
                     //_________________//
 
                     //Si ha selecionado radiobuttom 'FiltrarCalculoTotalMes'
                     if (FiltrarCalculoTotalMes)
                     {
                         ResultadoCalculoTotalMes = _dao.selectReparacionFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
-                        Listado = conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
                     }               
                     break;
                 #endregion
@@ -1438,12 +2446,12 @@ namespace GestorClientes
                 case "factura":
                     //Filtros para facturas 
                     if (FiltrarFechaConcreta && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y una matricula y no un idCliente
-                        Listado = conversion(_dao.selectFacturaFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectFacturaFiltroFecha(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
 
                     //Si ha selecionado radiobuttom FiltrarFechaConcreta pero si una matricula y un idCliente
                     if (FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
                     {
-                        Listado = conversion(_dao.selectFacturaUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectFacturaUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
                         //Activacion de facturas
                         if (Listado.Count != 0 && Listado != null )//Si se encontro algo se activa el boton si no, no facturas de esa fecha y de ese cliente
                             VisibleBtnExtraerFacturasPdf = "Visible";
@@ -1452,35 +2460,35 @@ namespace GestorClientes
                     }
 
                     if (FiltrarFechaConcreta && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarFechaConcreta'y no una matricula ni un IdCliente
-                        Listado = conversion(_dao.selectFacturaFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectFacturaFiltroFecha(FiltroFecha.ToString("yyyy-MM-dd")));
 
                     if (FiltrarMesFecha && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y una matricula pero no un idCliente
-                        Listado = conversion(_dao.selectFacturaFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectFacturaFiltroFechaMes(FiltroMatriculaSelecionado, FiltroFecha.ToString("yyyy-MM-dd")));
 
                     if (FiltrarMesFecha && FiltroMatriculaSelecionado is null && FiltroIDClienteSelecionado is null)//Si ha selecionado radiobuttom 'FiltrarMesFecha'y no una matricula ni un IdCliente
-                        Listado = conversion(_dao.selectFacturaFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectFacturaFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
 
                     //Si ha selecionado radiobuttom FiltrarMesFecha pero si una matricula y un idCliente
                     if (!FiltrarFechaConcreta && FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
                     {
-                        Listado = conversion(_dao.selectFacturaUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectFacturaUnIdCliUnaMatriculaEnMes(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
 
                     }
 
                     //Si no ha selecionado ninguna radiobuttom pero si una matricula y no un idCliente
                     if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado is null)
-                        Listado = conversion(_dao.selectFactura(FiltroMatriculaSelecionado));
+                        Listado = Conversion(_dao.selectFactura(FiltroMatriculaSelecionado));
 
                     //Si no ha selecionado ninguna radiobuttom pero si una matricula y un idCliente
                     if (!FiltrarFechaConcreta && !FiltrarMesFecha && !FiltrarCalculoTotalMes && FiltroMatriculaSelecionado != null && FiltroIDClienteSelecionado != null)
-                        Listado = conversion(_dao.selectFacturaUnIdCliUnaMatricula(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado)));
+                        Listado = Conversion(_dao.selectFacturaUnIdCliUnaMatricula(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado)));
                     //_________________//
 
                     //Si ha selecionado radiobuttom 'FiltrarCalculoTotalMes'
                     if (FiltrarCalculoTotalMes)
                     {
                         ResultadoCalculoTotalMes = _dao.selectFacturaFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
-                        Listado = conversion(_dao.selectFacturaFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
+                        Listado = Conversion(_dao.selectFacturaFiltroFechaMesNoANULADAS(FiltroFecha.ToString("yyyy-MM-dd")));
                     }
 
 
@@ -1490,117 +2498,9 @@ namespace GestorClientes
 
         }
 
-        private void CreacionDeFactura()
-        {
-            string ruta = AbrirDialogo();
-            if (ruta != string.Empty && ruta != null)
-            {
-                try
-                {
-                    #region Preparacion del documento
-                    //Preparacion de documento
-                    iTextSharp.text.Document documento = new iTextSharp.text.Document(PageSize.LETTER);
+      
 
-                    PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
-                    documento.Open();
-                    //Preparacion de imagen
-                    iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
-                    imagen.BorderWidth = 100;
-                    imagen.Alignment = Element.ALIGN_CENTER;
-                    float porcentaje = 0.0f;
-                    porcentaje = 250 / imagen.Width;
-                    imagen.ScalePercent(porcentaje * 100);
-                    //Añadir imagen lista
-                    documento.Add(imagen);
-                    #endregion
-
-                    #region Contenido texto de el pdf
-
-                    //Lineas de el documento
-                    Paragraph titulo = new Paragraph();
-                    titulo.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
-                    titulo.Add("Factura:");
-                    documento.Add(titulo);
-                    Paragraph lineaCabecera = new Paragraph();
-                    lineaCabecera.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
-                    Reparacion repar = (Reparacion)Listado[0];
-                    string apellidos = string.Empty;
-                    apellidos = _dao.selectClienteApellidos(repar.IdCliente);
-                    lineaCabecera.Add("\nNombre: " + repar.NombreCliRepa + "\nApellidos: " + apellidos + "\nMatricula: " + repar.MatriCoche + "\nFecha:" + repar.Fecha);
-                    documento.Add(lineaCabecera);
-
-                    //Salto de parrafo entre datos y tabla
-                    Paragraph saltoParrafo = new Paragraph(" ");
-                    documento.Add(saltoParrafo);
-
-                    //Creamos la tabla
-                    PdfPTable tabla = new PdfPTable(2);
-                    tabla.WidthPercentage = 100;
-
-                    Paragraph cabecera1 = new Paragraph();
-                    cabecera1.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
-                    cabecera1.Add("Servicio");
-                    Paragraph cabecera2 = new Paragraph();
-                    cabecera2.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 15, BaseColor.BLACK);
-                    cabecera2.Add("Precio");
-                    //Cabeceras de tabla
-                    tabla.AddCell(cabecera1);
-                    tabla.AddCell(cabecera2);
-                    List<double> listPreciosAsumar = new List<double>();//Precio de todos los servicios,para posteriormente ser sumaros y añadir el total de el coste de todos ellos a la tabla
-
-                    //Datos para la tabla (servicio realizado) y (precio de este)
-                    foreach (object item in Listado)
-                    {
-                        Paragraph celdColum1 = new Paragraph();
-                        celdColum1.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
-                        double precio = 0;
-                        Reparacion r = (Reparacion)item;
-                        celdColum1.Add(r.NombreServicio);
-                        tabla.AddCell(celdColum1);
-                        precio = _dao.selectServicioPrecio(r.NombreServicio);
-                        Paragraph celdColum2 = new Paragraph();
-                        celdColum2.Font = FontFactory.GetFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
-                        celdColum2.Add(precio.ToString() + "€");
-                        tabla.AddCell(celdColum2);
-                        listPreciosAsumar.Add(precio);
-                    }
-
-                    //Sumatorio de precios
-                    double precioTotal = 0;
-                    foreach (var valor in listPreciosAsumar)
-                    {
-                        precioTotal += valor;
-                    }
-                    //Añadimos linea de precio total con un estilo concreto.
-                    Paragraph lineaPrecioTotal = new Paragraph();
-                    lineaPrecioTotal.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
-                    lineaPrecioTotal.Add("Total: " + precioTotal.ToString() + "€");
-                    tabla.AddCell("");
-                    //tabla.HasRowspan(tabla.getLastCompletedRowIndex());
-                    tabla.AddCell(lineaPrecioTotal);
-
-                    documento.Add(tabla);
-                    documento.Close();
-
-                    #endregion
-
-                    System.Windows.MessageBox.Show("Factura del :" + repar.Fecha + "\nNombre: " + repar.NombreCliRepa + " " + apellidos + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
-                }
-                catch
-                {
-                    System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
-                }
-            }
-        }
-
-        //PENDIENTE
-        private void InsertargFactura(int numeroFactura, int linea, int idCliente, string matricula, int codServicio, string fecha, string numeroFacturaAnulada)
-        {
-
-
-
-        }
-
+      
         #endregion
 
         #region Metodos para propiedades Command de los componentes de la ventana
@@ -1669,6 +2569,11 @@ namespace GestorClientes
             get { return new RelayCommand(factura => CreacionDeFactura(), factura => true); }
         }
 
+        public RelayCommand AnadirLineaFacturaSustituta_click
+        {
+            get { return new RelayCommand(facturasustituta => AnadirLineaFacturaSustituta(), facturasustituta => true); }
+        }
+
 
 
 
@@ -1682,7 +2587,7 @@ namespace GestorClientes
          en lista de object para poder tratarlos todos por la misma propiedad "Listado" a la que el datagrid
          esta bindeada para que muestre todos los listados que sean soliciatdos*/
 
-        public List<object> conversion(List<Cliente> lcliente)
+        public List<object> Conversion(List<Cliente> lcliente)
         {
             List<object> listobjetos = new List<object>();
             foreach (Cliente cli in lcliente)
@@ -1692,7 +2597,7 @@ namespace GestorClientes
             return listobjetos;
         }
 
-        public List<object> conversion(List<Servicio> lservicios)
+        public List<object> Conversion(List<Servicio> lservicios)
         {
             List<object> listobjetos = new List<object>();
             foreach (Servicio miServicio in lservicios)
@@ -1702,7 +2607,7 @@ namespace GestorClientes
             return listobjetos;
         }
 
-        public List<object> conversion(List<Reparacion> lreparacio)
+        public List<object> Conversion(List<Reparacion> lreparacio)
         {
             List<object> listobjetos = new List<object>();
             foreach (Reparacion miReparacion in lreparacio)
@@ -1712,7 +2617,7 @@ namespace GestorClientes
             return listobjetos;
         }
 
-        public List<object> conversion(List<Factura> lfactura)
+        public List<object> Conversion(List<Factura> lfactura)
         {
             List<object> listobjetos = new List<object>();
             foreach (Factura fac in lfactura)
@@ -1741,10 +2646,25 @@ namespace GestorClientes
             Mensaje = string.Empty;
 
         }
+        private void MensajeInformacionAnulaFactura()
+        {
+            MensajeActualizacion = "Linea de factura añadida correctamente a la lista de preparación.";
+            Thread.Sleep(3000);
+            MensajeActualizacion = string.Empty;
+
+        }
 
         private void MensajeInformacionModCorrec()
         {
             Mensaje = "Modificacion realizada Correctamente";
+            Thread.Sleep(3000);
+            Mensaje = string.Empty;
+
+        }
+
+        private void MensajeInAnulacionFacturaCorrecta()
+        {
+            Mensaje = "La Factura se anulo correctamente";
             Thread.Sleep(3000);
             Mensaje = string.Empty;
 
@@ -1767,58 +2687,7 @@ namespace GestorClientes
         }
         #endregion
 
-        //ventana de dialogo donde se escogera la ruta
-        public string AbrirDialogo()
-        {
-            string rutaProvisional = string.Empty;
-            string nombreFactura = string.Empty;
-            string ruta = string.Empty;
-            FolderBrowserDialog dialogoDirectorio = new FolderBrowserDialog();
-            DialogResult resultado;
-            try
-            {
-                dialogoDirectorio.ShowNewFolderButton = true;
-                resultado = dialogoDirectorio.ShowDialog();
-                rutaProvisional = dialogoDirectorio.SelectedPath;
-                // path = dialogoDirectorio.SelectedPath;
-                // rutaParaSubdirectorio = path;
-                dialogoDirectorio.Dispose();
-                //Preparacion de nombre de el fichero(sera la palabra Factura y la fecha toda seguida sin guiones)
-                Reparacion repar = (Reparacion)Listado[0];
-                string[] formandoFehchaCorrelativa = repar.Fecha.Split('/');
-                nombreFactura = @"\FacturaDe" + repar.IdCliente + "_";
-                foreach (string item in formandoFehchaCorrelativa)
-                {
-                    nombreFactura += item;
-                }
-                ruta = @rutaProvisional + nombreFactura;
 
-
-                if (File.Exists(string.Concat(ruta + ".pdf")))
-                {
-                    string rutaProvisional2 = ruta;
-                    int contador = 0;
-                    while (File.Exists(string.Concat(rutaProvisional2 + ".pdf")))
-                    {
-                        rutaProvisional2 = ruta;//Para que siempre parte de laruta orginal y si cambia el nombre del fichero sea solo añadiendo(1) o (2) etc.. pero no que no sea nombredelfichero.pfd(1)(2)(3) solo nombredelfichero.pfd(1) o nombredelfichero.pfd(2)etcc..
-                        contador++;
-                        rutaProvisional2 += "(" + contador + ")";
-
-                    };
-                    ruta = rutaProvisional2 + ".pdf";
-                }
-                else
-                    ruta = ruta + ".pdf";
-
-            }
-            catch (Exception)
-            {
-
-                System.Windows.MessageBox.Show("Ops!.Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
-            }
-            // return path;
-            return ruta;
-        }// Refactorizado Listo
     }
 }
 /*
@@ -1827,11 +2696,8 @@ namespace GestorClientes
 
  //Tareas pendientes:
  ---Actualmente en curso---
- 1-Pendite control de errores al hora de generar la factura, como fichero ya existente o fichero abierto.
- 2- creada nueva tabla facturas la cual en base a  esta se genrara la factura en pdf
-a tra ves de el filtro  de reparaciones por mes, crear un boton que genere todas las facturas disponibles
-3-PENDIENTE InsertargFactura a la hora de crear una nueva factura en pdf desde el listado reparaciones y tambien la posibilidad de crear una nueva factura en pdf de un numero de factura selecionada, si esta no esta anulada
-
+1º-Crear una nueva factura al crear un pdf factura filtrando por una fecha determinada un cliente y una matricula en reparacion
+2º-Terminar apartado de Facturas en  ModificacionRegistro  para poder anular una factura existente
 
 
 --En cola---

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 //Añadido sql
 using System.Data;
 using MySql.Data.MySqlClient;
+//Para coger datos como la cadena conexion de el archivo de configuracion app.config
+using GestorClientes.Properties;
+
+
 namespace GestorClientes
 {
     class DaoSql
@@ -14,10 +18,11 @@ namespace GestorClientes
 
         public bool Conectar()
         {
-           
-            string cadenaConecxion = string.Format("server=localhost;port=3306;database=mecanica;uid=root;pwd=123;");
+
+            //string cadenaConecxion = string.Format("server=localhost;port=3306;database=mecanica;uid=root;pwd=123;");
+            string cadenaConecxion = Settings.Default.cadeanaConexion;//Boton derecho  en GestorClientes de el explorador de soluciones y dentrod e hay en "configuracion" ahi esta asignada la cadena de conexion
             try
-            {
+            {              
                 conexion = new MySqlConnection(cadenaConecxion);
                 conexion.Open();
                 return true;
@@ -524,6 +529,26 @@ namespace GestorClientes
             return true;
         }
 
+        //Todas las reparaciones de un cliente en una fecha con coche determinado
+        public bool DeleteReparacion(int idCliente, string matriculaCoche, string fecha)
+        {
+            //delete from cliente where idCliente=1 and matricula='2218CL';
+            //// "INSERT INTO reparacion (numReparacion,idCliente,matriCoche,codServicio,fecha) values (" + idReparacion + ",'" + idCliente + "','"+matriculaCoche+ "',"+codServicio+ ",'"+DateTime.Parse(fecha).ToShortDateString()+"')"
+            try
+            {
+                string sql;
+                sql = "delete from reparacion where and idCliente='" + idCliente + "'" + " and matriCoche='" + matriculaCoche + "' and fecha='" + Convert.ToDateTime(DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "'";
+                MySqlCommand cmd = new MySqlCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+        }
+
         //Preparacion Filtros
         //------------------------//
 
@@ -953,11 +978,76 @@ namespace GestorClientes
             {
                 throw new Exception(e.Message);
             }
+
             return lFactura;
 
         }
 
+        public List<Factura> selectFacturas(int numeroFactura)
+        {
+            List<Factura> lFactura = new List<Factura>();
+
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where numeroFactura="+numeroFactura+"  order by numeroFactura,Fecha,idCliente desc;";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+        public string selectEstadoFacturas(int numeroFactura)
+        {
+            string estado = string.Empty;
+
+            string sql = "select discinct(estadoFactura) from factura where numeroFactura="+numeroFactura;
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {                  
+                    estado = lector["estadoFactura"].ToString();                               
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return estado;
+
+        }
+        #region Filtros Factura
         //Filtros para facturas
+        //-------------------------
         public List<Factura> selectFacturaFiltroFecha(string matriculaCoche, string fecha)
         {
             //select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,numeroFacturaAnulada from factura f order by numeroFactura,Fecha,idCliente desc;
@@ -1279,15 +1369,14 @@ namespace GestorClientes
             }
             return lFactura;
         }
-
-        //PENDIENTE
+       
         public double selectFacturaFiltroCalculoMes(string fecha)
         {
             double total = 0;
-            //select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where month('2019-07-10')= month(fecha));
+            //select sum((select precio from servicio where codigo=f.codServicio))as total from factura f where month(fecha)=month('2019-06-01') and  year(fecha)=year('2019-06-01') and estadoFactura !='ANULADA';
             List<Reparacion> lReparacion = new List<Reparacion>();
             //string sql = "select * from reparacion;";
-            string sql = "select sum((select precio from servicio where codigo=r.codServicio))as total from reparacion r where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "')";
+            string sql = "select sum((select precio from servicio where codigo=f.codServicio))as total from factura f where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') and estadoFactura !='ANULADA'";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -1309,8 +1398,361 @@ namespace GestorClientes
 
         }
 
-        //------------------------//
+        public List<Factura> selectFacturaFiltroFechaMesNoANULADAS(string fecha)
+        {
+            //select strftime('%m','2019-07-10'); Extraemos el mes concreto
+            //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
+            List<Factura> lFactura = new List<Factura>();
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,fecha,estadoFactura,numeroFacturaAnulada from factura f where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "') and estadoFactura!='ANULADA'  order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
+
+
+        //------------------------//
+        #endregion
+
+            //Comprobacion de si una factura exists sin saber su numero  de factura
+        public bool SelectExisteEstaFactura(int idCliente, string matricula, string fecha)
+        {
+            int resultado = -1;
+            try
+            {
+                //select exists(select * from factura where fecha='2019-06-01' and matriCoche='2218CL' and estadoFactura='VIGENTE');
+                string sql;
+                sql = "select exists(select * from factura where fecha='"+ (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "' and matriCoche='"+matricula+"' and estadoFactura='VIGENTE' and idCliente="+idCliente+") as facturaExistente; ";
+                MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+                MySqlDataReader lector = null;
+               
+                try
+                {
+                    lector = sqlYconec.ExecuteReader();
+                    while (lector.Read())
+                    {
+                        //si devuelve uno 1 es verdad si devuelve 0 es falso
+                        resultado = int.Parse(lector["facturaExistente"].ToString());
+                    }
+                    lector.Close();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+             
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            if (resultado == 1)
+                return true;
+            else
+                return false;
+
+        }
+
+        
+        //SI HAY UNA FACTURA CON LOS MISMOS DATOS QUE OTRA PERO CON DISTINTO NUMERO DE FACTURA Y ESTADO VIGENTE
+        public bool SelectExisteEstaFacturaVigente(int idCliente, string matricula, string fecha ,int codServicio)
+        {
+            int resultado = -1;
+            try
+            {
+                //select exists(select * from factura where fecha='2019-06-01' and matriCoche='2218CL' and estadoFactura='VIGENTE');
+                string sql;
+                sql = "select exists(select * from factura where fecha='" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "' and matriCoche='" + matricula + "' and estadoFactura='VIGENTE' and idCliente=" + idCliente + " and codServicio="+codServicio+") as facturaExistente; ";
+                MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+                MySqlDataReader lector = null;
+
+                try
+                {
+                    lector = sqlYconec.ExecuteReader();
+                    while (lector.Read())
+                    {
+                        //si devuelve uno 1 es verdad si devuelve 0 es falso
+                        resultado = int.Parse(lector["facturaExistente"].ToString());
+                    }
+                    lector.Close();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            if (resultado == 1)
+                return true;
+            else
+                return false;
+
+        }
+
+        public bool SelectExisteEstaLineaDeEstaFactura(int idCliente, string matricula, string fecha,int linea,string codServicio)
+        {
+            int resultado = -1;
+            try
+            {
+                //select exists(select * from factura where fecha='2019-06-01' and matriCoche='2218CL' and estadoFactura='VIGENTE');
+                string sql;
+                sql = "select exists(select * from factura where fecha='" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "' and matriCoche='" + matricula + "' and estadoFactura='VIGENTE' and idCliente=" + idCliente + " and linea="+linea+" and codServicio="+codServicio+") as facturaExistente; ";
+                MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+                MySqlDataReader lector = null;
+             
+                try
+                {
+                    lector = sqlYconec.ExecuteReader();
+                    while (lector.Read())
+                    {
+                        //si devuelve uno 1 es verdad si devuelve 0 es falso
+                        resultado = int.Parse(lector["facturaExistente"].ToString());
+                    }
+                    lector.Close();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+              
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+            if (resultado == 1)
+                return true;
+            else
+                return false;
+        }
+       
+
+        public int SelectNumeroFactura(int idCliente, string matricula, string fecha)
+        {
+            int resultado = -1;
+            try
+            {
+                //select distinct(numeroFactura) from factura where matriCoche='2218CL' and fecha='2019-06-01'and estadoFactura='VIGENTE' and idCliente=1;
+                string sql;
+                sql = "select distinct(numeroFactura) from factura where fecha='" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "' and matriCoche='" + matricula + "' and estadoFactura='VIGENTE' and idCliente=" + idCliente;
+                MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+                MySqlDataReader lector = null;
+
+                try
+                {
+                    lector = sqlYconec.ExecuteReader();
+                    while (lector.Read())
+                    {
+                        //si devuelve uno 1 es verdad si devuelve 0 es falso
+                        resultado = int.Parse(lector["numeroFactura"].ToString());
+                    }
+                    lector.Close();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }          
+                return resultado;          
+
+        }
+
+        // CORREGIR caso en el que no haya ninguna factura y el max no devuelva nada
+        //Devuelve ya el numero de la siguiente factura o sea uno mas de el numero de la ultima factura
+        public int selectUltimoNumeroFactura()
+        {
+            int numeroUltimaFactura = -1;
+            //select round(sum(precio),2)as total from servicio where codigo in(select codServicio from reparacion where month('2019-07-10')= month(fecha));
+            List<Reparacion> lReparacion = new List<Reparacion>();
+            //string sql = "select * from reparacion;";
+            string sql = "select max(numeroFactura)as ultimaFactura from factura;";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    int.TryParse(lector["ultimaFactura"].ToString(), out numeroUltimaFactura);
+                }
+                lector.Close();
+                if (numeroUltimaFactura == -1)
+                    numeroUltimaFactura = 1;
+                else
+                    numeroUltimaFactura++;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return numeroUltimaFactura;
+
+        }
+
+        #region Creacion de Factura
+        
+        public bool InsertarFacturaLimpia(int numeroFactura, int linea, int idCliente, string matricula, int codServicio, string fecha )
+        {
+            try
+            {
+                //Insercion
+                string sql;
+                sql = "INSERT INTO factura (numeroFactura,linea,idCliente,matriCoche,codServicio,fecha,estadoFactura,numeroFacturaAnulada) values ('" + numeroFactura + "','" + linea + "'," + idCliente + ",'" + matricula.ToUpper() + "','" + codServicio + "','" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "','VIGENTE',NULL)";
+                MySqlCommand cmd = new MySqlCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+
+        }
+
+
+        #endregion
+
+        #region Anulacion Factura    
+
+        
+        public bool InsertarFacturaSustitutaPorAnulada(int numeroFacturaSustituta,int linea,int idCliente,string matricula,int codServicio,string fecha,string numeroFacturaAnulada)
+        {
+            try
+            {
+                #region comprobacion de si existe
+                //Primero comprobar si existe un resgitro en la tabla reparacion con estos datos, si no es asi darlo de alta, y despues de esta comprobacion, insertar la nueva factura
+                //select exists(select * from reparacion where idCliente=1 and fecha='2019-06-01' and matriCoche='2218CL' and numReparacion=1 and codServicio=4);
+                string sql = "select exists(select * from reparacion where idCliente="+idCliente+" and fecha='"+fecha+"' and matriCoche='"+matricula+"' and numReparacion="+linea+" and codServicio="+codServicio+")as existe";
+                MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+                MySqlDataReader lector = null;
+                int siExiste = -1;//1 es true, 0 es false
+                try
+                {
+                    lector = sqlYconec.ExecuteReader();
+                    while (lector.Read())
+                    {
+                        int.TryParse(lector["existe"].ToString(), out siExiste);
+                    }
+                    lector.Close();
+
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+                #endregion
+
+                //Accion segun si existe ya en reparaciones o no
+                if (siExiste == 1)//Si existe ya en la tabla reparaciones
+                {
+                    //Eliminamos la reparacion existente y la volvemos a insertar
+                    DeleteReparacion(idCliente, matricula, fecha);
+                    InsertReparacion(linea, idCliente, matricula, codServicio, fecha);
+                    //Insercion factura sustituta
+                    string sql2;
+                    sql2 = "INSERT INTO factura (numeroFactura,linea,idCliente,matriCoche,codServicio,fecha,estadoFactura,numeroFacturaAnulada) values ('" + numeroFacturaSustituta + "','" + linea + "'," + idCliente + ",'" + matricula.ToUpper() + "','" + codServicio + "','" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "','VIGENTE','" + numeroFacturaAnulada + "')";
+                    MySqlCommand cmd2 = new MySqlCommand(sql2, conexion);
+                    cmd2.ExecuteNonQuery();                    
+
+                    //Despues realizamos la actualizacion de la antigua factura "numeroFacturaAnulada"
+                    ActualizarAFacturaAnulada(numeroFacturaAnulada);
+
+                }
+                else if(siExiste==0)//Si no existe en la tabla reparaciones
+                {
+                    //Lo insertamos en la tabla reparaciones
+                    InsertReparacion(linea, idCliente, matricula, codServicio, fecha);
+
+                    //Lo instertamos en factura
+                    //Insercion
+                    string sql2;
+                    sql2 = "INSERT INTO factura (numeroFactura,linea,idCliente,matriCoche,codServicio,fecha,estadoFactura,numeroFacturaAnulada) values ('" + numeroFacturaSustituta + "','" + linea + "'," + idCliente + ",'" + matricula.ToUpper() + "','" + codServicio + "','" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "','VIGENTE','" + numeroFacturaAnulada + "')";
+                    MySqlCommand cmd2 = new MySqlCommand(sql2, conexion);
+                    cmd2.ExecuteNonQuery();
+
+                    //Despues realizamos la actualizacion de la antigua factura "numeroFacturaAnulada"
+                    ActualizarAFacturaAnulada(numeroFacturaAnulada);
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+
+        }
+
+        public bool ActualizarAFacturaAnulada(string numeroFacturaAnulada)
+        {
+            try
+            {
+                //Insercion
+                string sql;
+                sql = "update factura set estadoFactura='ANULADA' where numeroFactura="+numeroFacturaAnulada;
+                MySqlCommand cmd = new MySqlCommand(sql, conexion);
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+
+        }
+
+        #endregion
         //Facturacion
         //-----------------//
 

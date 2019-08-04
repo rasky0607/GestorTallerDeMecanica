@@ -44,9 +44,9 @@ create table factura(
 		fecha date,
 		estadoFactura enum('ANULADA','VIGENTE') default 'VIGENTE',
 		numeroFacturaAnulada integer default 0,		
-		primary key(numeroFactura,linea,idCliente,matriCoche,fecha),
-		foreign key (codServicio) references reparacion (codServicio) on update cascade on delete restrict,
-		foreign key (linea,idCliente,matriCoche,fecha) references reparacion (numReparacion,idCliente,matriCoche,fecha) on update cascade on delete restrict
+		primary key(numeroFactura,linea) -- idCliente,matriCoche,fecha
+		/*foreign key (codServicio) references reparacion (codServicio) on update cascade on delete restrict,
+		foreign key (linea,idCliente,matriCoche,fecha) references reparacion (numReparacion,idCliente,matriCoche,fecha) on update cascade on delete restrict*/
 		
 	);
 
@@ -71,12 +71,8 @@ create table factura(
 
 
 		
-		insert into factura values(1,1,1,'2218CL',4,'2019-06-01','ANULADA',NULL);
-		insert into factura values(1,2,1,'2218CL',3,'2019-06-01','ANULADA',NULL);
-		insert into factura values(1,3,1,'2218CL',4,'2019-06-01','ANULADA',NULL); 
+		insert into factura values(1,1,1,'2218CL',4,'2019-06-01','VIGENTE',NULL);
+		insert into factura values(1,2,1,'2218CL',3,'2019-06-01','VIGENTE',NULL);
+		insert into factura values(1,3,1,'2218CL',4,'2019-06-01','VIGENTE',NULL); 
 		insert into factura values(2,1,2,'1700JPG',5,'2019-02-21','VIGENTE',NULL);
 			
-		-- Factura 1 anulada por la 3
-		insert into factura values(3,1,1,'2218CL',4,'2019-06-01','VIGENTE',1);
-		insert into factura values(3,2,1,'2218CL',3,'2019-06-01','VIGENTE',1);
-		insert into factura values(3,3,1,'2218CL',4,'2019-06-01','VIGENTE',1);

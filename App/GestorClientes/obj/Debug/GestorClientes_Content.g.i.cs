@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("logo.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("bdmecanica.mdf")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("bdmecanica_log.ldf")]
 
 

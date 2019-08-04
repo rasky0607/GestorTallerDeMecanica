@@ -25,7 +25,7 @@ namespace GestorClientes
     {
         public MainWindow()
         {
-            InitializeComponent();         
+            InitializeComponent();            
         }
         #region Añadir registros
         //Mostrar los distintos grid con los distintos campos segun en que tabla se quiere realizar la insercion
@@ -39,13 +39,7 @@ namespace GestorClientes
                     gridServicioInsert.Visibility = Visibility.Hidden;
                     gridReparacionInsert.Visibility = Visibility.Hidden;
                 }
-
-                if (cbxtipoInsercion.SelectedItem.ToString() == "coche")
-                {
-                    gridClienteInsert.Visibility = Visibility.Hidden;
-                    gridServicioInsert.Visibility = Visibility.Hidden;
-                    gridReparacionInsert.Visibility = Visibility.Hidden;
-                }
+              
 
                 if (cbxtipoInsercion.SelectedItem.ToString() == "servicio")
                 {
@@ -127,7 +121,7 @@ namespace GestorClientes
             if (!gestion._dao.EstadoConexion())
             {
                 gestion._dao.Conectar();
-                gestion.Listado = gestion.conversion(gestion._dao.selectReparacion());
+                gestion.Listado = gestion.Conversion(gestion._dao.selectReparacion());
                 gestion._dao.Desconectar();
             }
             tbAnadir.IsEnabled = false;
@@ -167,6 +161,7 @@ namespace GestorClientes
                         tbModificacion.Focus();
                         gridClienteMod.Visibility = Visibility.Visible;
                         gridServicioMod.Visibility = Visibility.Hidden;
+                        gridFacturaMod.Visibility = Visibility.Hidden;
                         break;
 
                     case "servicio":
@@ -174,17 +169,61 @@ namespace GestorClientes
                         tbModificacion.IsEnabled = true;
                         tbModificacion.Focus();
                         gridClienteMod.Visibility = Visibility.Hidden;
+                        gridFacturaMod.Visibility = Visibility.Hidden;
                         gridServicioMod.Visibility = Visibility.Visible;
                         break;
 
                     case "reparacion": //Las reparaciones no se pueden modificar                       
                         MessageBox.Show("Las reparaciones no pueden ser modificas.\nPuedes eliminar la reparación selecionada y posteriormente crear una nueva con los datos que necesites.", "(◑ω◐)¡Ops!.");
                         break;
+
+                    case "factura":
+                        Factura f = new Factura();
+                        f = (Factura)dtgDatos.SelectedItem;
+                        if (f.EstadoFactura is "ANULADA")
+                            System.Windows.MessageBox.Show("Una factura ANULADA no puede volver a anularse.", "(◑ω◐)¡Ops!.");
+                        else
+                        {
+                            tbListado.IsEnabled = false;
+                            tbModificacion.IsEnabled = true;
+                            tbModificacion.Focus();
+                            gridClienteMod.Visibility = Visibility.Hidden;
+                            gridServicioMod.Visibility = Visibility.Hidden;
+                            gridFacturaMod.Visibility = Visibility.Visible;
+
+                            //Preparacion  añadir de los combobox  una reparacion con los clientes,matriculas de vehiculos y servicios posibles
+                            GestionVM gestion = new GestionVM();
+                            if (!gestion._dao.EstadoConexion())
+                            {
+                                gestion._dao.Conectar();
+                                cbxServicioFactura.ItemsSource = gestion._dao.selectServicioDescripcion();
+                                cbxIDClienteFactura.ItemsSource = gestion._dao.selectClienteIdCliente();
+                                gestion._dao.Desconectar();
+                            }
+                            //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
+                        }
+                        break;
                 }
             }
             else//Si no ha selecionado un registro
             {
                 MessageBox.Show("¡ATENCIÓN!:\nDebe selecionar un registro antes de ir a la ventana de Modificaciones. ", "(◑ω◐)¡Ops!.");
+            }
+        }
+
+        //Preparacion de Combobox para ala hora de modificar una factura, la cuale s muy similar a la insercion de una reparacion
+        private void CbxIDClienteFactura_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            GestionVM gestion = new GestionVM();
+            if (!gestion._dao.EstadoConexion())
+            {
+                if (cbxIDClienteFactura.SelectedItem != null)
+                {
+                    gestion._dao.Conectar();
+                    cbxMatriculaFactura.ItemsSource = gestion._dao.selectClienteMatricula(int.Parse(cbxIDClienteFactura.SelectedItem.ToString()));
+                    tbxNombreClienteFactura.Text = gestion._dao.selectClienteNombre(int.Parse(cbxIDClienteFactura.SelectedItem.ToString()));
+                    gestion._dao.Desconectar();
+                }
             }
         }
 
@@ -199,7 +238,7 @@ namespace GestorClientes
             if (!gestion._dao.EstadoConexion())
             {
                 gestion._dao.Conectar();
-                gestion.Listado = gestion.conversion(gestion._dao.selectReparacion());
+                gestion.Listado = gestion.Conversion(gestion._dao.selectReparacion());
                 gestion._dao.Desconectar();
             }
             tbModificacion.IsEnabled = false;
@@ -412,25 +451,29 @@ namespace GestorClientes
                 //Desconecxion
                 GestionVM g = (GestionVM)gdBase.DataContext;
                 g._dao.Desconectar();
-                #region Copias de seguridad
+                #region Copias de seguridad SQLite
                 //Copia de Seguridad 1
-                if (!File.Exists("./CopiasDeSeguridad/copiaBDTaller"))//Si no existe
-                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller");
-                else if (File.Exists("./CopiasDeSeguridad/copiaBDTaller") && !File.Exists("./CopiasDeSeguridad/copiaBDTaller"))//SI existe el original pero no el 1
-                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller1");
-                else if (File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller1") > File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller"))
-                {
-                    File.Delete("./CopiasDeSeguridad/copiaBDTaller");
-                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller");
+                /* if (!File.Exists("./CopiasDeSeguridad/copiaBDTaller"))//Si no existe
+                     File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller");
+                 else if (File.Exists("./CopiasDeSeguridad/copiaBDTaller") && !File.Exists("./CopiasDeSeguridad/copiaBDTaller"))//SI existe el original pero no el 1
+                     File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller1");
+                 else if (File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller1") > File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller"))
+                 {
+                     File.Delete("./CopiasDeSeguridad/copiaBDTaller");
+                     File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller");
 
-                }
-                else if (File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller1") < File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller"))
-                {
-                    File.Delete("./CopiasDeSeguridad/copiaBDTaller1");
-                    File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller1");
-                }
+                 }
+                 else if (File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller1") < File.GetCreationTime("./CopiasDeSeguridad/copiaBDTaller"))
+                 {
+                     File.Delete("./CopiasDeSeguridad/copiaBDTaller1");
+                     File.Copy("./taller", "./CopiasDeSeguridad/copiaBDTaller1");
+                 }*/
 
                 //Copia de seguridad 2(copiando uno a uno los registros y añadiendolos a un fichero .sqlite con las palabras reservadas de el motor para realizar las inserciones
+                #endregion
+
+                #region Copia de Seguridad SQL
+
                 #endregion
 
             }
@@ -521,5 +564,7 @@ namespace GestorClientes
         {
             
         }
+
+       
     }
 }

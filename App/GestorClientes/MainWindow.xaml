@@ -92,7 +92,7 @@
 
                     <!--DataGrid para los datos de la BD-->
                     <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow">
-                       <!--Apartado de estilos  sin codigo en c# que da color a las filas cuando se lista las facturas segun si pone ANULADA(rojo) o VIGENTE(verde)-->
+                        <!--Apartado de estilos  sin codigo en c# que da color a las filas cuando se lista las facturas segun si pone ANULADA(rojo) o VIGENTE(verde)-->
                         <DataGrid.RowStyle>
                             <Style TargetType="{x:Type DataGridRow}">
                                 <Style.Triggers>
@@ -150,7 +150,7 @@
                     <Label Content="lbMensajes" HorizontalAlignment="Left" Margin="188,372,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 
                     <!--Botones de Modificar Eliminar Insertar-->
-                    <materialDesign:PopupBox PlacementMode="BottomAndAlignCentres" Foreground="#FF45A3CF" ToolTipService.Placement="Left" ToolTip="Acciones"  Grid.Column="1" Margin="0,371,126,0" Width="58" Background="AliceBlue" HorizontalAlignment="Right" Height="44" VerticalAlignment="Top" IsEnabled="{Binding Habilitado}" >
+                    <materialDesign:PopupBox PlacementMode="BottomAndAlignCentres" Foreground="#FF45A3CF" ToolTipService.Placement="Left" ToolTip="Acciones"  Grid.Column="1" Margin="0,371,126,0" Width="58" Background="AliceBlue" HorizontalAlignment="Right" Height="44" VerticalAlignment="Top" IsEnabled="{Binding Habilitado}" Visibility="{Binding OcultarBtnsActionEdiUpDelete}" >
                         <StackPanel>
                             <StackPanel.Background>
                                 <LinearGradientBrush>
@@ -171,11 +171,20 @@
                     </materialDesign:PopupBox>
                     <Label Name="lbmensaje" HorizontalAlignment="Left" Margin="219,0,0,25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Width="419" Content="{Binding Mensaje}"/>
 
-                    <Button x:Name="btnExtraerFacturaAPdf" Background="#FF45A3CF"  ToolTip="Extraer factura en pdf"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Command="{Binding CreacionDeFactura_click}" Visibility="{Binding VisibleBtnExtraerFacturasPdf}" >
+                    <Button x:Name="btnExtraerFacturaAPdf" Background="#FF45A3CF"  ToolTip="Crea una factura nueva y Extraer dicha factura en pdf"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FF45A3CF" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Command="{Binding CreacionDeFactura_click}" Visibility="{Binding VisibleBtnExtraerFacturasPdf}" >
                         <!--IsEnabled="{Binding ActivarBtnExtraerFacturas}"-->
                         <materialDesign:PackIcon Kind="FilePdf" Height="20" Width="20" />
                     </Button>
-                   
+
+                    <Button x:Name="btnAnularFactura" Background="#FFD66E6E"  ToolTip="Anula una factura y crea una nueva"  Margin="0,382,87,0" Grid.Column="1" BorderBrush="#FFD66E6E" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Visibility="{Binding OcultarBtnsAnularFacturaYRecrearFactura}" Click="BtnEditar_Click">
+                        <!--IsEnabled="{Binding ActivarBtnExtraerFacturas}"-->
+                        <materialDesign:PackIcon Kind="Cancel" Height="20" Width="20" />
+                    </Button>
+
+                    <Button x:Name="btnReExtraerFacturaAPdfDeTfacturas" Background="#FFF9C15F"  ToolTip="Recrea la factura selecionada en pdf"  Margin="0,382,20,0" Grid.Column="1" BorderBrush="#FFF9C15F" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Command="{Binding CreacionDeFactura_click}" Visibility="{Binding OcultarBtnsAnularFacturaYRecrearFactura}" >
+                        <!--IsEnabled="{Binding ActivarBtnExtraerFacturas}"-->
+                        <materialDesign:PackIcon Kind="FileDocumentBox" Height="20" Width="20" />
+                    </Button>
 
                 </Grid>
 
@@ -250,7 +259,7 @@
                 <Grid Name="gridGeneralModificar" ScrollViewer.HorizontalScrollBarVisibility="Auto">
 
                     <Grid Name="gridSelectTablaMod"  Margin="252,10,258,-22" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                        <materialDesign:PackIcon Kind="DatabasePlus" Height="31" Width="58" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <materialDesign:PackIcon Kind="DatabaseEdit" Height="31" Width="58" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                         <Label Content="Estas modificando el dato de un:" Margin="49,0,0,0" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Width="202" />
                         <TextBox x:Name="tbxtipoTablaMod" Background="White" Margin="49,31,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="212"  IsEnabled="False" Text="{Binding TablaAcltualListada}" />
                     </Grid>
@@ -281,6 +290,33 @@
                         <TextBox x:Name="tbxPrecioMod" Margin="79,0,0,39" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="65" Height="25" VerticalAlignment="Bottom" Text="{Binding PrecioMod}" ToolTip="Recuerda los numeros decimales deben indicarse con un punto NO con una coma."/>
                     </Grid>
 
+                    <!--Datos De Factura a Modificacion, lo que realmente hace es anular la que se esta modificando y crear una nueva referenciando a el numero de factura de la vieja-->
+                    <Grid x:Name="gridFacturaMod" Margin="103,93,128,81" HorizontalAlignment="Center" VerticalAlignment="Center"  Height="259" Width="632" Visibility="Visible">
+                        <Label x:Name="lbIdClienteFactura" Content=" ID Cliente:" Margin="93,117,0,0" FontWeight="Bold" HorizontalAlignment="Left" Width="166" Height="26" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="cbxIDClienteFactura" Margin="174,117,0,0" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="26" VerticalAlignment="Top" SelectedItem="{Binding IdClienteFactura}" SelectionChanged="CbxIDClienteFactura_SelectionChanged" ItemsSource="{Binding IdclientesComboboxFactura}" IsEnabled="{Binding BloquearCbxIdClienteFactura}"/>
+                        <Label x:Name="lbMatriculaCocheFactura" Content="Matricula del coche:" Margin="41,0,0,63" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <ComboBox x:Name="cbxMatriculaFactura" Margin="174,0,0,61" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="112" Height="25" VerticalAlignment="Bottom" SelectedItem="{Binding MatriculaFactura}" SelectionChanged="CbxMatriculaRepaInsert_SelectionChanged" IsEnabled="{Binding BloquearCbxMatriculaFactura}"/>
+                        <Label x:Name="lbServicioFactura" Content="Servicio Realizado:" Margin="346,0,0,161" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <ComboBox x:Name="cbxServicioFactura" Margin="470,0,0,161" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="124" Height="25" VerticalAlignment="Bottom" SelectedItem="{Binding ServicioFactura}" ItemsSource="{Binding ListComboboxServicioFactura}"/>
+                        <Label x:Name="lbFechaFactura" Content="Fecha:" Margin="417,0,0,61" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <DatePicker x:Name="dpFechaFactura" Margin="470,0,0,62" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="124" Height="25" VerticalAlignment="Bottom" SelectedDate="{Binding FechaFactura}" SelectedDateChanged="DpFecha_SelectedDateChanged" IsEnabled="{Binding BloquearDataPickerFechaFactura}" />
+                        <Label x:Name="lbNumReparacionFactura" Visibility="Hidden" Content="Linea de factura:" Margin="59,0,0,161" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom" ToolTip="Linea de un servicio ofrecido a un determinado precio" />
+                        <TextBlock x:Name="tbxlineaFactura" Visibility="Hidden" Margin="174,0,0,162" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="51" Height="25" VerticalAlignment="Bottom" ToolTip="Linea de un servicio ofrecido a un determinado precio" Text="{Binding LienaFactura}" IsEnabled="False"/>
+                        <Label x:Name="lbNombreClienteFactura" Content="Nombre Cliente:" Margin="361,0,0,113" FontWeight="Bold" HorizontalAlignment="Left" Width="150" Height="25" VerticalAlignment="Bottom"/>
+                        <TextBlock x:Name="tbxNombreClienteFactura" Margin="470,0,0,113" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="124" Height="25" VerticalAlignment="Bottom"  IsEnabled="False"/>
+                        <Label Content="Numero de Factura a anular:" HorizontalAlignment="Left" Margin="126,0,0,0" VerticalAlignment="Top"/>
+                        <TextBlock x:Name="tbxNumeroFacturaAanular" Margin="126,0,0,203" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="124" Height="25" VerticalAlignment="Bottom"  IsEnabled="False" Text="{Binding NumeroFactura}"/>
+                        <Label Content="Numero de Factura sustituta:" HorizontalAlignment="Left" Margin="361,0,0,0" VerticalAlignment="Top"/>
+                        <TextBlock x:Name="tbxNumeroFacturaSustituta" Margin="361,0,0,203" FontWeight="Bold" Background="White" HorizontalAlignment="Left" Width="124" Height="25" VerticalAlignment="Bottom"  IsEnabled="False" Text="{Binding NumeroFacturaSustituta}"/>
+                        <Button  HorizontalAlignment="Left" Margin="274,31,0,0" VerticalAlignment="Top" Width="60" Height="25" IsEnabled="False">
+                            <materialDesign:PackIcon Kind="ArrowRightBoldCircle" Height="20" Width="20" />
+                        </Button>
+                        <Button  HorizontalAlignment="Left" Margin="285,224,0,0" VerticalAlignment="Top" Width="49" Height="25" IsEnabled="True" ToolTip="Añadir siguiente linea de la nueva factura o(siguiente servicio que se va cobrar en la nueva factura)." Background="#FF55BD6D" BorderBrush="#FF55BD6D" Command="{Binding AnadirLineaFacturaSustituta_click}">
+                            <materialDesign:PackIcon Kind="Arrow" Height="20" Width="20" />
+                        </Button>
+
+
+                    </Grid>
 
 
                     <Grid Name="gridbtnMod" Margin="229,0,206,10" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="336" Height="66">
@@ -296,6 +332,8 @@
 
 
             </TabItem>
+
+
 
         </TabControl>
         <Label Name="lbTablaListada" HorizontalAlignment="Left" Margin="429,19,0,0" Grid.Row="1" VerticalAlignment="Top" Content="{Binding TablaMostraEnListado}" FontWeight="Bold" FontStyle="Italic" ToolTip="Registro que actualmente se estan mostrando en el listado." Background="#FFFBF8F8" Visibility="Hidden" />

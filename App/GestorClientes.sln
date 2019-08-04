@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestorClientes", "GestorClientes\GestorClientes.csproj", "{40BB2AC5-9FF6-4614-A6BA-8E64F6229580}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "InstalerGestorClientes", "InstalerGestorClientes\InstalerGestorClientes.vdproj", "{456FCC59-B586-4309-A24D-E775072AD6C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{40BB2AC5-9FF6-4614-A6BA-8E64F6229580}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40BB2AC5-9FF6-4614-A6BA-8E64F6229580}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40BB2AC5-9FF6-4614-A6BA-8E64F6229580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{456FCC59-B586-4309-A24D-E775072AD6C7}.Debug|Any CPU.ActiveCfg = Debug
+		{456FCC59-B586-4309-A24D-E775072AD6C7}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
