@@ -272,7 +272,7 @@ namespace GestorClientes
                     //Cambio de nombres esteticos en reparacion
                     if (dtgDatos.Columns[2].Header is "NombreCliRepa")
                     {
-                        dtgDatos.Columns[2].Header = "Nombre Cliente";
+                        dtgDatos.Columns[2].Header = "Nombre";
                     }
 
                     if (dtgDatos.Columns[3].Header is "ApellidosCliRepa")
@@ -282,14 +282,56 @@ namespace GestorClientes
 
                     if (dtgDatos.Columns[4].Header is "MatriCoche")
                     {
-                        dtgDatos.Columns[4].Header = "Matricula coche";
+                        dtgDatos.Columns[4].Header = "Matricula";
                     }
 
                     if (dtgDatos.Columns[6].Header is "NombreServicio")
                     {
                         dtgDatos.Columns[6].Header = "Servicio";
                     }
+                    if (lbTablaListada.Content.ToString() == "Facturas")
+                    {
+                        //Tabla Facturas
+                        if (dtgDatos.Columns[0].Header is "NumeroFactura")
+                        {
+                            dtgDatos.Columns[0].Header = "Numero de Factura";
+                        }
 
+                        if (dtgDatos.Columns[2].Header is "EstadoFactura")
+                        {
+                            dtgDatos.Columns[2].Header = "Estado de Factura";
+                        }
+
+                        if (dtgDatos.Columns[3].Header is "NumeroFacturaAnulada")
+                        {
+                            dtgDatos.Columns[3].Header = "Numero Factura Anulada";
+                        }
+
+                        if (dtgDatos.Columns[4].Header is "idCliente")
+                        {
+                            dtgDatos.Columns[4].Header = "ID Cliente";
+                        }
+
+                        if (dtgDatos.Columns[5].Header is "NombreCliente")
+                        {
+                            dtgDatos.Columns[5].Header = "Nombre";
+                        }
+
+                        if (dtgDatos.Columns[6].Header is "ApellidosCliente")
+                        {
+                            dtgDatos.Columns[6].Header = "Apellidos";
+                        }
+
+                        if (dtgDatos.Columns[8].Header is "CodServicio")
+                        {
+                            dtgDatos.Columns[8].Header = "Codigo servicio";
+                        }
+
+                        if (dtgDatos.Columns[9].Header is "NombreServicio")
+                        {
+                            dtgDatos.Columns[9].Header = "Servicio";
+                        }
+                    }
                     //-----------//
                     #endregion
 
@@ -471,6 +513,7 @@ namespace GestorClientes
 
                 //Copia de seguridad 2(copiando uno a uno los registros y añadiendolos a un fichero .sqlite con las palabras reservadas de el motor para realizar las inserciones
                 #endregion
+                g._dao.CopiaSeguridad();
 
                 #region Copia de Seguridad SQL
 
@@ -565,6 +608,10 @@ namespace GestorClientes
             
         }
 
-       
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ExtraerFacturasCSV ventanaExtracionCSV = new ExtraerFacturasCSV();
+            ventanaExtracionCSV.Show();
+        }
     }
 }

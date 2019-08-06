@@ -49,7 +49,7 @@ namespace GestorClientes
         string _ocultarBtnsActionEdiUpDelete = "Visible";//Oculta el conjunto de botones donde estan los 3 putitos que desplega el boton de editar borrar y crear o insertar
 
         string _ocultarBtnsAnularFacturaYRecrearFactura = "Hidden";//Oculta el conjunto de botones donde estan los 3 putitos que desplega el boton de editar borrar y crear o insertar
-        
+
 
         #endregion
 
@@ -149,6 +149,13 @@ namespace GestorClientes
 
         #endregion
 
+        #region Campos Extraer CSV de Factura
+        bool _cbxCSVTodasLasFacturas;
+        bool _cbxCSVfacturaExtracfiltrarPorUnMes;
+        bool _activarDtpFacturasMesExtraerCSV = false;//datapicker para filtrar Facturas de un mes y pasar a csv
+        bool _activarBtnExtraerCSV = false;
+        DateTime _fechaMesExtraerFacturasCsv = DateTime.Now;
+        #endregion
 
         #endregion
         #region Propiedades
@@ -289,9 +296,6 @@ namespace GestorClientes
 
         }
 
-      
-
-
         //Indica al usuario que tabla se esta viendo en el apartado listado
         public string TablaMostraEnListado
         {
@@ -318,7 +322,7 @@ namespace GestorClientes
                             OcultarBtnsAnularFacturaYRecrearFactura = "Hidden";
                             OcultarBtnsActionEdiUpDelete = "Visible";
                             break;
-                        case "factura":                         
+                        case "factura":
                             value = "Facturas";
                             OcultarBtnsAnularFacturaYRecrearFactura = "Visible";
                             OcultarBtnsActionEdiUpDelete = "Hidden";
@@ -599,7 +603,7 @@ namespace GestorClientes
             set
             {
                 if (_listablas != value)
-                {                    
+                {
                     _listablas = value;
                     Notificador("Listablas");
                 }
@@ -969,7 +973,7 @@ namespace GestorClientes
                 if (_idclientesComboboxFactura != value)
                 {
                     _idclientesComboboxFactura = value;
-                    Notificador("IdclientesComboboxFactura");                 
+                    Notificador("IdclientesComboboxFactura");
 
                 }
             }
@@ -1129,8 +1133,8 @@ namespace GestorClientes
                                 Y numero de factura sustituta sera  una consulta de un select max(numeroFactura) el cual sacara el numero mas grande de la tabla facturas al que sumaremos uno,
                                 que sera el numero de la nueva factura*/
                                 NumeroFactura = f.NumeroFactura;
-                                NumeroFacturaSustituta = _dao.selectUltimoNumeroFactura();                               
-                         
+                                NumeroFacturaSustituta = _dao.selectUltimoNumeroFactura();
+
                                 break;
 
 
@@ -1281,8 +1285,101 @@ namespace GestorClientes
             }
         }
         #endregion
-   
 
+
+
+        #endregion
+
+        #region Propiedades extraer CSV de la tabla Facturas
+        public bool CbxCSVTodasLasFacturas
+        {
+            get { return _cbxCSVTodasLasFacturas; }
+            set
+            {
+                if (_cbxCSVTodasLasFacturas != value)
+                {
+                    _cbxCSVTodasLasFacturas = value;
+                    if (value == true)
+                    {
+                        ActivarBtnExtraerCSV = true;
+                        ActivarDtpFacturasMesExtraerCSV = false;
+                    }
+                    Notificador("CbxCSVTodasLasFacturas");
+                }
+
+            }
+        }
+
+        //Extraer todas las facturas de un mes
+        public bool CbxCSVfacturaExtracfiltrarPorUnMes
+        {
+            get { return _cbxCSVfacturaExtracfiltrarPorUnMes; }
+            set
+            {
+                if (_cbxCSVfacturaExtracfiltrarPorUnMes != value)
+                {
+                    _cbxCSVfacturaExtracfiltrarPorUnMes = value;
+                    if (value == true)
+                        ActivarDtpFacturasMesExtraerCSV = true;
+                    if (value == true && FechaMesExtraerFacturasCsv != null)
+                    {
+                        ActivarDtpFacturasMesExtraerCSV = true;
+                        ActivarBtnExtraerCSV = true;
+                    }
+                    if (value == true && FechaMesExtraerFacturasCsv == null)
+                    {
+                        ActivarDtpFacturasMesExtraerCSV = true;
+                        ActivarBtnExtraerCSV = false;
+                    }
+                    Notificador("CbxCSVfacturaExtracfiltrarPorUnMes");
+                }
+
+            }
+        }
+
+        //Activa el datapicker de extraer facturas de un mes cuando el radioButton de Extraer todas las facturas de un mes esta marcado
+        public bool ActivarDtpFacturasMesExtraerCSV
+        {
+            get { return _activarDtpFacturasMesExtraerCSV; }
+            set
+            {
+                if (_activarDtpFacturasMesExtraerCSV != value)
+                {
+                    _activarDtpFacturasMesExtraerCSV = value;
+                    Notificador("ActivarDtpFacturasMesExtraerCSV");
+                }
+
+            }
+        }
+
+        //Activa el boton cuando el primer radiobutton esta marcado o cuando el segundo lo esta y hayuna fecha escogida
+        public bool ActivarBtnExtraerCSV
+        {
+            get { return _activarBtnExtraerCSV; }
+            set
+            {
+                if (_activarBtnExtraerCSV != value)
+                {
+                    _activarBtnExtraerCSV = value;
+                    Notificador("ActivarBtnExtraerCSV");
+                }
+
+            }
+        }
+
+        public DateTime FechaMesExtraerFacturasCsv
+        {
+            get { return _fechaMesExtraerFacturasCsv; }
+            set
+            {
+                if (_fechaMesExtraerFacturasCsv != value)
+                {
+                    _fechaMesExtraerFacturasCsv = value;
+                    Notificador("FechaMesExtraerFacturasCsv");
+                }
+
+            }
+        }
 
         #endregion
 
@@ -1540,7 +1637,7 @@ namespace GestorClientes
                                 PrecioMod = 0;
                             }
                             break;
-                          
+
                         case "factura":
                             DialogResult respuesta = MessageBox.Show("Esta seguro de no quere añadir mas lineas a esta nueva factura con el numero: " + NumeroFacturaSustituta + " que sustituira a la factura numero: " + NumeroFactura, "¡¡Atención Ò.Ó!!", MessageBoxButtons.YesNo);
                             if (respuesta == DialogResult.Yes)
@@ -1552,7 +1649,7 @@ namespace GestorClientes
                                     f = listLineasFacturaSutituta[i];
                                     /*En este paso comprobamos que este en la tabla reparacion los datos de la linea de factura y de actualizar la factura anulada
                                     a estado ANULADO y que la nueva factura contenta en numeroFacturaAnulada el numero de la factura que se anula*/
-                                    _dao.InsertarFacturaSustitutaPorAnulada(f.NumeroFactura,f.Linea,f.IdCliente,f.Matricula,f.CodServicio,f.Fecha,f.NumeroFacturaAnulada);                                    
+                                    _dao.InsertarFacturaSustitutaPorAnulada(f.NumeroFactura, f.Linea, f.IdCliente, f.Matricula, f.CodServicio, f.Fecha, f.NumeroFacturaAnulada);
                                 }
 
                                 //Volvemos ha activar los combox y datapicker(Solo se bloquearon para asegurarnos que esta factura siempre insertamos el mismo cliente,con el mismo coche de el mismo dia ,con distintos servicios)
@@ -1564,7 +1661,7 @@ namespace GestorClientes
 
                                 //Vaciamos la lista, por si se vuelve a modificar otra, que no se mezclen los registros de facturas que se acumularian en la lista listLineasFacturaSutituta
                                 listLineasFacturaSutituta.Clear();
-                                Listado =Conversion(_dao.selectFacturas());//Actualizamos la lista
+                                Listado = Conversion(_dao.selectFacturas());//Actualizamos la lista
                                 EsCorrectoMod = -1;
                                 Thread h1 = new Thread(new ThreadStart(MensajeInAnulacionFacturaCorrecta));
                                 h1.Start();
@@ -1637,12 +1734,12 @@ namespace GestorClientes
             }
             catch (Exception e)
             {
-                Mensaje = "ERROR: "+e.Message;
+                Mensaje = "ERROR: " + e.Message;
             }
-            
+
         }
 
-       //PENDIENTE COMPROBAR SI HAY UNA FACTURA CON LOS MISMOS DATOS QUE OTRA PERO CON DISTINTO NUMERO DE FACTURA Y ESTADO VIGENTE
+        //PENDIENTE COMPROBAR SI HAY UNA FACTURA CON LOS MISMOS DATOS QUE OTRA PERO CON DISTINTO NUMERO DE FACTURA Y ESTADO VIGENTE
         //Insertamos linea de factura  totalmente nueva sin que tenga anulaciones o haga referencia  otra factura anulada (Se ejecutara cuando creamos una factura en pdf desde la tabla reparacion)
         private int InsertarlineaFacturaVirgen()
         {
@@ -1662,7 +1759,7 @@ namespace GestorClientes
                     if (_dao.SelectExisteEstaFacturaVigente(r.IdCliente, r.MatriCoche, r.Fecha, r.CodServicio))//Si alguno de los resgitros ya  existe como factura, se le pide que anule la factura 
                     {
                         minumeroFactura = -2;
-                        numeroFacturaYaexistente=_dao.SelectNumeroFactura(r.IdCliente, r.MatriCoche, r.Fecha);
+                        numeroFacturaYaexistente = _dao.SelectNumeroFactura(r.IdCliente, r.MatriCoche, r.Fecha);
                         break;
                     }
                 }
@@ -1684,15 +1781,16 @@ namespace GestorClientes
                 else
                 {
 
-                    MessageBox.Show("Ops!.Ya existe una factura creada con eso registros con el numero de factura: "+numeroFacturaYaexistente+"\nSi desea crear un nuevo pdf de estos registros,dirijase a esta factura clicke en ella y luego vaya al boton que indica \"recrear esta factura en PDF.\"\nTambien puede anular esta factura si lo desea y crear una nueva con los registros de reparaciones pertinentes", "(◑ω◐)¡Ops!.");
+                    MessageBox.Show("Ops!.Ya existe una factura creada con eso registros con el numero de factura: " + numeroFacturaYaexistente + "\nSi desea crear un nuevo pdf de estos registros,dirijase a esta factura clicke en ella y luego vaya al boton que indica \"recrear esta factura en PDF.\"\nTambien puede anular esta factura si lo desea y crear una nueva con los registros de reparaciones pertinentes", "(◑ω◐)¡Ops!.");
                 }
-                
-               
+
+
             }
             return minumeroFactura;
 
         }
-        
+
+        //Creacion de factura en PDF
         private void CreacionDeFactura()
         {
             //Añadimos las lineas de la nueva factura a la BD.
@@ -1729,11 +1827,11 @@ namespace GestorClientes
 
                             //Lineas de el documento
                             Paragraph saltoParrafo = new Paragraph(" ");
-                           /* Paragraph titulo1 = new Paragraph();
-                            titulo1.Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 18, 3, BaseColor.BLACK);
-                            titulo1.Add("Electromecánica Óscar.");
-                            titulo1.Alignment = Element.ALIGN_CENTER;//alineacion de el texto a la derecha
-                            documento.Add(titulo1);*/
+                            /* Paragraph titulo1 = new Paragraph();
+                             titulo1.Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 18, 3, BaseColor.BLACK);
+                             titulo1.Add("Electromecánica Óscar.");
+                             titulo1.Alignment = Element.ALIGN_CENTER;//alineacion de el texto a la derecha
+                             documento.Add(titulo1);*/
                             documento.Add(saltoParrafo);
                             //Añadir imagen lista
                             documento.Add(imagen);
@@ -1932,12 +2030,12 @@ namespace GestorClientes
                     }
                 }
             }
-                #endregion
+            #endregion
 
             #region Factura sacada de la tabla Factura
-                //Apartado recrear factura en PDF desde la tabla facturas(Necesitamos la propiedad selecteItem de el datagrid
-                if (TablaAcltualListada == "factura")
-                {
+            //Apartado recrear factura en PDF desde la tabla facturas(Necesitamos la propiedad selecteItem de el datagrid
+            if (TablaAcltualListada == "factura")
+            {
 
                 Factura fac = new Factura();
 
@@ -2192,9 +2290,9 @@ namespace GestorClientes
                     System.Windows.MessageBox.Show("Ops!.Antes de recrear el pdf de una factura debes selecionar un registro de alguna de ellas.", "(◑ω◐)¡Ops!.");
 
             }
-                #endregion
+            #endregion
 
-            
+
         }
         //ventana de dialogo donde se escogera la ruta
         public string AbrirDialogo()
@@ -2218,70 +2316,238 @@ namespace GestorClientes
             if (TablaAcltualListada == "factura")
             {
                 Factura miFactura = (Factura)SelecionRegistroAModificar;
-                 formandoFehchaCorrelativa = miFactura.Fecha.Split('/');
+                formandoFehchaCorrelativa = miFactura.Fecha.Split('/');
                 nombreFactura = @"\FacturaDe" + miFactura.IdCliente + "_";
-                 fec = DateTime.Parse(miFactura.Fecha);
+                fec = DateTime.Parse(miFactura.Fecha);
             }
 
-                #region Formacion de ruta y nombre de fichero
-                try
+            #region Formacion de ruta y nombre de fichero
+            try
+            {
+                dialogoDirectorio.ShowNewFolderButton = true;
+                resultado = dialogoDirectorio.ShowDialog();
+                rutaProvisional = dialogoDirectorio.SelectedPath;
+                // path = dialogoDirectorio.SelectedPath;
+                // rutaParaSubdirectorio = path;
+                dialogoDirectorio.Dispose();
+
+                foreach (string item in formandoFehchaCorrelativa)
                 {
-                    dialogoDirectorio.ShowNewFolderButton = true;
-                    resultado = dialogoDirectorio.ShowDialog();
-                    rutaProvisional = dialogoDirectorio.SelectedPath;
-                    // path = dialogoDirectorio.SelectedPath;
-                    // rutaParaSubdirectorio = path;
-                    dialogoDirectorio.Dispose();
-                   
-                    foreach (string item in formandoFehchaCorrelativa)
-                    {
-                        nombreFactura += item;
-                    }
-                    // ruta = @rutaProvisional + nombreFactura;
-
-                    //Preparamos el nombre para el directorio el cual constara de numero de mes y  de año correlativos
-                    
-                    string fecha = fec.Month.ToString();
-                    fecha += "_" + fec.Year.ToString();
-                    //Crear directorio con numero de mes y año para la factura   
-                    if (!Directory.Exists(String.Concat(@rutaProvisional + @"\" + fecha)))//Si no existe el directorio lo crea
-                    {
-                        Directory.CreateDirectory(String.Concat(@rutaProvisional + @"\" + fecha));
-                    }
-                    //Guardamos la ruta hasta el directorio creado
-                    ruta = String.Concat(@rutaProvisional + @"\" + fecha + nombreFactura);
-                    //------//
-
-                    if (File.Exists(string.Concat(ruta + ".pdf")))
-                    {
-                        string rutaProvisional2 = ruta;
-                        int contador = 0;
-                        while (File.Exists(string.Concat(rutaProvisional2 + ".pdf")))
-                        {
-                            rutaProvisional2 = ruta;//Para que siempre parte de laruta orginal y si cambia el nombre del fichero sea solo añadiendo(1) o (2) etc.. pero no que no sea nombredelfichero.pfd(1)(2)(3) solo nombredelfichero.pfd(1) o nombredelfichero.pfd(2)etcc..
-                            contador++;
-                            rutaProvisional2 += "(" + contador + ")";
-
-                        };
-                        ruta = rutaProvisional2 + ".pdf";
-                    }
-                    else
-                        ruta = ruta + ".pdf";
-
+                    nombreFactura += item;
                 }
-                catch (Exception)
+                // ruta = @rutaProvisional + nombreFactura;
+
+                //Preparamos el nombre para el directorio el cual constara de numero de mes y  de año correlativos
+
+                string fecha = fec.Month.ToString();
+                fecha += "_" + fec.Year.ToString();
+                //Crear directorio con numero de mes y año para la factura   
+                if (!Directory.Exists(String.Concat(@rutaProvisional + @"\" + fecha)))//Si no existe el directorio lo crea
                 {
-
-                    System.Windows.MessageBox.Show("Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
+                    Directory.CreateDirectory(String.Concat(@rutaProvisional + @"\" + fecha));
                 }
-            
+                //Guardamos la ruta hasta el directorio creado
+                ruta = String.Concat(@rutaProvisional + @"\" + fecha + nombreFactura);
+                //------//
+
+                if (File.Exists(string.Concat(ruta + ".pdf")))
+                {
+                    string rutaProvisional2 = ruta;
+                    int contador = 0;
+                    while (File.Exists(string.Concat(rutaProvisional2 + ".pdf")))
+                    {
+                        rutaProvisional2 = ruta;//Para que siempre parte de laruta orginal y si cambia el nombre del fichero sea solo añadiendo(1) o (2) etc.. pero no que no sea nombredelfichero.pfd(1)(2)(3) solo nombredelfichero.pfd(1) o nombredelfichero.pfd(2)etcc..
+                        contador++;
+                        rutaProvisional2 += "(" + contador + ")";
+
+                    };
+                    ruta = rutaProvisional2 + ".pdf";
+                }
+                else
+                    ruta = ruta + ".pdf";
+
+            }
+            catch (Exception)
+            {
+
+                System.Windows.MessageBox.Show("Ocurrio un erro al crear la factura en formato PDF.\nIntentelo de nuevo más tarde, o pongase en contacto con el adminsitrador.", "(◑ω◐)¡Ops!.");
+            }
+
             #endregion
 
-   
+
             // return path;
             return ruta;
         }// Refactorizado Listo
 
+        //PENDIENTE DE PROBAR
+        public string AbrirDialogParaCSV(string fechaSelecionada)
+        {
+            string rutaProvisional = string.Empty;
+            string ruta = string.Empty;
+            FolderBrowserDialog dialogoDirectorio = new FolderBrowserDialog();
+            DialogResult resultado;
+            dialogoDirectorio.ShowNewFolderButton = true;
+            resultado = dialogoDirectorio.ShowDialog();
+            rutaProvisional = dialogoDirectorio.SelectedPath;
+            dialogoDirectorio.Dispose();
+
+            string nombreFichersoCSV = "FacturasDel";
+
+            if (!File.Exists(rutaProvisional))
+            {
+
+                if (fechaSelecionada != null)
+                {
+                    List<Factura> listFacturasMes = _dao.selectFacturaFiltroFechaMes(fechaSelecionada);
+                    Factura miFactura = listFacturasMes[0];
+                    string[] formandoFehchaCorrelativa = null;
+                    formandoFehchaCorrelativa = miFactura.Fecha.Split('/');
+
+                    foreach (string item in formandoFehchaCorrelativa)
+                    {
+                        nombreFichersoCSV += "_" + item;
+                    }
+                    // ruta = @rutaProvisional + nombreFactura;
+                }
+                else
+                    nombreFichersoCSV = "TodasLasFacturas";
+
+                //Guardamos la ruta hasta el directorio creado
+                ruta = String.Concat(@rutaProvisional + @"\" + nombreFichersoCSV);
+                //------//
+                string rutaComprobadora = string.Concat(ruta + ".csv");
+                if (File.Exists(rutaComprobadora))
+                {
+                    string rutaProvisional2 = ruta;
+                    int contador = 0;
+                    while (File.Exists(string.Concat(rutaProvisional2 + ".csv")))
+                    {
+                        rutaProvisional2 = ruta;//Para que siempre parte de laruta orginal y si cambia el nombre del fichero sea solo añadiendo(1) o (2) etc.. pero no que no sea nombredelfichero.pfd(1)(2)(3) solo nombredelfichero.pfd(1) o nombredelfichero.pfd(2)etcc..
+                        contador++;
+                        rutaProvisional2 += "(" + contador + ")";
+
+                    };
+                    ruta = rutaProvisional2 + ".csv";
+                }
+                else
+                    ruta = ruta + ".csv";
+            }
+
+            return ruta;
+        }
+
+       
+        public void ExtraerFacturasACsv()
+        {
+            bool siHayFacturas = false;
+            List<Factura> listFacturas = new List<Factura>();
+            string ruta = string.Empty;
+           _dao.Conectar();//Debemos abrir una nueva conexion ya que estamos  abriendo otra nueva ventana
+
+          
+                // Si esta marcado el radiobutton de todas las facturas
+                if (CbxCSVTodasLasFacturas)
+                {
+
+                    //comprobamos que hay facturas para ese mes de la fecha escogida
+                    siHayFacturas = _dao.SelectExistenFacturas();
+
+                    //Si hay factura abre el dialog,si no,no
+                    if (siHayFacturas == true)
+                    {
+                        //Abrir Dialog
+                        ruta = AbrirDialogParaCSV(null);
+                        //Recogemos todas las facturas 
+                        listFacturas = _dao.selectFacturas();
+                    }
+
+                }
+
+                //Si el radiobutton marcado es la de facturas de un mes
+                if (CbxCSVfacturaExtracfiltrarPorUnMes)
+                {
+                    //comprobamos que hay facturas para ese mes de la fecha escogida 
+                    siHayFacturas = _dao.SelectExisteFacturasParaEseMes(FechaMesExtraerFacturasCsv.ToString("yyyy-MM-dd"));
+
+                    //Si hay facturas, si no,no
+                    if (siHayFacturas == true)
+                    {
+                        //Abrir dialog
+                        ruta = AbrirDialogParaCSV(FechaMesExtraerFacturasCsv.ToString("yyyy-MM-dd"));
+                        //Recogemos todas las facturas de un mes     
+                        listFacturas = _dao.selectFacturaFiltroFechaMes(FechaMesExtraerFacturasCsv.ToString("yyyy-MM-dd"));
+                    }
+                }
+                if (siHayFacturas == false)
+                    System.Windows.MessageBox.Show("Ops!.¡Lo sentimos, pero no hay facturas registradas para ese mes!.", "(◑ω◐)¡Ops!.");
+
+
+            if (siHayFacturas == true)
+            {
+                #region Escribimos fichero CSV
+                List<string> encabezadoCSV = new List<string>();
+                #region prepara encabezado del fichero CSV
+                encabezadoCSV.Add("Numero de Factura");
+                encabezadoCSV.Add("linea");
+                encabezadoCSV.Add("Estado de la factura");
+                encabezadoCSV.Add("Numero de factura anulada");
+                encabezadoCSV.Add("Id Cliente");
+                encabezadoCSV.Add("Nombre Cliente");
+                encabezadoCSV.Add("Apellidos Cliente");
+                encabezadoCSV.Add("Matricula del coche");
+                encabezadoCSV.Add("Codigo de Servicio");
+                encabezadoCSV.Add("Nombre de Servicio");
+                encabezadoCSV.Add("Fecha");
+                #endregion
+
+
+                string cadenaEncabezadounida = string.Join(";", encabezadoCSV);
+
+                //Empezamos ha escribir en el fichero
+                try
+                {
+                    FileStream fichero = new FileStream(ruta, FileMode.OpenOrCreate, FileAccess.Write);
+                    StreamWriter escritor = new StreamWriter(fichero);
+
+                    using (escritor)
+                    {
+                        //Escribimos encabezados
+                        escritor.WriteLine(cadenaEncabezadounida);
+
+                        List<string> lineaDeCSV = new List<string>();
+                        //Recorremo la lista de facturas y vamos escribiendo
+                        foreach (Factura item in listFacturas)
+                        {
+                            lineaDeCSV.Add(item.NumeroFactura.ToString());
+                            lineaDeCSV.Add(item.Linea.ToString());
+                            lineaDeCSV.Add(item.EstadoFactura.ToString());
+                            lineaDeCSV.Add(item.NumeroFacturaAnulada.ToString());
+                            lineaDeCSV.Add(item.IdCliente.ToString());
+                            lineaDeCSV.Add(item.NombreCliente.ToString());
+                            lineaDeCSV.Add(item.ApellidosCliente.ToString());
+                            lineaDeCSV.Add(item.Matricula.ToString());
+                            lineaDeCSV.Add(item.CodServicio.ToString());
+                            lineaDeCSV.Add(item.NombreServicio.ToString());
+                            lineaDeCSV.Add(item.Fecha.ToString());
+                            //Unimos las cadenas en una sola con un separador ";"
+                            string cadenaLineaFacturaUnida = string.Join(";", lineaDeCSV);
+                            escritor.WriteLine(cadenaLineaFacturaUnida);//Escribimos en el fichero la linea separadas por ;
+                            lineaDeCSV.Clear();//Limpiamos para que no escriba en la siguiente pasada la linea anterior mas la nueva
+                        }
+                    }
+                    System.Windows.MessageBox.Show("La extracción a fichero CSV fue un éxito.\nEstá alojado en la ruta:\n" + ruta, "Éxito◑‿◐");
+                }
+                catch (Exception e)
+                {
+                    _dao.Desconectar();
+                    System.Windows.MessageBox.Show("Ops,Lo sentimos pero ocurrio un error inesperado.\nPongase en contacto con el administrador.\nERROR:"+e.Message, "(◑ω◐)¡Ops!.");
+                }
+                #endregion
+            }
+
+                _dao.Desconectar();
+        }
 
         //Este metodo refresca el listado despues de haber eliminado los registros desde la clase MainWindow en el metodo BtnEliminar_Click
         private void EliminarRegistro()
@@ -2382,9 +2648,9 @@ namespace GestorClientes
             FiltrarMesFecha = false;
             FiltroFecha = DateTime.Now;
             ResultadoCalculoTotalMes = 0;
-            if(TablaAcltualListada is "reparacion")
+            if (TablaAcltualListada is "reparacion")
                 Listado = Conversion(_dao.selectReparacion());
-            if(TablaAcltualListada is "factura")
+            if (TablaAcltualListada is "factura")
                 Listado = Conversion(_dao.selectFacturas());
             VisibleBtnExtraerFacturasPdf = "Hidden";
         }
@@ -2439,7 +2705,7 @@ namespace GestorClientes
                     {
                         ResultadoCalculoTotalMes = _dao.selectReparacionFiltroCalculoMes(FiltroFecha.ToString("yyyy-MM-dd"));
                         Listado = Conversion(_dao.selectReparacionFiltroFechaMes(FiltroFecha.ToString("yyyy-MM-dd")));
-                    }               
+                    }
                     break;
                 #endregion
 
@@ -2453,7 +2719,7 @@ namespace GestorClientes
                     {
                         Listado = Conversion(_dao.selectFacturaUnIdCliUnaMatriculaEnFecha(FiltroMatriculaSelecionado, int.Parse(FiltroIDClienteSelecionado), FiltroFecha.ToString("yyyy-MM-dd")));
                         //Activacion de facturas
-                        if (Listado.Count != 0 && Listado != null )//Si se encontro algo se activa el boton si no, no facturas de esa fecha y de ese cliente
+                        if (Listado.Count != 0 && Listado != null)//Si se encontro algo se activa el boton si no, no facturas de esa fecha y de ese cliente
                             VisibleBtnExtraerFacturasPdf = "Visible";
                         else
                             VisibleBtnExtraerFacturasPdf = "Hidden";
@@ -2498,9 +2764,9 @@ namespace GestorClientes
 
         }
 
-      
 
-      
+
+
         #endregion
 
         #region Metodos para propiedades Command de los componentes de la ventana
@@ -2572,6 +2838,10 @@ namespace GestorClientes
         public RelayCommand AnadirLineaFacturaSustituta_click
         {
             get { return new RelayCommand(facturasustituta => AnadirLineaFacturaSustituta(), facturasustituta => true); }
+        }
+        public RelayCommand ExtraerFacturasACsv_click
+        {
+            get { return new RelayCommand(extraerACSV => ExtraerFacturasACsv(), extraerACSV => true); }
         }
 
 

@@ -179,3 +179,5 @@ E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\Syste
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Xml.XPath.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Debug\System.Xml.XPath.XDocument.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\GestorClientes.exe.config
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\ExtraerFacturasCSV.g.cs
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Debug\ExtraerFacturasCSV.baml

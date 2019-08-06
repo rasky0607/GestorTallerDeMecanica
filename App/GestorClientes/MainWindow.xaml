@@ -29,14 +29,9 @@
                     <GradientStop Color="#FF45A3CF" Offset="1"/>
                 </LinearGradientBrush>
             </Menu.Background>
-            <MenuItem ToolTip="Exportar documentos." IsEnabled="{Binding Habilitado}" Visibility="Collapsed">
+            <MenuItem ToolTip="Exportar documentos." IsEnabled="{Binding Habilitado}">
                 <MenuItem.Header>Archivo</MenuItem.Header>
-                <MenuItem Header="Exportar listado a formato PDF." IsEnabled="False">
-                    <MenuItem.Icon>
-                        <materialDesign:PackIcon Kind="FilePdf" Height="16" Width="19" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Exportar listado a formato CSV." IsEnabled="False">
+                <MenuItem Header="Exportar listado de Facturas a formato CSV."  Click="MenuItem_Click">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="FileCsv" Height="16" Width="19" />
                     </MenuItem.Icon>

@@ -8,7 +8,7 @@ using System.Data;
 using MySql.Data.MySqlClient;
 //Para coger datos como la cadena conexion de el archivo de configuracion app.config
 using GestorClientes.Properties;
-
+using System.IO;
 
 namespace GestorClientes
 {
@@ -1819,7 +1819,26 @@ namespace GestorClientes
         {
             try
             {
-              
+                //mysqldump -u root -p123 mecanica >C:\Users\pinid\Escritorio\backupMecanica.sql
+
+               
+                string rutaBacUpkBD = System.Configuration.ConfigurationManager.AppSettings.Get("backup");//Optenemos el  dato de configuracion con la clave backup de el fichero app.config          
+                string rutaRecursoMysqlDump= System.Configuration.ConfigurationManager.AppSettings.Get("rutaRecursoMysqldump");//Optenemos el  dato de configuracion con la clave rutaRecursoMysqldump de el fichero app.config    
+                if (!Directory.Exists(rutaBacUpkBD))
+                    Directory.CreateDirectory(rutaBacUpkBD);
+                
+                System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                proc.EnableRaisingEvents = false;
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
+                //direccionar el lugar de ubicacion del recurso
+                proc.StartInfo.FileName = rutaRecursoMysqlDump;
+                //parametros que recibe le recurso del gestpr de datos + el directorio PENDIENTE CONFIGUARAR LA RUTA DE SALIDA(DEBEMSO CREAR PRIMERO EL DIRECTORIO DONDE SE GUARDARA SI NO EXISTE
+                proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r "+rutaBacUpkBD+"\\backUpBDMecanica.sql";
+                //ejecutar el recurso
+                proc.StartInfo.WindowStyle = new System.Diagnostics.ProcessWindowStyle();
+                proc.Start();
+                //MessageBox.Show("Copia de seguridad realizada con exito");
             }
             catch (Exception e)
             {
@@ -1828,6 +1847,90 @@ namespace GestorClientes
             return true;
 
         }
+
+
+        public bool SelectExisteFacturasParaEseMes(string fecha)
+        {
+            int resultado = -1;
+            try
+            {//month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "'
+                //select exists(select * from factura where fecha='2019-06-01' and matriCoche='2218CL' and estadoFactura='VIGENTE');
+                string sql;
+                sql = "select exists(select * from factura where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "')) as facturasExistente; ";
+                MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+                MySqlDataReader lector = null;
+
+                try
+                {
+                    lector = sqlYconec.ExecuteReader();
+                    while (lector.Read())
+                    {
+                        //si devuelve uno 1 es verdad si devuelve 0 es falso
+                        resultado = int.Parse(lector["facturasExistente"].ToString());
+                    }
+                    lector.Close();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            if (resultado == 1)
+                return true;
+            else
+                return false;
+
+        }
+
+        public bool SelectExistenFacturas()
+        {
+            int resultado = -1;
+            try
+            {//month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "'
+                //select exists(select * from factura where fecha='2019-06-01' and matriCoche='2218CL' and estadoFactura='VIGENTE');
+                string sql;
+                sql = "select exists(select * from factura) as facturasExistente; ";
+                MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+                MySqlDataReader lector = null;
+
+                try
+                {
+                    lector = sqlYconec.ExecuteReader();
+                    while (lector.Read())
+                    {
+                        //si devuelve uno 1 es verdad si devuelve 0 es falso
+                        resultado = int.Parse(lector["facturasExistente"].ToString());
+                    }
+                    lector.Close();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            if (resultado == 1)
+                return true;
+            else
+                return false;
+
+        }
+
+
+    
 
     }
 
