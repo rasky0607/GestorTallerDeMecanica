@@ -25,7 +25,7 @@ namespace GestorClientes
     class GestionVM : INotifyPropertyChanged
     {
 
-        static string rutaImg = @"../../img/cartel.png";
+        //static string rutaImg = @"../../img/cartel.png";
         #region Variables
         string colorRojo = "#FFD66E6E";
         string colorAzul = "#FF45A3CF";
@@ -1812,12 +1812,12 @@ namespace GestorClientes
                             PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
                             documento.Open();
                             //Preparacion de imagen
-                            iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
+                            /*iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
                             imagen.BorderWidth = 100;
                             imagen.Alignment = Element.ALIGN_CENTER;
                             float porcentaje = 0.0f;
                             porcentaje = 250 / imagen.Width;
-                            imagen.ScalePercent(porcentaje * 100);
+                            imagen.ScalePercent(porcentaje * 100);*/
 
                             #endregion
                             //Donde sacaremos mas abajo los datos basicos de la factura como la fecha, nombre de el cliente y matricula del coche
@@ -1834,10 +1834,18 @@ namespace GestorClientes
                              documento.Add(titulo1);*/
                             documento.Add(saltoParrafo);
                             //Añadir imagen lista
-                            documento.Add(imagen);
+                            //documento.Add(imagen);
                             #region Datos Empresa
 
                             //Datos de la empresa
+
+                            Paragraph dato = new Paragraph();
+                            dato.Font = FontFactory.GetFont(FontFactory.TIMES_BOLDITALIC, 16, 3, BaseColor.BLACK);
+                            dato.Add("Electromecanica Óscar.");
+                            dato.Alignment = Element.ALIGN_CENTER;//alineacion de el texto a la derecha                 
+                            documento.Add(dato);
+                            documento.Add(saltoParrafo);
+
                             Paragraph dato1 = new Paragraph();
                             dato1.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
                             dato1.Add("Óscar Castro Pérez.");
@@ -2059,12 +2067,12 @@ namespace GestorClientes
                                 PdfWriter lapiz = PdfWriter.GetInstance(documento, new FileStream(ruta, FileMode.Create));
                                 documento.Open();
                                 //Preparacion de imagen
-                                iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
+                               /* iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(rutaImg);
                                 imagen.BorderWidth = 100;
                                 imagen.Alignment = Element.ALIGN_CENTER;
                                 float porcentaje = 0.0f;
                                 porcentaje = 250 / imagen.Width;
-                                imagen.ScalePercent(porcentaje * 100);
+                                imagen.ScalePercent(porcentaje * 100);*/
 
                                 #endregion
                                 //Donde sacaremos mas abajo los datos basicos de la factura como la fecha, nombre de el cliente y matricula del coche
@@ -2081,11 +2089,18 @@ namespace GestorClientes
                                  documento.Add(titulo1);*/
                                 documento.Add(saltoParrafo);
                                 //Añadir imagen lista
-                                documento.Add(imagen);
+                                //documento.Add(imagen);
 
                                 #region Datos Empresa
 
                                 //Datos de la empresa
+                                Paragraph dato = new Paragraph();
+                                dato.Font = FontFactory.GetFont(FontFactory.TIMES_BOLDITALIC, 16, 3, BaseColor.BLACK);
+                                dato.Add("Electromecanica Óscar.");
+                                dato.Alignment = Element.ALIGN_CENTER;//alineacion de el texto a la derecha                 
+                                documento.Add(dato);
+                                documento.Add(saltoParrafo);
+
                                 Paragraph dato1 = new Paragraph();
                                 dato1.Font = FontFactory.GetFont(FontFactory.TIMES, 13, 3, BaseColor.BLACK);
                                 dato1.Add("Óscar Castro Pérez.");
