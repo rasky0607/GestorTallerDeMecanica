@@ -191,7 +191,7 @@
                     <Grid Name="gridSelectTablaInsert"  Margin="252,10,258,-22" VerticalAlignment="Top" HorizontalAlignment="Center" >
                         <materialDesign:PackIcon Kind="DatabasePlus" Height="31" Width="58" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                         <Label Content="¿Que deseas añadir?:" Margin="49,0,0,0" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Width="166" />
-                        <ComboBox x:Name="cbxtipoInsercion" Background="White" Margin="49,31,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="212"  ItemsSource="{Binding Listablas}" SelectionChanged="CbxtipoInsercion_SelectionChanged" SelectedItem="{Binding TablaSelecionada}"  />
+                        <ComboBox x:Name="cbxtipoInsercion" Background="White" Margin="49,31,0,0" VerticalAlignment="Top" Height="28" HorizontalAlignment="Left" Width="212"   SelectionChanged="CbxtipoInsercion_SelectionChanged" SelectedItem="{Binding TablaSelecionada}"  />
                     </Grid>
                     <!--Datos De cliente a insertar-->
                     <Grid x:Name="gridClienteInsert" Margin="36,86,22,65" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" Height="164" Width="713">

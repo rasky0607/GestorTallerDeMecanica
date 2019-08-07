@@ -150,8 +150,8 @@ namespace GestorClientes
         List<string> _idclientesComboboxFactura = new List<string>();//lista que recarga el itemsource de el combobox de de idCliente cuando se va anular una factura creando otra.
         bool _bloquearCbxIdClienteFactura = true;
         bool _bloquearCbxMatriculaFactura = true;
-        bool _bloquearDataPickerFechaFactura = true;
-
+        bool _bloquearDataPickerFechaFactura = true;        
+        
 
         #endregion
 
@@ -1791,6 +1791,9 @@ namespace GestorClientes
                                     BloquearDataPickerFechaFactura = true;
 
                                     EsCorrectoMod = 0;//es correcta la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+                                    //para restablecer y comprobar que selecione la proxima vez que venga a esta ventan un id
+                                    IdClienteFactura = -1;
+                                   
 
                                     //Vaciamos la lista, por si se vuelve a modificar otra, que no se mezclen los registros de facturas que se acumularian en la lista listLineasFacturaSutituta
                                     listLineasFacturaSutituta.Clear();

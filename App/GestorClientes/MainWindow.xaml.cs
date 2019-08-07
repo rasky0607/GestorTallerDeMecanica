@@ -134,13 +134,21 @@ namespace GestorClientes
         //tabInsertar=añadir
         private void BtnIraTabInsertar_Click(object sender, RoutedEventArgs e)
         {
+
             cbxtipoInsercion.SelectedItem = null;
+            cbxtipoInsercion.ItemsSource = null;
             tbAnadir.IsEnabled = true;
             tbListado.IsEnabled = false;
             tbAnadir.Focus();
             //Vaciar todos los componentes de la pestaña insertar (de todas las tablas)
             LimpiezaDeTextoEnCompoentesDeInsercion();
-
+            List<string> listadoTablasBD = new List<string>();
+            listadoTablasBD.Add("cliente");
+            listadoTablasBD.Add("servicio");
+            listadoTablasBD.Add("reparacion");
+            cbxtipoInsercion.ItemsSource = listadoTablasBD;
+           
+          
         }
         #endregion
 
@@ -199,6 +207,10 @@ namespace GestorClientes
                                 cbxServicioFactura.ItemsSource = gestion._dao.selectServicioDescripcion();
                                 cbxIDClienteFactura.ItemsSource = gestion._dao.selectClienteIdCliente();
                                 gestion._dao.Desconectar();
+                                cbxIDClienteFactura.SelectedIndex = -1;
+                                cbxMatriculaFactura.SelectedIndex = -1;
+                                tbxNombreClienteFactura.Text = string.Empty;
+
                             }
                             //----Fin preparacion de combobox de pestaña añadir en la tabla reapracion---
                         }

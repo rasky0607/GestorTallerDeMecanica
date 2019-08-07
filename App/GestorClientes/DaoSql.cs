@@ -1675,7 +1675,7 @@ namespace GestorClientes
                 #region comprobacion de si existe
                 //Primero comprobar si existe un resgitro en la tabla reparacion con estos datos, si no es asi darlo de alta, y despues de esta comprobacion, insertar la nueva factura
                 //select exists(select * from reparacion where idCliente=1 and fecha='2019-06-01' and matriCoche='2218CL' and numReparacion=1 and codServicio=4);
-                string sql = "select exists(select * from reparacion where idCliente="+idCliente+" and fecha='"+fecha+"' and matriCoche='"+matricula+"' and numReparacion="+linea+" and codServicio="+codServicio+")as existe";
+                string sql = "select exists(select * from reparacion where idCliente="+idCliente+" and fecha='"+fecha+"' and matriCoche='"+matricula+"' and numReparacion="+linea+")as existe";
                 MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
                 MySqlDataReader lector = null;
                 int siExiste = -1;//1 es true, 0 es false
