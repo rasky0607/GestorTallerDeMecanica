@@ -264,7 +264,7 @@ namespace GestorClientes
 
         public int selectServicioCodigo(string descripcion)
         {
-            Servicio miservicio = new Servicio();
+            int codigoServicio = -1;
             string sql = "select codigo from servicio where descripcion='" + descripcion + "';";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
@@ -275,7 +275,7 @@ namespace GestorClientes
                 lector = sqlYconec.ExecuteReader();
                 while (lector.Read())
                 {
-                    miservicio.Codigo = int.Parse(lector["codigo"].ToString());
+                    codigoServicio = int.Parse(lector["codigo"].ToString());
                 }
                 lector.Close();
             }
@@ -283,7 +283,7 @@ namespace GestorClientes
             {
                 throw new Exception(e.Message);
             }
-            return miservicio.Codigo;
+            return codigoServicio;
 
         }
 
@@ -291,7 +291,7 @@ namespace GestorClientes
         {
             int nreparaciones = -1;
             //select count(*)as cantidad from reparacion where idCliente=1 and matriCoche='2019OPL' and fecha='2019-07-11';
-            string sql = "select count(*)as cantidad from reparacion where idCliente='" + idCliRepara + "'and matriCoche='" + matriculaRepa + "'and fecha='" + (DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "'";
+            string sql = "select max(numReparacion)as cantidad from reparacion where idCliente='" + idCliRepara + "'and matriCoche='" + matriculaRepa + "'and fecha='" + fecha + "'";
             MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
 
             MySqlDataReader lector = null;
@@ -301,7 +301,10 @@ namespace GestorClientes
                 lector = sqlYconec.ExecuteReader();
                 while (lector.Read())
                 {
-                    nreparaciones = int.Parse(lector["cantidad"].ToString());
+                    int.TryParse(lector["cantidad"].ToString(), out nreparaciones);
+                    if (nreparaciones == -1)
+                        nreparaciones = 0;
+
                 }
                 lector.Close();
             }
@@ -537,7 +540,7 @@ namespace GestorClientes
             try
             {
                 string sql;
-                sql = "delete from reparacion where and idCliente='" + idCliente + "'" + " and matriCoche='" + matriculaCoche + "' and fecha='" + Convert.ToDateTime(DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "'";
+                sql = "delete from reparacion where idCliente='" + idCliente + "'" + " and matriCoche='" + matriculaCoche + "' and fecha='" + Convert.ToDateTime(DateTime.Parse(fecha)).ToString("yyyy-MM-dd") + "'";
                 MySqlCommand cmd = new MySqlCommand(sql, conexion);
                 cmd.ExecuteNonQuery();
 

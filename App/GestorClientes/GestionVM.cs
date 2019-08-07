@@ -33,6 +33,7 @@ namespace GestorClientes
         public DaoSql _dao = new DaoSql();
         List<string> listadoTablasBD = new List<string>(); //Listado de tablas de la BD en la que si se puede insertar manualmente por le usuario (cliente,servicio,reparacion) PERO NO FACTURA de hay que no lo cojamos de el  show tables, como haciamos antes
         List<Factura> listLineasFacturaSutituta = new List<Factura>();//Listado de datos de la factura sustituta para anular una factura y sustituirla por la nueva con nuevas lineas en ModificacionRegistro
+        List<Reparacion> listReparacionesPorAnadir = new List<Reparacion>();//Conjunto de reparaciones en la pestaña  añadir, para evitar que el usuario este constantemente cambiando de pestaña al añadir una reparaciond eun cliente para el mismo dia
         #endregion
 
         #region campos
@@ -79,12 +80,17 @@ namespace GestorClientes
         double _precioInsert;
 
         //Datos Añadir Reparacion(Convertir Propiedades)
-        int _idClirepaInsert;//Seleciona un string de un idCliente de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
+        int _idClirepaInsert=0;//Seleciona un string de un idCliente de cliente y a partir de el buscamos el id luego internamente almacenandolo en _idClienteRepaInsert
         string _matriculaRepaInsert;
         string _ServicioRepa;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         int _CodServicioRepa;
         DateTime _fechaRepaInser = DateTime.Now;
         int _numRepaInsert = 1;
+
+        bool _bloquearCbxIdCliInsertRepa = true;
+        bool _bloquearCbxMatriculaInsertRepa = true;
+        bool _bloquearCbxFechaInsertRepa = true;
+
 
         #endregion
 
@@ -134,7 +140,7 @@ namespace GestorClientes
         //Datos Modificar Añadiendo una nueva que sustituye la anterior Factura 
         int _numeroFactura;
         int _numeroFacturaSustituta;
-        int _idClienteFactura;
+        int _idClienteFactura =-1;
         string _matriculaFactura;
         string _ServicioFactura;//Seleciona un string de servicio y a partir de el buscamos el cod luego internamente almacenandolo en _CodServicioRepa
         List<string> _listComboboxServicioFactura;//lista de combobox de servicios realizados(itemSource)
@@ -829,7 +835,6 @@ namespace GestorClientes
             }
         }
 
-
         public int NumRepaInsert
         {
             get { return _numRepaInsert; }
@@ -839,6 +844,47 @@ namespace GestorClientes
                 {
                     _numRepaInsert = value;
                     Notificador("NumRepaInsert");
+                }
+            }
+        }
+
+        //Esteticos Anadir Reparacion 
+
+        public bool BloquearCbxIdCliInsertRepa
+        {
+            get { return _bloquearCbxIdCliInsertRepa; }
+            set
+            {
+                if (_bloquearCbxIdCliInsertRepa != value)
+                {
+                    _bloquearCbxIdCliInsertRepa = value;
+                    Notificador("BloquearCbxIdCliInsertRepa");
+                }
+            }
+        }
+
+        public bool BloquearCbxMatriculaInsertRepa
+        {
+            get { return _bloquearCbxMatriculaInsertRepa; }
+            set
+            {
+                if (_bloquearCbxMatriculaInsertRepa != value)
+                {
+                    _bloquearCbxMatriculaInsertRepa = value;
+                    Notificador("BloquearCbxMatriculaInsertRepa");
+                }
+            }
+        }
+
+        public bool BloquearCbxFechaInsertRepa
+        {
+            get { return _bloquearCbxFechaInsertRepa; }
+            set
+            {
+                if (_bloquearCbxFechaInsertRepa != value)
+                {
+                    _bloquearCbxFechaInsertRepa = value;
+                    Notificador("BloquearCbxFechaInsertRepa");
                 }
             }
         }
@@ -1556,15 +1602,26 @@ namespace GestorClientes
                             }
                             break;
                         case "reparacion":
-                            CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);
-                            /*Necesario para comprobar el numero de reparacion en el partado de los datos, ya que la comprobacion de CbxIdClienteInsert_SelectionChanged de la clase MainWindow solo afecta ala parte grafica,
-                            ya que el cambio no consigue activar  una alteracion de el dato de la propiead,de esta forma queda asegurada*/
-                            NumRepaInsert = _dao.selectNumRepara(IdClirepaInsert, MatriculaRepaInsert, FechaRepaInser.ToString("yyyy-MM-dd"));
-                            if (NumRepaInsert >= 1)
-                                NumRepaInsert++;
-                            else
-                                NumRepaInsert = 1;
-                            if (_dao.InsertReparacion(NumRepaInsert, IdClirepaInsert, MatriculaRepaInsert, CodServicioRepa, FechaRepaInser.ToString("yyyy-MM-dd")))
+                            int totalDeReparaciones = listReparacionesPorAnadir.Count;
+
+                            if (totalDeReparaciones == 0)
+                            {
+                                System.Windows.MessageBox.Show("No has indicado los datos para ninguan reparación aun.", "(◑ω◐)¡Ops!.");
+                                break;
+                            }
+
+                            int contador = 0;
+                            foreach (Reparacion reparacion in listReparacionesPorAnadir)
+                            {
+                                if (_dao.InsertReparacion(reparacion.NumReparacion, reparacion.IdCliente, reparacion.MatriCoche, reparacion.CodServicio, reparacion.Fecha))//.ToString("yyyy-MM-dd")
+                                    contador++;
+                                else
+                                {                                    
+                                    System.Windows.MessageBox.Show("Ops,Lo sentimos pero ocurrio un error inesperado.\nPongase en contacto con el administrador." , "(◑ω◐)¡Ops!.");
+                                }
+                            }
+
+                            if (contador==totalDeReparaciones)
                             {
                                 //MensajeInsercion = "Insercion realizada correctamente";
                                 EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
@@ -1575,6 +1632,14 @@ namespace GestorClientes
                                 ListadoReparacion();
                                 EsCorrectoInsert = -1;//Reiniciamos la propiedad,para que en la siguiente ronda que vaya a añadir produzca de nuevo un cambio en la propiedad y ejecute el metodo de MainWindows TbxInserCorrect_TextChanged
                             }
+
+                            //Limpiamos la lista de elementos, para futuras reparaciones que deseomos añadir al volver a la pestaña añadir selecionado reparacion
+                            listReparacionesPorAnadir.Clear();
+
+                            //Al terminar la operacion en esta pestaña habilitamos de nuevo todos los combobox bloqueados
+                            BloquearCbxIdCliInsertRepa = true;
+                            BloquearCbxFechaInsertRepa = true;
+                            BloquearCbxMatriculaInsertRepa = true;
                             break;
                     }
                 }
@@ -1587,7 +1652,73 @@ namespace GestorClientes
             }
         }
 
-        //PROBAR parte CASE FACTRURA
+        //Crea una lista de reparacion que sera añadida al dar al boton Insertar(de forma que el cliente no deba estar constantemente cambiando de ventana para insertar varias reparaciones a un mismo cliente)
+        private void AnadirReparacionALalistaDePreparacion()
+        {
+            //Añadimos la linea de factura de la pestaña modificaciones al listado de listLineasFacturaAanular
+            try
+            {
+                if (IdClirepaInsert == 0 || MatriculaRepaInsert is null || ServicioRepa is null)
+                {
+                    System.Windows.MessageBox.Show("Debes selecionar siempre un cliente,una matricula,una fecha y un servicio.", "(◑ω◐)¡Ops!.");
+                }
+                else 
+                {
+                    int cantidad = listReparacionesPorAnadir.Count;
+                    if (cantidad == 0)//La primera vez, obtenemos el maximo numero de reparacion para un determinado cliente con un coche en una determinada fecha concreta
+                    {
+                        /*Necesario para comprobar el numero de reparacion en el apartado de los datos, ya que la comprobacion de CbxIdClienteInsert_SelectionChanged de la clase MainWindow solo afecta ala parte grafica,
+                              ya que el cambio no consigue activar  una alteracion de el dato de la propiead,de esta forma queda asegurada*/
+                        NumRepaInsert = _dao.selectNumRepara(IdClirepaInsert, MatriculaRepaInsert, FechaRepaInser.ToString("yyyy-MM-dd"));
+                        if (NumRepaInsert >= 1)
+                            NumRepaInsert++;
+                        else
+                            NumRepaInsert = 1;
+                    }
+                    else//Si ya hicimos lo anterior, solo incrementamos el numero de reparacion en 1 mas
+                    {
+                        NumRepaInsert++;
+                        BloquearCbxIdCliInsertRepa = false;
+                        BloquearCbxFechaInsertRepa = false;
+                        BloquearCbxMatriculaInsertRepa = false;
+                    }
+
+
+                    CodServicioRepa = _dao.selectServicioCodigo(ServicioRepa);
+
+                    Reparacion r = new Reparacion();
+                    r.NumReparacion = NumRepaInsert;
+                    r.IdCliente = IdClirepaInsert;
+                    r.MatriCoche = MatriculaRepaInsert;
+                    r.CodServicio = CodServicioRepa;
+                    r.Fecha = FechaRepaInser.ToString("yyyy-MM-dd");
+
+                    //Añadimos la nueva reparacion a la lista que sera la que se recorrera e insertara cuando se confirme los cambios en ModificacionRegistro en el case "reparacion"
+                    listReparacionesPorAnadir.Add(r);
+
+                    BloquearCbxIdCliInsertRepa = false;
+                    BloquearCbxFechaInsertRepa = false;
+                    BloquearCbxMatriculaInsertRepa = false;
+
+                    //Recargamos el valor por defecto de todos los datos para la siguiente linea de factura que se inserte:
+                    ServicioRepa = null;
+
+                    //Mensaje de linea insertada
+                    Thread h1 = new Thread(new ThreadStart(MensjInfoReparacionAnadidaEnListaDeInsercion));
+                    h1.Start();
+                }
+                
+
+            }
+            catch (Exception e)
+            {
+                Mensaje = "ERROR: " + e.Message;
+            }
+        }
+
+
+
+
         private void ModificacionRegistro()
         {
             if (EstadoConexion)
@@ -1639,45 +1770,52 @@ namespace GestorClientes
                             break;
 
                         case "factura":
-                            DialogResult respuesta = MessageBox.Show("Esta seguro de no quere añadir mas lineas a esta nueva factura con el numero: " + NumeroFacturaSustituta + " que sustituira a la factura numero: " + NumeroFactura, "¡¡Atención Ò.Ó!!", MessageBoxButtons.YesNo);
-                            if (respuesta == DialogResult.Yes)
+                            if (listLineasFacturaSutituta.Count != 0)
                             {
-                                //AQUI entonces realizaremos la insercion del listado de lineas de la factura que habremos preparado y almacenado antes en listLineasFacturaAanular
-                                for (int i = 0; i < listLineasFacturaSutituta.Count; i++)
+                                DialogResult respuesta = MessageBox.Show("Esta seguro de no quere añadir mas lineas a esta nueva factura con el numero: " + NumeroFacturaSustituta + " que sustituira a la factura numero: " + NumeroFactura, "¡¡Atención Ò.Ó!!", MessageBoxButtons.YesNo);
+                                if (respuesta == DialogResult.Yes)
                                 {
-                                    Factura f = new Factura();
-                                    f = listLineasFacturaSutituta[i];
-                                    /*En este paso comprobamos que este en la tabla reparacion los datos de la linea de factura y de actualizar la factura anulada
-                                    a estado ANULADO y que la nueva factura contenta en numeroFacturaAnulada el numero de la factura que se anula*/
-                                    _dao.InsertarFacturaSustitutaPorAnulada(f.NumeroFactura, f.Linea, f.IdCliente, f.Matricula, f.CodServicio, f.Fecha, f.NumeroFacturaAnulada);
+                                    //AQUI entonces realizaremos la insercion del listado de lineas de la factura que habremos preparado y almacenado antes en listLineasFacturaAanular
+                                    for (int i = 0; i < listLineasFacturaSutituta.Count; i++)
+                                    {
+                                        Factura f = new Factura();
+                                        f = listLineasFacturaSutituta[i];
+                                        /*En este paso comprobamos que este en la tabla reparacion los datos de la linea de factura y de actualizar la factura anulada
+                                        a estado ANULADO y que la nueva factura contenta en numeroFacturaAnulada el numero de la factura que se anula*/
+                                        _dao.InsertarFacturaSustitutaPorAnulada(f.NumeroFactura, f.Linea, f.IdCliente, f.Matricula, f.CodServicio, f.Fecha, f.NumeroFacturaAnulada);
+                                    }
+
+                                    //Volvemos ha activar los combox y datapicker(Solo se bloquearon para asegurarnos que esta factura siempre insertamos el mismo cliente,con el mismo coche de el mismo dia ,con distintos servicios)
+                                    BloquearCbxIdClienteFactura = true;
+                                    BloquearCbxMatriculaFactura = true;
+                                    BloquearDataPickerFechaFactura = true;
+
+                                    EsCorrectoMod = 0;//es correcta la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+
+                                    //Vaciamos la lista, por si se vuelve a modificar otra, que no se mezclen los registros de facturas que se acumularian en la lista listLineasFacturaSutituta
+                                    listLineasFacturaSutituta.Clear();
+                                    Listado = Conversion(_dao.selectFacturas());//Actualizamos la lista
+                                    EsCorrectoMod = -1;
+                                    Thread h1 = new Thread(new ThreadStart(MensajeInAnulacionFacturaCorrecta));
+                                    h1.Start();
                                 }
 
-                                //Volvemos ha activar los combox y datapicker(Solo se bloquearon para asegurarnos que esta factura siempre insertamos el mismo cliente,con el mismo coche de el mismo dia ,con distintos servicios)
-                                BloquearCbxIdClienteFactura = true;
-                                BloquearCbxMatriculaFactura = true;
-                                BloquearDataPickerFechaFactura = true;
-
-                                EsCorrectoMod = 0;//es correcta la modificacion Para cambiar el foco a tblistado en lugar de estar en tbAñadir
-
-                                //Vaciamos la lista, por si se vuelve a modificar otra, que no se mezclen los registros de facturas que se acumularian en la lista listLineasFacturaSutituta
-                                listLineasFacturaSutituta.Clear();
-                                Listado = Conversion(_dao.selectFacturas());//Actualizamos la lista
-                                EsCorrectoMod = -1;
-                                Thread h1 = new Thread(new ThreadStart(MensajeInAnulacionFacturaCorrecta));
-                                h1.Start();
+                                //Resumen:
+                                /*1º->En primer lugar se guardaran cada  una de las  lineas de facturas nuevas en una lista.
+                                  2º->En segundo lugar se comprobara que la linea insertada no existe ya en la tabla reparacion,
+                                 * y se insertara las distintas lineas de la factura en la tabla reparacion , sustituiendo el campo linea de la factura por numero de reparacion
+                                 *3º-> En tercer lugar se comprobara que la segunda linea de factura si la hay debe coincidir en (fecha,IdCliente y Matricula Coche con la primera), asi como todas las siguiente si las hay
+                                 *4º-> Cada vez que se desee añadir una nueva linea de factura se debera dar aun boton de siguiente linea, el cual vaciara los campos excepto Numero de factura a anular y numero de factura sustituta.
+                                 * 5º->cuando se finalice de introducir todas sus lineas se hara click en modificar y se creara el pdf con la factura y delvoremos al usuario al listado de facturas(antes de esto se preguntara al usuario si esta seguro de esto)
+                                 * 6º En caso de dar a volver  en lugar de modificar, se recorrera la listat de facturas insertadas durante este proceso y se eliminaran, lo mismo con las inserciones realizadas en reparaciones
+                                */
+                                //List<Factura> listLineasFacturaAanular = new List<Factura>();//Listado de datos de la factura que vamos modificando para anular una factura y sustituirla por otra en ModificacionRegistro VolverAtrasMod
+                                break;
                             }
-
-                            //Resumen:
-                            /*1º->En primer lugar se guardaran cada  una de las  lineas de facturas nuevas en una lista.
-                              2º->En segundo lugar se comprobara que la linea insertada no existe ya en la tabla reparacion,
-                             * y se insertara las distintas lineas de la factura en la tabla reparacion , sustituiendo el campo linea de la factura por numero de reparacion
-                             *3º-> En tercer lugar se comprobara que la segunda linea de factura si la hay debe coincidir en (fecha,IdCliente y Matricula Coche con la primera), asi como todas las siguiente si las hay
-                             *4º-> Cada vez que se desee añadir una nueva linea de factura se debera dar aun boton de siguiente linea, el cual vaciara los campos excepto Numero de factura a anular y numero de factura sustituta.
-                             * 5º->cuando se finalice de introducir todas sus lineas se hara click en modificar y se creara el pdf con la factura y delvoremos al usuario al listado de facturas(antes de esto se preguntara al usuario si esta seguro de esto)
-                             * 6º En caso de dar a volver  en lugar de modificar, se recorrera la listat de facturas insertadas durante este proceso y se eliminaran, lo mismo con las inserciones realizadas en reparaciones
-                            */
-                            //List<Factura> listLineasFacturaAanular = new List<Factura>();//Listado de datos de la factura que vamos modificando para anular una factura y sustituirla por otra en ModificacionRegistro VolverAtrasMod
-                            break;
+                            else {
+                                System.Windows.MessageBox.Show("No has indicado ninguna linea para la nueva factura sustituta.", "(◑ω◐)¡Ops!.");
+                                break;
+                            }
                     }
                 }
                 catch
@@ -1694,42 +1832,50 @@ namespace GestorClientes
             //Añadimos la linea de factura de la pestaña modificaciones al listado de listLineasFacturaAanular
             try
             {
-                Factura f = new Factura();
-                f.NumeroFactura = NumeroFacturaSustituta;//Numero de nueva factura que sustitutye a la anulada
-                                                         //f.Linea = LineaFactura;
-                f.IdCliente = IdClienteFactura;
-                f.Matricula = MatriculaFactura;
-                f.NombreServicio = ServicioFactura;
-                f.CodServicio = _dao.selectServicioCodigo(ServicioFactura);
-                f.NombreCliente = _dao.selectClienteNombre(IdClienteFactura);
-                f.Fecha = FechaFactura.ToString("yyyy-MM-dd");
-                f.EstadoFactura = "VIGENTE";
-                f.NumeroFacturaAnulada = NumeroFactura.ToString();//Numero de factura que se va anular
-
-                int cantidad = listLineasFacturaSutituta.Count;//El numero de la cantidad de factura que vamos añadiendo se corresponde con el numero de lineas de la factura
-                if (cantidad == 0)
+                if (IdClienteFactura == -1 || MatriculaFactura is null || ServicioFactura is null)
+                    System.Windows.MessageBox.Show("Debes selecionar siempre un cliente,una matricula,una fecha y un servicio.", "(◑ω◐)¡Ops!.");
+                else
                 {
-                    f.Linea = 1;
-                    BloquearCbxIdClienteFactura = false;
-                    BloquearCbxMatriculaFactura = false;
-                    BloquearDataPickerFechaFactura = false;
-                }
-                else if (cantidad >= 1)
-                {
-                    f.Linea = cantidad + 1;
-                }
+                    Factura f = new Factura();
+                    f.NumeroFactura = NumeroFacturaSustituta;//Numero de nueva factura que sustitutye a la anulada
+                                                             //f.Linea = LineaFactura;
+                    f.IdCliente = IdClienteFactura;
+                    f.Matricula = MatriculaFactura;
+                    f.NombreServicio = ServicioFactura;
+                    f.CodServicio = _dao.selectServicioCodigo(ServicioFactura);
+                    f.NombreCliente = _dao.selectClienteNombre(IdClienteFactura);
+                    f.Fecha = FechaFactura.ToString("yyyy-MM-dd");
+                    f.EstadoFactura = "VIGENTE";
+                    f.NumeroFacturaAnulada = NumeroFactura.ToString();//Numero de factura que se va anular
 
-                //Añadimos la nueva factura a la lista que sera la que se recorrera e insertara cuando se confirme los cambios en ModificacionRegistro en el case "factura"
-                listLineasFacturaSutituta.Add(f);
-                //Una vez añadimos una linea de la factura, la siguiente linea añadida sera la 2 asi que aumentamos la propiedad linea en 1
-                //LineaFactura = f.Linea++;
-                //Recargamos el valor por defecto de todos los datos para la siguiente linea de factura que se inserte:
-                IdclientesComboboxFactura = _dao.selectClienteIdCliente();
-                //Renovamos el conbobox de Servicio Realizado para que se marque a 0
-                ListComboboxServicioFactura = _dao.selectServicioDescripcion();
-                //Mensaje de linea insertada
-                Thread h1 = new Thread(new ThreadStart(MensajeInformacionAnulaFactura));
-                h1.Start();
+                    int cantidad = listLineasFacturaSutituta.Count;//El numero de la cantidad de factura que vamos añadiendo se corresponde con el numero de lineas de la factura
+                    if (cantidad == 0)
+                    {
+                        f.Linea = 1;
+                        BloquearCbxIdClienteFactura = false;
+                        BloquearCbxMatriculaFactura = false;
+                        BloquearDataPickerFechaFactura = false;
+                    }
+                    else if (cantidad >= 1)
+                    {
+                        f.Linea = cantidad + 1;
+                    }
+
+                    //Añadimos la nueva factura a la lista que sera la que se recorrera e insertara cuando se confirme los cambios en ModificacionRegistro en el case "factura"
+                    listLineasFacturaSutituta.Add(f);
+                    //Una vez añadimos una linea de la factura, la siguiente linea añadida sera la 2 asi que aumentamos la propiedad linea en 1
+                    //LineaFactura = f.Linea++;
+
+                    //Recargamos el valor por defecto de todos los datos para la siguiente linea de factura que se inserte:
+                    //IdclientesComboboxFactura = _dao.selectClienteIdCliente();
+                    //Renovamos el conbobox de Servicio Realizado para que se marque a 0
+                    //ListComboboxServicioFactura = _dao.selectServicioDescripcion();
+                    ServicioFactura = null;
+
+                    //Mensaje de linea insertada
+                    Thread h1 = new Thread(new ThreadStart(MensajeInformacionAnulaFactura));
+                    h1.Start();
+                }
 
             }
             catch (Exception e)
@@ -2395,7 +2541,7 @@ namespace GestorClientes
             return ruta;
         }// Refactorizado Listo
 
-        //PENDIENTE DE PROBAR
+   
         public string AbrirDialogParaCSV(string fechaSelecionada)
         {
             string rutaProvisional = string.Empty;
@@ -2620,6 +2766,7 @@ namespace GestorClientes
             CodServicioRepa = 0;
             NumRepaInsert = 1;
             EsCorrectoInsert = -1;
+            listReparacionesPorAnadir.Clear();
 
             //Otros
             Mensaje = string.Empty;
@@ -2650,6 +2797,7 @@ namespace GestorClientes
             BloquearCbxIdClienteFactura = true;
             BloquearCbxMatriculaFactura = true;
             BloquearDataPickerFechaFactura = true;
+            listLineasFacturaSutituta.Clear();
             //Otros
             Mensaje = string.Empty;
             #endregion
@@ -2854,6 +3002,11 @@ namespace GestorClientes
         {
             get { return new RelayCommand(facturasustituta => AnadirLineaFacturaSustituta(), facturasustituta => true); }
         }
+        public RelayCommand AnadirReparacionALalistaDePreparacion_click
+        {
+            get { return new RelayCommand(reparacion => AnadirReparacionALalistaDePreparacion(), reparacion => true); }
+        }
+
         public RelayCommand ExtraerFacturasACsv_click
         {
             get { return new RelayCommand(extraerACSV => ExtraerFacturasACsv(), extraerACSV => true); }
@@ -2936,6 +3089,14 @@ namespace GestorClientes
             MensajeActualizacion = "Linea de factura añadida correctamente a la lista de preparación.";
             Thread.Sleep(3000);
             MensajeActualizacion = string.Empty;
+
+        }
+
+        private void MensjInfoReparacionAnadidaEnListaDeInsercion()
+        {
+            MensajeInsercion = "Reparación añadida correctamente a la lista de preparación.";
+            Thread.Sleep(3000);
+            MensajeInsercion = string.Empty;
 
         }
 
