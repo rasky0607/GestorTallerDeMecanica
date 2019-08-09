@@ -1613,7 +1613,7 @@ namespace GestorClientes
                             int contador = 0;
                             foreach (Reparacion reparacion in listReparacionesPorAnadir)
                             {
-                                if (_dao.InsertReparacion(reparacion.NumReparacion, reparacion.IdCliente, reparacion.MatriCoche, reparacion.CodServicio, reparacion.Fecha))//.ToString("yyyy-MM-dd")
+                                if (_dao.InsertReparacion(reparacion.NumReparacion, reparacion.IdCliente, reparacion.MatriCoche, reparacion.CodServicio, reparacion.Fecha,"NO FACTURADA"))//.ToString("yyyy-MM-dd")
                                     contador++;
                                 else
                                 {                                    
@@ -1662,7 +1662,20 @@ namespace GestorClientes
                 {
                     System.Windows.MessageBox.Show("Debes selecionar siempre un cliente,una matricula,una fecha y un servicio.", "(◑ω◐)¡Ops!.");
                 }
-                else 
+                else if (_dao.SelectExisteEstaFactura(IdClirepaInsert, MatriculaRepaInsert, FechaRepaInser.ToString("yyyy-MM-dd")))//Si existe ya una factura  con esa fecha, ese cliente y esa matricula(no pdora insertar otra reparacion,debera ir a facturas, anular la existente ,creando una nueva con nuevas reapraciones)
+                {
+                   int numeroFacturaExistente= _dao.SelectNumeroFactura(IdClirepaInsert, MatriculaRepaInsert, FechaRepaInser.ToString("yyyy-MM-dd"));
+                    List<Factura> listaDeLinesDeFacturas = new List<Factura>();
+                    listaDeLinesDeFacturas= _dao.selectFacturaUnIdCliUnaMatriculaEnFecha(MatriculaRepaInsert, IdClirepaInsert, FechaRepaInser.ToString("yyyy-MM-dd"));
+                    int numeroDelineasDelaFactura = listaDeLinesDeFacturas.Count;
+                    System.Windows.MessageBox.Show("Ya existe una factura creada para este cliente,esta matricula y este dia concretos.\nSi deseas añadirle más reparaciones a dicho cliente en este dia podrás añadirle nuevas reparaciones al anular la factura ya creada.\n" +
+                        "Datos de la factura existete que podría anular es:\n -Numero de factura:"+ numeroFacturaExistente+"\n -ID Cliente: "+ listaDeLinesDeFacturas[0].IdCliente +"\n -Nombre: "+ listaDeLinesDeFacturas[0].NombreCliente + "\n" +
+                        "-Apellidos: "+ listaDeLinesDeFacturas [0].ApellidosCliente+ "\nEsta factura tiene un total de "+numeroDelineasDelaFactura+" de lineas", "(◑ω◐)¡Ops!.");
+                    EsCorrectoInsert = 0;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+                    ListadoFacturas();
+                    EsCorrectoInsert = -1;//es correcto Para cambiar el foco a tblistado en lugar de estar en tbAñadir
+                }
+                else
                 {
                     int cantidad = listReparacionesPorAnadir.Count;
                     if (cantidad == 0)//La primera vez, obtenemos el maximo numero de reparacion para un determinado cliente con un coche en una determinada fecha concreta
@@ -1715,9 +1728,6 @@ namespace GestorClientes
                 Mensaje = "ERROR: " + e.Message;
             }
         }
-
-
-
 
         private void ModificacionRegistro()
         {
@@ -1784,6 +1794,11 @@ namespace GestorClientes
                                         a estado ANULADO y que la nueva factura contenta en numeroFacturaAnulada el numero de la factura que se anula*/
                                         _dao.InsertarFacturaSustitutaPorAnulada(f.NumeroFactura, f.Linea, f.IdCliente, f.Matricula, f.CodServicio, f.Fecha, f.NumeroFacturaAnulada);
                                     }
+
+                                    //Eliminamos de la tabla reparacion toda  reparacion relacionada con la factura ANULADA
+                                    Factura miFactura = new Factura();
+                                    miFactura = (Factura)SelecionRegistroAModificar;
+                                    _dao.DeleteReparacion(miFactura.IdCliente, miFactura.Matricula, miFactura.Fecha);
 
                                     //Volvemos ha activar los combox y datapicker(Solo se bloquearon para asegurarnos que esta factura siempre insertamos el mismo cliente,con el mismo coche de el mismo dia ,con distintos servicios)
                                     BloquearCbxIdClienteFactura = true;
@@ -1906,30 +1921,35 @@ namespace GestorClientes
                     Reparacion r = new Reparacion();
                     r = (Reparacion)Listado[i];
                     if (_dao.SelectExisteEstaFacturaVigente(r.IdCliente, r.MatriCoche, r.Fecha, r.CodServicio))//Si alguno de los resgitros ya  existe como factura, se le pide que anule la factura 
-                    {
-                        minumeroFactura = -2;
-                        numeroFacturaYaexistente = _dao.SelectNumeroFactura(r.IdCliente, r.MatriCoche, r.Fecha);
-                        break;
+                    {                       
+                      minumeroFactura = -2;
+                      numeroFacturaYaexistente = _dao.SelectNumeroFactura(r.IdCliente, r.MatriCoche, r.Fecha);
+                      break;                      
                     }
                 }
                 if (minumeroFactura != -2)//si ninguno de los registros con los que se va ha crear la factura, ya existe en la tabla factura
                 {
                     Reparacion rep = new Reparacion();
                     rep = (Reparacion)Listado[0];
-
+                    
                     //Inserta una nueva factura limpiamente
                     minumeroFactura = _dao.selectUltimoNumeroFactura();
                     for (int i = 0; i < Listado.Count; i++)
                     {
                         Reparacion r = new Reparacion();
                         r = (Reparacion)Listado[i];
+
                         //Insertamos una linea de factura
-                        _dao.InsertarFacturaLimpia(minumeroFactura, r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha);
+                        if (_dao.InsertarFacturaLimpia(minumeroFactura, r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha))
+                        {
+                            //Actualizamos el estado de la reparacion a Facturada PENDIENTE DE PROBAR
+                            _dao.UpdatetReparacionAFacturada(r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha);
+                        }
                     }
+            
                 }
                 else
                 {
-
                     MessageBox.Show("Ops!.Ya existe una factura creada con eso registros con el numero de factura: " + numeroFacturaYaexistente + "\nSi desea crear un nuevo pdf de estos registros,dirijase a esta factura clicke en ella y luego vaya al boton que indica \"recrear esta factura en PDF.\"\nTambien puede anular esta factura si lo desea y crear una nueva con los registros de reparaciones pertinentes", "(◑ω◐)¡Ops!.");
                 }
 
@@ -2175,9 +2195,9 @@ namespace GestorClientes
                             documento.Close();
 
                             #endregion
-
+                            Listado =Conversion(_dao.selectReparacion());
                             System.Windows.MessageBox.Show("Factura del :" + repar.Fecha + "\nNombre: " + repar.NombreCliRepa + " " + apellidos + "\nGuardada en la ruta: \"" + ruta + "\"", "Éxito◑‿◐");
-
+                           
                         }
 
                         catch

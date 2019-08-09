@@ -86,7 +86,7 @@
                     <Button Name="btnconecdesconec" Margin="22,0,0,10" Height="41"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="130" Background="{Binding ColorConexion}" BorderBrush="{Binding ColorConexion}" Content="{Binding ConectadoDesconectado}" Command="{Binding Conectar_click, Mode=OneWay}"/>
 
                     <!--DataGrid para los datos de la BD-->
-                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow">
+                    <DataGrid Name="dtgDatos" Margin="10,10,193,71" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Listado}"  SelectedItem="{Binding SelecionRegistroAModificar}" LoadingRow="DtgDatos_LoadingRow" >
                         <!--Apartado de estilos  sin codigo en c# que da color a las filas cuando se lista las facturas segun si pone ANULADA(rojo) o VIGENTE(verde)-->
                         <DataGrid.RowStyle>
                             <Style TargetType="{x:Type DataGridRow}">
@@ -96,6 +96,13 @@
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding EstadoFactura}" Value="VIGENTE">
                                         <Setter Property="Background" Value="#FF8BF0B4"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding EstadoReparacion}" Value="FACTURADA">
+                                        <Setter Property="Background" Value="#FF8BF0B4"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding EstadoReparacion}" Value="NO FACTURADA">
+                                        <Setter Property="Background" Value="#FFF9C15F"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

@@ -17,6 +17,7 @@ namespace GestorClientes
         string _fecha;
         string _nombreCliRepa;//Campo adicional para mostrar resultado de una subconsulta(pura estetica)
         string _apellidosCliRepa;//campo adicional para mostrar resultado de una subconsulta(pura estetica)
+        string _estadoReparacion;//Facturadoo no facturado
         
         //Propiedades
         public int NumReparacion { get => _numReparacion; set => _numReparacion = value; }
@@ -31,7 +32,8 @@ namespace GestorClientes
         public String NombreServicio { get => _nombreServicio; set => _nombreServicio = value; }       
         //-------------//
         public String Fecha { get => _fecha; set => _fecha = value; }
-      
+        public String EstadoReparacion { get => _estadoReparacion; set => _estadoReparacion = value; }
+
 
 
         //Constructor:

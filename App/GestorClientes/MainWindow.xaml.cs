@@ -281,26 +281,35 @@ namespace GestorClientes
                     #endregion
 
                     #region Cambiar nombre de columnas
-                    //Cambio de nombres esteticos en reparacion
-                    if (dtgDatos.Columns[2].Header is "NombreCliRepa")
+                    if (lbTablaListada.Content.ToString() == "Reparaciones")
                     {
-                        dtgDatos.Columns[2].Header = "Nombre";
+                        //Cambio de nombres esteticos en reparacion
+                        if (dtgDatos.Columns[2].Header is "NombreCliRepa")
+                        {
+                            dtgDatos.Columns[2].Header = "Nombre";
+                        }
+
+                        if (dtgDatos.Columns[3].Header is "ApellidosCliRepa")
+                        {
+                            dtgDatos.Columns[3].Header = "Apellidos";
+                        }
+
+                        if (dtgDatos.Columns[4].Header is "MatriCoche")
+                        {
+                            dtgDatos.Columns[4].Header = "Matricula";
+                        }
+
+                        if (dtgDatos.Columns[6].Header is "NombreServicio")
+                        {
+                            dtgDatos.Columns[6].Header = "Servicio";
+                        }
+
+                        if (dtgDatos.Columns[8].Header is "EstadoReparacion")
+                        {
+                            dtgDatos.Columns[8].Header = "Estado de reparación";
+                        }
                     }
 
-                    if (dtgDatos.Columns[3].Header is "ApellidosCliRepa")
-                    {
-                        dtgDatos.Columns[3].Header = "Apellidos";
-                    }
-
-                    if (dtgDatos.Columns[4].Header is "MatriCoche")
-                    {
-                        dtgDatos.Columns[4].Header = "Matricula";
-                    }
-
-                    if (dtgDatos.Columns[6].Header is "NombreServicio")
-                    {
-                        dtgDatos.Columns[6].Header = "Servicio";
-                    }
                     if (lbTablaListada.Content.ToString() == "Facturas")
                     {
                         //Tabla Facturas
@@ -420,8 +429,14 @@ namespace GestorClientes
                                 {
                                     Reparacion r = new Reparacion();
                                     r = (Reparacion)dtgDatos.SelectedItems[i];
-                                    if (gestion._dao.DeleteReparacion(r.NumReparacion, r.IdCliente, r.MatriCoche, r.Fecha))
-                                        regisRepaborradoconExito++;
+                                    if (r.EstadoReparacion != "FACTURADA")
+                                    {
+                                        if (gestion._dao.DeleteReparacion(r.NumReparacion, r.IdCliente, r.MatriCoche, r.Fecha))
+                                            regisRepaborradoconExito++;
+                                    }
+                                    else {
+                                        MessageBox.Show("Las reparaciones con el estado \"FACTURADAS\" no pueden ser eliminadas del registro de \"Reparaciones\".\nSi algunas de las repaciones selecionadas poseen este estado,estas serán obviadas en la lista de registros a eliminar.", "(◑ω◐)¡Ops!.");
+                                    }
                                 }
                                 if (regisRepaborradoconExito == dtgDatos.SelectedItems.Count)
                                 {
@@ -625,5 +640,8 @@ namespace GestorClientes
             ExtraerFacturasCSV ventanaExtracionCSV = new ExtraerFacturasCSV();
             ventanaExtracionCSV.Show();
         }
+
+     
+
     }
 }

@@ -30,6 +30,7 @@ drop table if exists cliente;
 		matriCoche varchar(20),
 		codServicio integer,
 		fecha date,
+		estadoReparacion enum('FACTURADA','NO FACTURADA') default 'NO FACTURADA',
 		primary key(numReparacion,idCliente,matriCoche,fecha),
 		foreign key (idCliente,matriCoche) references cliente (idCliente,matricula) on update cascade on delete restrict,
 		foreign key (codServicio) references servicio (codigo) on update cascade on delete restrict
@@ -61,13 +62,13 @@ create table factura(
 		insert into servicio values(5,'Pastillas de freno',30);
 		insert into servicio values(6,'Liquido de freno',25);
 
-		insert into reparacion values(1,1,'2218CL',4,'2019-06-01');
-		insert into reparacion values(2,1,'2218CL',3,'2019-06-01');
-		insert into reparacion values(3,1,'2218CL',4,'2019-06-01');
-		insert into reparacion values(1,2,'1700JPG',5,'2019-02-21');
-		insert into reparacion values(1,3,'2019OPL',6,'2019-03-19');
-		insert into reparacion values(1,1,'2218CL',6,'2019-07-11');
-		insert into reparacion values(2,1,'2218CL',6,'2019-07-11');
+		insert into reparacion values(1,1,'2218CL',4,'2019-06-01','FACTURADA');
+		insert into reparacion values(2,1,'2218CL',3,'2019-06-01','FACTURADA');
+		insert into reparacion values(3,1,'2218CL',4,'2019-06-01','FACTURADA');
+		insert into reparacion values(1,2,'1700JPG',5,'2019-02-21','FACTURADA');
+		insert into reparacion values(1,3,'2019OPL',6,'2019-03-19','NO FACTURADA');
+		insert into reparacion values(1,1,'2218CL',6,'2019-07-11','NO FACTURADA');
+		insert into reparacion values(2,1,'2218CL',6,'2019-07-11','NO FACTURADA');
 
 
 		
