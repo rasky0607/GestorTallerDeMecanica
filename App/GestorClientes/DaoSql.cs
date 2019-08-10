@@ -1955,8 +1955,88 @@ namespace GestorClientes
 
         }
 
+        //Consultas para CSV
+        public List<Factura> selectFacturasConPrecioDeServicios()
+        {
+            List<Factura> lFactura = new List<Factura>();
 
-    
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,(select precio from servicio where codigo=f.codServicio)as precio,fecha,estadoFactura,numeroFacturaAnulada from factura f order by numeroFactura,Fecha,idCliente desc;";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.PrecioServicio = double.Parse(lector["precio"].ToString());
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+            return lFactura;
+
+        }
+
+        public List<Factura> selectFacturaFiltroFechaMesConPreciosServicio(string fecha)
+        {
+            //select strftime('%m','2019-07-10'); Extraemos el mes concreto
+            //select * from reparacion where idCliente=1 and strftime('%m','2019-07-10')= strftime('%m',fecha);
+            List<Factura> lFactura = new List<Factura>();
+            string sql = "select numeroFactura,linea,idCLiente,(select nombre from cliente where idCliente=f.idCliente)as nombre,(select apellidos from cliente where idCliente=f.idCliente)as apellidos,matriCoche,codServicio,(select descripcion from servicio where codigo=f.codServicio)as servicio,(select precio from servicio where codigo=f.codServicio)as precio,fecha,estadoFactura,numeroFacturaAnulada from factura f where month(fecha)=month('" + fecha + "') and  year(fecha)=year('" + fecha + "')  order by numeroFactura,Fecha,idCliente desc";
+            MySqlCommand sqlYconec = new MySqlCommand(sql, conexion);
+
+            MySqlDataReader lector = null;
+
+            try
+            {
+                lector = sqlYconec.ExecuteReader();
+                while (lector.Read())
+                {
+                    Factura mifactura = new Factura();
+                    mifactura.NumeroFactura = int.Parse(lector["numeroFactura"].ToString());
+                    mifactura.Linea = int.Parse(lector["linea"].ToString());
+                    mifactura.IdCliente = int.Parse(lector["idCliente"].ToString());
+                    mifactura.NombreCliente = lector["nombre"].ToString();
+                    mifactura.ApellidosCliente = lector["apellidos"].ToString();
+                    mifactura.Matricula = lector["matriCoche"].ToString();
+                    mifactura.CodServicio = int.Parse(lector["codServicio"].ToString());
+                    mifactura.NombreServicio = lector["servicio"].ToString();
+                    mifactura.PrecioServicio = double.Parse(lector["precio"].ToString());
+                    mifactura.Fecha = DateTime.Parse(lector["fecha"].ToString()).ToShortDateString();
+                    mifactura.EstadoFactura = lector["estadoFactura"].ToString();
+                    mifactura.NumeroFacturaAnulada = lector["numeroFacturaAnulada"].ToString();
+
+                    lFactura.Add(mifactura);
+                }
+                lector.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lFactura;
+
+        }
+
 
     }
 

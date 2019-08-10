@@ -352,6 +352,10 @@ namespace GestorClientes
                         {
                             dtgDatos.Columns[9].Header = "Servicio";
                         }
+                        if (dtgDatos.Columns[10].Header is "PrecioServicio")
+                        {
+                            dtgDatos.Columns[10].Visibility = Visibility.Collapsed;
+                        }
                     }
                     //-----------//
                     #endregion
@@ -419,8 +423,7 @@ namespace GestorClientes
                                 MessageBox.Show("Uno o alguno de los servicios seleccionados no pueden ser eliminados,posiblemente tengan algun registro\nde reparaciones con el que esten relacionados.\nAntes de eliminarlo\\s debes borrar las reparacion\\es con las que esten relacionado\\s", "(◑ω◐)¡Ops!.");
                             }
 
-                            break;
-                        //REVISAR
+                            break;      
                         case "reparacion":
                             int regisRepaborradoconExito = 0;
                             try
