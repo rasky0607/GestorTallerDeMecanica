@@ -1920,60 +1920,62 @@ namespace GestorClientes
             //IF que pregunta si esa factura existe ya con  los mismos datos y otro numero de factura y el estado vigente
             if (SelecionRegistroAModificar is null)
                 MessageBox.Show("Ops!.Debes selecionar un registro de \"Reparaciones\" con estado de reparación \"NO FACTURADA\" para poder extraer el pdf de esta y crear su correspondiente factura. ", "(◑ω◐)¡Ops!.");
-
-            if (TablaAcltualListada == "reparacion")
+            else
             {
-                //List<Reparacion> listaDeReparacionesAFacturar = new List<Reparacion>();
-                Reparacion reparacionSelecionada = new Reparacion();
-                reparacionSelecionada = (Reparacion)SelecionRegistroAModificar;
-
-                if (reparacionSelecionada.EstadoReparacion == "NO FACTURADA")
+                if (TablaAcltualListada == "reparacion")
                 {
-                    listaDeReparacionesAFacturar = _dao.selectReparacionUnIdCliUnaMatriculaEnFecha(reparacionSelecionada.MatriCoche, reparacionSelecionada.IdCliente, DateTime.Parse(reparacionSelecionada.Fecha).ToString("yyyy-MM-dd"));
-                    //Comprobacion de si ya se creo una factura con estos mismos datos y que este vigente
-                    for (int i = 0; i < listaDeReparacionesAFacturar.Count; i++)
-                    {
-                        Reparacion r = new Reparacion();
-                        r = (Reparacion)listaDeReparacionesAFacturar[i];
-                        if (_dao.SelectExisteEstaFacturaVigente(r.IdCliente, r.MatriCoche, r.Fecha, r.CodServicio))//Si alguno de los resgitros ya  existe como factura, se le pide que anule la factura 
-                        {
-                            minumeroFactura = -2;
-                            numeroFacturaYaexistente = _dao.SelectNumeroFactura(r.IdCliente, r.MatriCoche, r.Fecha);
-                            break;
-                        }
-                    }
-                    if (minumeroFactura != -2)//si ninguno de los registros con los que se va ha crear la factura, ya existe en la tabla factura
-                    {
-                        Reparacion rep = new Reparacion();
-                        rep = (Reparacion)listaDeReparacionesAFacturar[0];
+                    //List<Reparacion> listaDeReparacionesAFacturar = new List<Reparacion>();
+                    Reparacion reparacionSelecionada = new Reparacion();
+                    reparacionSelecionada = (Reparacion)SelecionRegistroAModificar;
 
-                        //Inserta una nueva factura limpiamente
-                        minumeroFactura = _dao.selectUltimoNumeroFactura();
+                    if (reparacionSelecionada.EstadoReparacion == "NO FACTURADA")
+                    {
+                        listaDeReparacionesAFacturar = _dao.selectReparacionUnIdCliUnaMatriculaEnFecha(reparacionSelecionada.MatriCoche, reparacionSelecionada.IdCliente, DateTime.Parse(reparacionSelecionada.Fecha).ToString("yyyy-MM-dd"));
+                        //Comprobacion de si ya se creo una factura con estos mismos datos y que este vigente
                         for (int i = 0; i < listaDeReparacionesAFacturar.Count; i++)
                         {
                             Reparacion r = new Reparacion();
                             r = (Reparacion)listaDeReparacionesAFacturar[i];
-
-                            //Insertamos una linea de factura
-                            if (_dao.InsertarFacturaLimpia(minumeroFactura, r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha))
+                            if (_dao.SelectExisteEstaFacturaVigente(r.IdCliente, r.MatriCoche, r.Fecha, r.CodServicio))//Si alguno de los resgitros ya  existe como factura, se le pide que anule la factura 
                             {
-                                //Actualizamos el estado de la reparacion a Facturada PENDIENTE DE PROBAR
-                                _dao.UpdatetReparacionAFacturada(r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha);
+                                minumeroFactura = -2;
+                                numeroFacturaYaexistente = _dao.SelectNumeroFactura(r.IdCliente, r.MatriCoche, r.Fecha);
+                                break;
                             }
                         }
+                        if (minumeroFactura != -2)//si ninguno de los registros con los que se va ha crear la factura, ya existe en la tabla factura
+                        {
+                            Reparacion rep = new Reparacion();
+                            rep = (Reparacion)listaDeReparacionesAFacturar[0];
+
+                            //Inserta una nueva factura limpiamente
+                            minumeroFactura = _dao.selectUltimoNumeroFactura();
+                            for (int i = 0; i < listaDeReparacionesAFacturar.Count; i++)
+                            {
+                                Reparacion r = new Reparacion();
+                                r = (Reparacion)listaDeReparacionesAFacturar[i];
+
+                                //Insertamos una linea de factura
+                                if (_dao.InsertarFacturaLimpia(minumeroFactura, r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha))
+                                {
+                                    //Actualizamos el estado de la reparacion a Facturada PENDIENTE DE PROBAR
+                                    _dao.UpdatetReparacionAFacturada(r.NumReparacion, r.IdCliente, r.MatriCoche, r.CodServicio, r.Fecha);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Ops!.Ya existe una factura creada con eso registros con el numero de factura: " + numeroFacturaYaexistente + "\nSi desea crear un nuevo pdf de estos registros,dirijase a esta factura clicke en ella y luego vaya al boton que indica \"recrear esta factura en PDF.\"\nTambien puede anular esta factura si lo desea y crear una nueva con los registros de reparaciones pertinentes", "(◑ω◐)¡Ops!.");
+                        }
+
                     }
                     else
                     {
-                        MessageBox.Show("Ops!.Ya existe una factura creada con eso registros con el numero de factura: " + numeroFacturaYaexistente + "\nSi desea crear un nuevo pdf de estos registros,dirijase a esta factura clicke en ella y luego vaya al boton que indica \"recrear esta factura en PDF.\"\nTambien puede anular esta factura si lo desea y crear una nueva con los registros de reparaciones pertinentes", "(◑ω◐)¡Ops!.");
+                        MessageBox.Show("Ops!.Esta factura ya esta facturada.Comprueba que el estado de la factura selecionada es \"NO FACTURADA\".\nRecordatorio las reparaciones ya \"FACTURADAS\" podrás encontrarlas en el registro de Facturas. ", "(◑ω◐)¡Ops!.");
                     }
 
+                    ListadoReparacion();//Listamos de nuevo las reparaciones para actualizar
                 }
-                else
-                {
-                    MessageBox.Show("Ops!.Esta factura ya esta facturada.Comprueba que el estado de la factura selecionada es \"NO FACTURADA\".\nRecordatorio las reparaciones ya \"FACTURADAS\" podrás encontrarlas en el registro de Facturas. ", "(◑ω◐)¡Ops!.");
-                }
-
-                ListadoReparacion();//Listamos de nuevo las reparaciones para actualizar
             }
             return minumeroFactura;
 
@@ -2186,8 +2188,8 @@ namespace GestorClientes
 
                             double precioBrutoYBImponible = 0;
                             double ivaAplicado = 0;
-                            ivaAplicado = (precioTotal * double.Parse(IVA)) / 100;//Sacamos cuanto es 21% de el iva del precio final
-                            precioBrutoYBImponible = precioTotal - ivaAplicado;//Le quitamos el 21% del iva el precio total para obtener el precio bruto y la Base imponible por que los descuentos lo hacemos directamente sobre  total de la factura, si no iria a parte
+                            ivaAplicado = Math.Round((precioTotal * double.Parse(IVA)) / 100,2);//Sacamos cuanto es 21% de el iva del precio final
+                            precioBrutoYBImponible = Math.Round(precioTotal - ivaAplicado,2);//Le quitamos el 21% del iva el precio total para obtener el precio bruto y la Base imponible por que los descuentos lo hacemos directamente sobre  total de la factura, si no iria a parte
 
                             //Añadimos linea de precio total con un estilo concreto.
                             Paragraph lineaBrutoYBImponible = new Paragraph();
@@ -2451,8 +2453,8 @@ namespace GestorClientes
 
                                 double precioBrutoYBImponible = 0;
                                 double ivaAplicado = 0;
-                                ivaAplicado = (precioTotal * double.Parse(IVA)) / 100;//Sacamos cuanto es 21% de el iva del precio final
-                                precioBrutoYBImponible = precioTotal - ivaAplicado;//Le quitamos el 21% del iva el precio total para obtener el precio bruto y la Base imponible por que los descuentos lo hacemos directamente sobre  total de la factura, si no iria a parte
+                                ivaAplicado = Math.Round((precioTotal * double.Parse(IVA)) / 100,2);//Sacamos cuanto es 21% de el iva del precio final
+                                precioBrutoYBImponible = Math.Round(precioTotal - ivaAplicado,2);//Le quitamos el 21% del iva el precio total para obtener el precio bruto y la Base imponible por que los descuentos lo hacemos directamente sobre  total de la factura, si no iria a parte
 
                                 //Añadimos linea de precio total con un estilo concreto.
                                 Paragraph lineaBrutoYBImponible = new Paragraph();
@@ -2811,17 +2813,22 @@ namespace GestorClientes
                     {
                         case "cliente":
                             Listado = Conversion(_dao.selectCliente());
+                            Thread h1 = new Thread(new ThreadStart(MensajeInformacionEliminacionCorrecta));
+                            h1.Start();
                             break;
                         case "servicio":
 
                             Listado = Conversion(_dao.selectServicio());
+                            Thread h2 = new Thread(new ThreadStart(MensajeInformacionEliminacionCorrecta));
+                            h2.Start();
                             break;
                         case "reparacion":
                             Listado = Conversion(_dao.selectReparacion());
+                            Thread h3 = new Thread(new ThreadStart(MensajeInformacionEliminacionCorrecta));
+                            h3.Start();
                             break;
                     }
-                    Thread h1 = new Thread(new ThreadStart(MensajeInformacionEliminacionCorrecta));
-                    h1.Start();
+                   
 
                 }
                 catch
