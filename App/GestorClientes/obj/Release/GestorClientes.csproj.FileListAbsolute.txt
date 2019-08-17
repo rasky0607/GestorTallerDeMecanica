@@ -132,7 +132,6 @@ E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Release\Sys
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Release\System.Xml.XPath.XDocument.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Release\Renci.SshNet.dll
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Release\Renci.SshNet.xml
-E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\GestorClientes.csprojAssemblyReference.cache
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\GestorClientes.exe.config
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\ExtraerFacturasCSV.g.cs
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\ExtraerFacturasCSV.baml

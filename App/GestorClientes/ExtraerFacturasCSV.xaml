@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GestorClientes"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Extractor de facturas para hoja de calculo" Height="230.899" Width="328.932" ResizeMode="NoResize" Icon="img/excel.ico">
+        Title="Extractor de hoja de calculo Excel" Height="230.899" Width="328.932" ResizeMode="NoResize" Icon="img/excel.ico">
     <Grid>
         <Grid.DataContext>
             <local:GestionVM/>
