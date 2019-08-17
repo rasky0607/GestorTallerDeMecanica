@@ -135,3 +135,4 @@ E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\bin\Release\Ren
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\GestorClientes.exe.config
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\ExtraerFacturasCSV.g.cs
 E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\ExtraerFacturasCSV.baml
+E:\Repositorios en Git\GestorTallerDeMecanica\App\GestorClientes\obj\Release\GestorClientes.csprojAssemblyReference.cache
