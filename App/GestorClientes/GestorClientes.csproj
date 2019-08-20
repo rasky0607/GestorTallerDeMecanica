@@ -173,6 +173,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ManualDeUsuario\ManualDeUsuario.pdf" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

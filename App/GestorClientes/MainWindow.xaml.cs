@@ -633,10 +633,6 @@ namespace GestorClientes
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -644,7 +640,25 @@ namespace GestorClientes
             ventanaExtracionCSV.Show();
         }
 
-     
-
+        //Apertura del manual de usuario
+        private void BtnManualusuario_Click(object sender, RoutedEventArgs e)
+        {
+            /* Prueba para Debug: ya que empieza desde la carpeta Debug
+          string rutaRelativa = "../../ManualDeUsuario/ManualDeUsuario.pdf";
+          string rutaAbsoluta = System.IO.Path.GetFullPath(rutaRelativa);*/
+            string rutaRelativa = string.Empty;
+            string rutaAbsoluta= string.Empty;
+            //prueba con la posicion en  la que se encuentra en la carpeta creada con el isntalador de la app:
+            //En este caso la carpeta ManualDeUsuario se encuentra a el mismo nivel que el ejecutable,de ahi que la ruta relativa sea ./ y no ../
+            try
+            {
+                 rutaRelativa = "./ManualDeUsuario/ManualDeUsuario.pdf";
+                 rutaAbsoluta = System.IO.Path.GetFullPath(rutaRelativa);
+                Process.Start(rutaAbsoluta);
+            }
+            catch {
+                System.Windows.MessageBox.Show("Ocurrio un error al intentar abrir el manual en PDF de la aplicación localizado en la ruta:\n\""+ rutaAbsoluta + "\"\n asegurese de tener algún lector de PDF instalado o el propio navegador Explore.", "(◑ω◐)¡Ops!.");
+            }
+        }
     }
 }

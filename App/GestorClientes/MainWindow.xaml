@@ -51,6 +51,11 @@
                         <materialDesign:PackIcon Kind="GithubCircle" Height="19" Width="17" />
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Name="btnManualusuario" Header="Manual de usuario."  ToolTip="Manual de uso del programa." Click="BtnManualusuario_Click" >
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="Help" Height="19" Width="17" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Name="btnAcercaDe" Header="Acerca de..."  ToolTip="Información sobre del desarrollador y versión de la aplicación." Click="BtnAcercaDe_Click">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="InformationVariant" Height="19" Width="17" />
