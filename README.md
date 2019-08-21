@@ -27,4 +27,5 @@ Requisitos:
 
 Manual del usuario:
 =================================
-- ![Manual en PDF.](ManualUsuario/ManualDeUsuario.pdf)
+Aquí podrás encontrar capturas de pantalla a las cuales se les ha adjuntado explicaciones especificas sobre cada una de las funcionalidades de la aplicación.<br/>Haz click
+![ aquí](ManualUsuario/ManualDeUsuario.pdf) para verlo.
