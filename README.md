@@ -12,6 +12,13 @@ Funciones básicas:
 - Extraer listado de facturas en formato CSV o "hoja de calculo".
 - Copia de seguridad de los registros de la BD.
 
+Otras básicas:
+=================================
+- <b>Filtrado de reparaciones</b> por cliente,fecha o mes concretos.
+- <b>Calculo de presupuesto</b> total de todas las <b>reparaciones</b> de un mes concreto.
+- <b>Filtrado de facturas</b> por cliente,fecha o mes concretos.
+- <b>Calculo de presupuesto</b> total de todas las <b>facturas</b> de un mes concreto.
+
 Requisitos:
 =================================
 - S.O (Windows).
