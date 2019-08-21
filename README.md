@@ -25,6 +25,6 @@ Requisitos:
 - Instalación de gestor de base de datos <a href="https://downloads.mariadb.org/mariadb">MariaDB.</a>
 - Inyectar Script sql ![mecanica.sql](scriptBDsql/mecanica.sql) "Este contiene algunas inserciones a modo de ejemplo".
 
-Manual del usuaro:
+Manual del usuario:
 =================================
 - ![Manual en PDF.](ManualUsuario/ManualDeUsuario.pdf)
