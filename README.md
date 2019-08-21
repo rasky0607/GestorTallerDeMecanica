@@ -1,5 +1,6 @@
-# Gestor de clientes.
-- Especifico para talleres de mecánica.<br/>
+# Gestor de clientes.<h6><i> Especifico para talleres de mecánica.</i></h6><br/>
+<img src="App/GestorClientes/img/logo.PNG" width="100">
+
 
 Funciones básicas:
 =================================
@@ -14,7 +15,7 @@ Funciones básicas:
 Requisitos:
 =================================
 - S.O (Windows).
-- Instalación de gestor de base de datos ![MariaDB](https://downloads.mariadb.org/mariadb).
+- Instalación de gestor de base de datos <a href="https://downloads.mariadb.org/mariadb">MariaDB.</a>
 - Inyectar Script sql ![mecanica.sql](scriptBDsql/mecanica.sql) "Este contiene algunas inserciones a modo de ejemplo".
 
 Manual del usuaro:
