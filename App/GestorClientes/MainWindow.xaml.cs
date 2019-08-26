@@ -543,10 +543,11 @@ namespace GestorClientes
 
                 //Copia de seguridad 2(copiando uno a uno los registros y añadiendolos a un fichero .sqlite con las palabras reservadas de el motor para realizar las inserciones
                 #endregion
-                g._dao.CopiaSeguridad();
 
+                g._dao.CopiaSeguridad();
+                g._dao.CopiaSeguridadSemanal();
                 #region Copia de Seguridad SQL
-                
+
                 #endregion
 
             }

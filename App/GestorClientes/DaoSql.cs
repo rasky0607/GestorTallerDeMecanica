@@ -1849,7 +1849,8 @@ namespace GestorClientes
 
                
                 string rutaBacUpkBD = System.Configuration.ConfigurationManager.AppSettings.Get("backup");//Optenemos el  dato de configuracion con la clave backup de el fichero app.config          
-                string rutaRecursoMysqlDump= System.Configuration.ConfigurationManager.AppSettings.Get("rutaRecursoMysqldump");//Optenemos el  dato de configuracion con la clave rutaRecursoMysqldump de el fichero app.config    
+                string rutaRecursoMysqlDump= System.Configuration.ConfigurationManager.AppSettings.Get("rutaRecursoMysqldump");//Optenemos el  dato de configuracion con la clave rutaRecursoMysqldump de el fichero app.config  
+                string nombreDeFichero = "backUpBDMecanica";
                 if (!Directory.Exists(rutaBacUpkBD))
                     Directory.CreateDirectory(rutaBacUpkBD);
                 
@@ -1859,12 +1860,93 @@ namespace GestorClientes
                 proc.StartInfo.RedirectStandardOutput = true;
                 //direccionar el lugar de ubicacion del recurso
                 proc.StartInfo.FileName = rutaRecursoMysqlDump;
+                //Si hay una Copia de seguridad ya hecha
+                if (File.Exists(rutaBacUpkBD + "\\" + nombreDeFichero + ".sql"))
+                {
+
+                    if (File.Exists(rutaBacUpkBD + "\\" + nombreDeFichero + "Backup1.sql"))//Si existe backUpBDMecanicaBackup1 , machaca la primera copia backUpBDMecanica
+                    {
+                        //parametros que recibe le recurso del gestpr de datos + el directorio PENDIENTE CONFIGUARAR LA RUTA DE SALIDA(DEBEMSO CREAR PRIMERO EL DIRECTORIO DONDE SE GUARDARA SI NO EXISTE
+                        proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r " + rutaBacUpkBD + "\\backUpBDMecanica.sql";
+                    }
+                    else//Si no existe backUpBDMecanicaBackup1 , crea una copia llamada backUpBDMecanicaBackup1.sql
+                    {
+                        //parametros que recibe le recurso del gestpr de datos + el directorio PENDIENTE CONFIGUARAR LA RUTA DE SALIDA(DEBEMSO CREAR PRIMERO EL DIRECTORIO DONDE SE GUARDARA SI NO EXISTE
+                        proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r " + rutaBacUpkBD + "\\backUpBDMecanicaBackup1.sql";
+                    }
+                }
+                else//Si no existe backUpBDMecanica, crea una copia llamada backUpBDMecanica.sql
+                {
+                    //parametros que recibe le recurso del gestpr de datos + el directorio PENDIENTE CONFIGUARAR LA RUTA DE SALIDA(DEBEMSO CREAR PRIMERO EL DIRECTORIO DONDE SE GUARDARA SI NO EXISTE
+                    proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r " + rutaBacUpkBD + "\\backUpBDMecanica.sql";
+                }
+                //------------------//
+
                 //parametros que recibe le recurso del gestpr de datos + el directorio PENDIENTE CONFIGUARAR LA RUTA DE SALIDA(DEBEMSO CREAR PRIMERO EL DIRECTORIO DONDE SE GUARDARA SI NO EXISTE
-                proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r "+rutaBacUpkBD+"\\backUpBDMecanica.sql";
+                //proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r "+rutaBacUpkBD+"\\backUpBDMecanica.sql";
                 //ejecutar el recurso
                 proc.StartInfo.WindowStyle = new System.Diagnostics.ProcessWindowStyle();
                 proc.Start();
                 //MessageBox.Show("Copia de seguridad realizada con exito");
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return true;
+
+        }
+        public bool CopiaSeguridadSemanal()
+        {
+            try
+            {             
+                //mysqldump -u root -p123 mecanica >C:\Users\pinid\Escritorio\backupMecanica.sql
+                string rutaBacUpkBD = System.Configuration.ConfigurationManager.AppSettings.Get("backup");//Optenemos el  dato de configuracion con la clave backup de el fichero app.config          
+                string rutaRecursoMysqlDump = System.Configuration.ConfigurationManager.AppSettings.Get("rutaRecursoMysqldump");//Optenemos el  dato de configuracion con la clave rutaRecursoMysqldump de el fichero app.config  
+                //string nombreDeFichero = "backUpBDMecanica";
+                if (!Directory.Exists(rutaBacUpkBD))
+                    Directory.CreateDirectory(rutaBacUpkBD);
+
+                string nombreFicheroSemanal = "backUpBDMecanicaSemanal";
+                if (File.Exists(rutaBacUpkBD + "\\" + nombreFicheroSemanal + ".sql"))//Si existe el fichero
+                {
+                    //Obtenemos la fecha del fichero y calculamos la diferencia entre la fecha de creacion y la actual
+                    DateTime fechaFichero = DateTime.Parse(File.GetCreationTime(rutaBacUpkBD + "\\" + nombreFicheroSemanal + ".sql").ToShortDateString());
+                    double resultado = 0;
+                    resultado = (DateTime.Parse(DateTime.Now.ToShortDateString()) - fechaFichero).TotalDays;
+
+                    if (resultado == 7)//Si han pasado 7 dias desde la ultima copia, realizamos una nueva
+                    {
+                        //Proceso de copia
+                        System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                        proc.EnableRaisingEvents = false;
+                        proc.StartInfo.UseShellExecute = false;
+                        proc.StartInfo.RedirectStandardOutput = true;
+                        //direccionar el lugar de ubicacion del recurso
+                        proc.StartInfo.FileName = rutaRecursoMysqlDump;
+                        //parametros que recibe le recurso del gestpr de datos + el directorio PENDIENTE CONFIGUARAR LA RUTA DE SALIDA(DEBEMSO CREAR PRIMERO EL DIRECTORIO DONDE SE GUARDARA SI NO EXISTE
+                        proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r " + rutaBacUpkBD + "\\backUpBDMecanicaSemanal.sql";
+                        //ejecutar el recurso
+                        proc.StartInfo.WindowStyle = new System.Diagnostics.ProcessWindowStyle();
+                        proc.Start();
+                    }
+                }
+                else//Si no existe el ficheroo de copia semanal
+                {
+                    //Proceso de copia
+                    System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                    proc.EnableRaisingEvents = false;
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    //direccionar el lugar de ubicacion del recurso
+                    proc.StartInfo.FileName = rutaRecursoMysqlDump;
+                    //parametros que recibe le recurso del gestpr de datos + el directorio PENDIENTE CONFIGUARAR LA RUTA DE SALIDA(DEBEMSO CREAR PRIMERO EL DIRECTORIO DONDE SE GUARDARA SI NO EXISTE
+                    proc.StartInfo.Arguments = "--opt --force --user=root --password=123 --databases mecanica -r " + rutaBacUpkBD + "\\backUpBDMecanicaSemanal.sql";
+                    //ejecutar el recurso
+                    proc.StartInfo.WindowStyle = new System.Diagnostics.ProcessWindowStyle();
+                    proc.Start();
+                    //MessageBox.Show("Copia de seguridad realizada con exito");
+                }
             }
             catch (Exception e)
             {
