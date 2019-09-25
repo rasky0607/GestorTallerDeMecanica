@@ -1,12 +1,13 @@
 # Gestor de clientes.<h6>
+ <i> Especifico para talleres de mecánica.</i></h6><br/>
+<img src="App/GestorClientes/img/logo.PNG" width="100"><br/><hr/><br/>
 [![GitHub release](https://img.shields.io/github/release/rasky0607/GestorTallerDeMecanica.svg)]()
 [![GitHub last commit](https://img.shields.io/github/last-commit/rasky0607/GestorTallerDeMecanica.svg)]()
 [![GitHub issues](https://img.shields.io/github/issues/rasky0607/GestorTallerDeMecanica.svg)]()
 [![GitHub stars](https://img.shields.io/github/stars/rasky0607/GestorTallerDeMecanica.svg)]()
 [![GitHub forks](https://img.shields.io/github/forks/rasky0607/GestorTallerDeMecanica.svg)](https://github.com/rasky0607/GestorTallerDeMecanica//network)
   
-  <i> Especifico para talleres de mecánica.</i></h6><br/>
-<img src="App/GestorClientes/img/logo.PNG" width="100">
+
 
 
 
